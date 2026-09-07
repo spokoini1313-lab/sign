@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>חתימה על מסמך</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#eef1ee; --paper:#ffffff; --ink:#1b2624; --muted:#62716c; --line:#c9d2cc;
+    --accent:#d4620f; --accent-hover:#b95309; --good:#3a7a4e; --good-soft:#dcefe0;
+    --radius:12px; --shadow:0 4px 6px -1px rgba(0,0,0,.1);
+  }
+  *{ box-sizing:border-box; }
+  html{ direction:rtl; }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Heebo',Arial,sans-serif; line-height:1.6; padding:20px 14px 60px; }
+  .wrap{ max-width:640px; margin:0 auto; }
+  h1{ font-size:1.3rem; margin:0 0 4px; }
+  h2{ font-size:1.05rem; margin:0 0 6px; }
+  .muted{ color:var(--muted); }
+  .card{ background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; margin-bottom:16px; }
+  table{ width:100%; border-collapse:collapse; font-size:.9rem; }
+  th{ text-align:right; border-bottom:2px solid var(--ink); padding:6px 8px; font-size:.72rem; color:var(--muted); text-transform:uppercase; }
+  td{ padding:8px; border-bottom:1px solid #eee; }
+  .total{ text-align:left; font-size:1.25rem; font-weight:700; margin-top:12px; }
+  label{ display:block; font-size:.78rem; color:var(--muted); margin-bottom:5px; font-weight:500; }
+  input[type=text]{ width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:1rem; background:var(--paper); color:var(--ink); }
+  .field{ margin-bottom:16px; }
+  .sign-pad-wrap{ border:2px dashed var(--line); border-radius:8px; background:#fff; margin-bottom:12px; touch-action:none; overflow:hidden; }
+  #pad{ width:100%; height:180px; display:block; touch-action:none; cursor:crosshair; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:44px; padding:11px 20px; border-radius:var(--radius); border:1px solid var(--line); background:var(--paper); color:var(--ink); text-decoration:none; font-size:.9rem; font-weight:500; font-family:inherit; cursor:pointer; box-shadow:0 2px 5px -2px rgba(0,0,0,.15); }
+  .btn.primary{ background:linear-gradient(180deg,var(--accent),var(--accent-hover)); border-color:var(--accent-hover); color:#fff; font-weight:700; width:100%; }
+  .btn.block{ width:100%; }
+  .row{ display:flex; gap:8px; }
+  .row .btn{ flex:1; }
+  .done{ text-align:center; }
+  .done .ok{ font-size:2.4rem; margin-bottom:6px; }
+  .foot{ text-align:center; color:var(--muted); font-size:.72rem; margin-top:20px; }
+  .spinner{ display:inline-block; width:16px; height:16px; border:2px solid var(--line); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  #err{ display:none; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="card"><p class="muted" style="margin:0;">טוען מסמך...</p></div>
+</div>
+
+<div id="print-root" style="display:none;"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+function esc(s){
+  if (s === null || s === undefined) return "";
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+function ils(v){
+  var n = parseFloat(v);
+  if (isNaN(n)) return "₪0";
+  return "₪" + n.toLocaleString("he-IL", {maximumFractionDigits:0});
+}
+function decodePayload(s){
+  s = s.replace(/-/g,'+').replace(/_/g,'/');
+  while (s.length % 4) s += '=';
+  var json = decodeURIComponent(escape(atob(s)));
+  return JSON.parse(json);
+}
+
+var app = document.getElementById("app");
+var hash = location.hash.slice(1);
+var m = hash.match(/(?:^|&)d=([^&]+)/);
+if (!m){
+  app.innerHTML = '<div class="card"><h2>קישור לא תקין</h2><p class="muted">חסרים פרטי המסמך בקישור. יש לבקש קישור חדש מבעל העסק.</p></div>';
+  return;
+}
+var data;
+try { data = decodePayload(m[1]); }
+catch(e){
+  app.innerHTML = '<div class="card"><h2>קישור לא תקין</h2><p class="muted">לא ניתן לקרוא את פרטי המסמך. יש לבקש קישור חדש.</p></div>';
+  return;
+}
+
+function buildDocHtml(){
+  var head = '<div style="display:flex;align-items:center;gap:14px;border-bottom:4px solid #d4620f;padding-bottom:14px;margin-bottom:20px;">' +
+    '<div><h1 style="margin:0;font-size:1.5rem;">' + esc(data.bn||"") + '</h1>' +
+    (data.tid ? '<div style="color:#666;font-size:.82rem;">ח.פ / עוסק: ' + esc(data.tid) + '</div>' : '') +
+    '</div></div>';
+  var title = data.k === "co" ? "כתב תוספת עבודה" : "הצעת מחיר";
+  var body = '<h2 style="margin:0 0 4px;font-size:1.25rem;">' + esc(title) + (data.t ? ' — ' + esc(data.t) : '') + '</h2>' +
+    '<div style="color:#666;font-size:.85rem;margin-bottom:16px;">' + esc(data.cn||"") + (data.ca ? ' · ' + esc(data.ca) : '') + '</div>';
+  if (data.k === "co"){
+    body += '<p style="white-space:pre-wrap;line-height:1.6;">' + esc(data.ds||"") + '</p>' +
+      '<div style="text-align:left;margin-top:16px;font-size:1.25em;font-weight:bold;">עלות נוספת: ' + ils(data.tot) + '</div>';
+  } else {
+    body += '<table><thead><tr><th>תיאור</th><th>כמות</th><th>מחיר יח׳</th><th>סה"כ</th></tr></thead><tbody>' +
+      (data.ln||[]).map(function(l){
+        var d=l[0], q=l[1], p=l[2];
+        return '<tr><td>'+esc(d)+'</td><td>'+q+'</td><td>'+ils(p)+'</td><td>'+ils(q*p)+'</td></tr>';
+      }).join("") + '</tbody></table>' +
+      '<div class="total">סה"כ: ' + ils(data.tot) + '</div>';
+  }
+  return head + body;
+}
+
+function renderMain(){
+  app.innerHTML =
+    '<div class="card">' + buildDocHtml() + '</div>' +
+    '<div class="card">' +
+    '<div class="field"><label>שם החותם/ת *</label><input type="text" id="sign-name" placeholder="שם מלא"></div>' +
+    '<label>חתימה *</label>' +
+    '<div class="sign-pad-wrap"><canvas id="pad"></canvas></div>' +
+    '<div class="row" style="margin-bottom:0;">' +
+    '<button class="btn" id="clear-btn" style="flex:none;">ניקוי</button>' +
+    '<button class="btn primary" id="submit-btn">✓ אישור וחתימה</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="foot">מסמך זה נשלח אליך ישירות על ידי ' + esc(data.bn||"העסק") + '. החתימה נשמרת רק על המכשיר שלך עד שתשלח אותה בחזרה.</div>';
+
+  var canvas = document.getElementById("pad");
+  setupPad(canvas);
+  document.getElementById("clear-btn").onclick = function(){ clearPad(canvas); };
+  document.getElementById("submit-btn").onclick = function(){ submit(canvas); };
+}
+
+function setupPad(canvas){
+  var ratio = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * ratio;
+  canvas.height = rect.height * ratio;
+  var ctx = canvas.getContext("2d");
+  ctx.scale(ratio, ratio);
+  ctx.lineWidth = 2.2; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  ctx.strokeStyle = "#161f1d";
+  canvas._hasDrawn = false;
+  var drawing = false, last = null;
+  function pos(e){ var r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+  function start(e){ drawing = true; last = pos(e); try{ canvas.setPointerCapture(e.pointerId); }catch(_){} }
+  function move(e){
+    if (!drawing) return;
+    var p = pos(e);
+    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    last = p; canvas._hasDrawn = true;
+  }
+  function end(){ drawing = false; }
+  canvas.addEventListener("pointerdown", start);
+  canvas.addEventListener("pointermove", move);
+  canvas.addEventListener("pointerup", end);
+  canvas.addEventListener("pointerleave", end);
+}
+function clearPad(canvas){
+  var ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas._hasDrawn = false;
+}
+
+async function submit(canvas){
+  var name = document.getElementById("sign-name").value.trim();
+  if (!name){ alert("יש להזין שם"); return; }
+  if (!canvas._hasDrawn){ alert("יש לחתום לפני האישור"); return; }
+  var btn = document.getElementById("submit-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> מכין PDF...';
+
+  try {
+    var sigDataUrl = canvas.toDataURL("image/png");
+    var root = document.getElementById("print-root");
+    root.style.cssText = "display:block;position:fixed;inset-inline-start:-9999px;top:0;width:780px;background:#fff;color:#161f1d;padding:36px;font-family:'Heebo',Arial,sans-serif;direction:rtl;";
+    root.innerHTML = buildDocHtml() +
+      '<div style="margin-top:30px;padding-top:14px;border-top:1px solid #ddd;">' +
+      '<div style="font-size:.8rem;color:#666;margin-bottom:6px;">✓ נחתם דיגיטלית על ידי ' + esc(name) + ' · ' + esc(new Date().toLocaleDateString("he-IL")) + '</div>' +
+      '<img src="' + sigDataUrl + '" style="height:64px;">' +
+      '</div>' +
+      '<div style="margin-top:30px;padding-top:14px;border-top:1px solid #ddd;color:#999;font-size:.72rem;">נחתם דרך קבלן פלוס · ' + esc(new Date().toLocaleDateString("he-IL")) + '</div>';
+
+    await new Promise(function(r){ setTimeout(r, 60); });
+    var canvasImg = await html2canvas(root, {scale:2, backgroundColor:"#ffffff", useCORS:true});
+    root.style.display = "none"; root.innerHTML = "";
+
+    var jsPDF = window.jspdf.jsPDF;
+    var pdf = new jsPDF({unit:"pt", format:"a4"});
+    var pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight();
+    var imgW = pageW, imgH = canvasImg.height * (imgW / canvasImg.width);
+    var imgData = canvasImg.toDataURL("image/jpeg", 0.92);
+    var heightLeft = imgH, position = 0;
+    pdf.addImage(imgData, "JPEG", 0, position, imgW, imgH);
+    heightLeft -= pageH;
+    while (heightLeft > 0){
+      position = heightLeft - imgH;
+      pdf.addPage();
+      pdf.addImage(imgData, "JPEG", 0, position, imgW, imgH);
+      heightLeft -= pageH;
+    }
+    var blob = pdf.output("blob");
+    var filename = (data.k === "co" ? "כתב-תוספת-חתום" : "הצעה-חתומה") + ".pdf";
+
+    showDone(blob, filename);
+  } catch(err){
+    btn.disabled = false;
+    btn.textContent = "✓ אישור וחתימה";
+    alert("שגיאה בהכנת המסמך. נסה שוב.");
+  }
+}
+
+function showDone(blob, filename){
+  app.innerHTML =
+    '<div class="card done">' +
+    '<div class="ok">✅</div>' +
+    '<h2>המסמך נחתם!</h2>' +
+    '<p class="muted">עכשיו יש לשלוח את הקובץ החתום בחזרה ל-' + esc(data.bn||"בעל העסק") + ' — בוואטסאפ הכי פשוט.</p>' +
+    '<div class="row">' +
+    '<button class="btn primary" id="share-btn">📲 שליחה בוואטסאפ</button>' +
+    '</div>' +
+    '<div class="row" style="margin-top:8px;">' +
+    '<button class="btn" id="dl-btn">⬇ הורדת הקובץ</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="foot">אם השליחה לא נפתחת אוטומטית, הורד את הקובץ ושלח אותו ידנית כקובץ מצורף.</div>';
+
+  document.getElementById("dl-btn").onclick = function(){
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  };
+  document.getElementById("share-btn").onclick = async function(){
+    try {
+      var file = new File([blob], filename, {type:"application/pdf"});
+      if (navigator.canShare && navigator.canShare({files:[file]})){
+        await navigator.share({files:[file], title:filename, text:"מסמך חתום — " + (data.bn||"")});
+        return;
+      }
+    } catch(e){ if (e && e.name === "AbortError") return; }
+    document.getElementById("dl-btn").click();
+    alert("שיתוף ישיר לא נתמך בדפדפן הזה — הקובץ ירד למכשיר, יש לשלוח אותו ידנית בוואטסאפ כקובץ מצורף.");
+  };
+}
+
+renderMain();
+})();
+</script>
+</body>
+</html>
