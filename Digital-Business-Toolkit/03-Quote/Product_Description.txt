@@ -1,0 +1,35 @@
+ContractorOS — Smart Quote Builder
+=====================================
+
+WHAT IT IS
+An Excel/Google Sheets workbook for building clean, professional,
+multi-line-item price quotes — with automatic totals, discounts, and VAT.
+
+WHO IT'S FOR
+Any tradesperson or contractor who sends price quotes to clients:
+electricians, plumbers, HVAC techs, painters, carpenters, renovation
+contractors, and subcontractors of every trade.
+
+THE PROBLEM IT SOLVES
+Quotes built from scratch every time, in inconsistent formats, with
+manual (error-prone) totals and forgotten VAT or discounts — which look
+unprofessional and cost you client trust.
+
+WHAT'S INSIDE
+- Main Workspace: one row per line item (work description, unit,
+  quantity, unit price, discount %) grouped by Quote Number
+- Quote Summary: one row per quote, with validity, payment terms, VAT %,
+  and automatically calculated subtotal / VAT / total
+- Dashboard with live KPIs: total quotes, total quoted value, approved
+  quotes, approval rate, average quote value
+- Status tracking (draft / sent / approved / rejected) with color coding
+- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+
+HOW IT WORKS
+1. Add one row per work item to Main Workspace, tagged with a Quote Number.
+2. Add one row per quote to Quote Summary with terms and VAT.
+3. Totals calculate automatically from the line items.
+4. Filter to one quote and print/export to PDF for the client.
+
+COMPATIBILITY
+Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.

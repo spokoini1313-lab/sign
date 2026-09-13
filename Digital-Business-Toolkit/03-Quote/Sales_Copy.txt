@@ -1,0 +1,29 @@
+ContractorOS — Smart Quote Builder
+=====================================
+
+HEADLINE
+Send quotes that look like a real business — in minutes.
+
+SUBHEADLINE
+Build clean, itemized price quotes with automatic totals, discounts and
+VAT — no more rebuilding a quote from scratch, no more math mistakes.
+
+WHY YOU NEED THIS
+A messy, inconsistent quote loses jobs before you even start. This tool
+gives every client the same clean, professional layout — and does every
+calculation for you.
+
+WHAT YOU GET
+✔ A professional Excel/Google Sheets quote builder
+✔ Automatic line-item, subtotal, VAT, and total calculation
+✔ Quote status tracking: draft / sent / approved / rejected
+✔ A live Dashboard showing your quote pipeline and approval rate
+✔ Hebrew interface, right-to-left, built for Israeli tradespeople
+✔ Works on Excel, Excel Online, and Google Sheets
+
+WHO IT'S FOR
+Every trade that quotes jobs: electricians, plumbers, HVAC, painters,
+carpenters, renovation contractors, subcontractors.
+
+CALL TO ACTION
+Get Smart Quote Builder and start sending quotes that win jobs.

@@ -1,0 +1,25 @@
+FAQ — Smart Quote Builder (ContractorOS)
+==========================================
+
+Q: How do I print a single quote for a client?
+A: Filter Main Workspace to one Quote Number, filter Quote Summary to
+the matching row, then use File > Print or File > Export > PDF.
+
+Q: Can a quote have as many line items as I want?
+A: Yes — just add more rows to Main Workspace with the same Quote Number.
+
+Q: Where do I set the VAT rate?
+A: In Quote Summary, per quote — so you can quote different VAT
+treatments if needed (defaults to 17%).
+
+Q: Does discount apply per line item or the whole quote?
+A: Per line item (Discount % column) — giving you full control over
+which items are discounted.
+
+Q: Can I track whether a client approved the quote?
+A: Yes — update the Status column in Quote Summary (draft / sent /
+approved / rejected); the Dashboard tracks your approval rate live.
+
+Q: Does this send the quote to the client automatically?
+A: No — this is a builder and tracker. Export to PDF and send via email
+or WhatsApp as you normally would.
