@@ -1,0 +1,23 @@
+FAQ — Project Execution Dashboard (ContractorOS)
+===================================================
+
+Q: How is "Days Remaining" calculated?
+A: Due Date minus today's date. A negative number means the task is
+overdue; the cell turns red automatically.
+
+Q: What happens once a task is marked "Completed" or "Canceled"?
+A: Days Remaining shows "-" instead of a number, since it's no longer
+relevant to track.
+
+Q: Can I manage more than one project in this file?
+A: Yes — add your own Project column if you're tracking several projects
+at once, or keep one workbook copy per project for a cleaner view.
+
+Q: How is overall Project Completion % calculated?
+A: It's the average of every task's individual Completion % — so
+weight tasks by breaking large ones into smaller, evenly-sized tasks if
+you want a more accurate average.
+
+Q: What does the Dashboard's "Nearest Deadline" show?
+A: The closest due date among all tasks that aren't yet completed or
+canceled — the next thing you genuinely need to worry about.

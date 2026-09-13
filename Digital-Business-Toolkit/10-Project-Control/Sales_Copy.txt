@@ -1,0 +1,30 @@
+ContractorOS — Project Execution Dashboard
+==============================================
+
+HEADLINE
+Run every project on schedule, not on memory.
+
+SUBHEADLINE
+Break any project into tasks, assign owners, and let this tool tell you
+automatically what's overdue and how close you are to done.
+
+WHY YOU NEED THIS
+A project falls behind one small slipped task at a time — and by the
+time it's obvious, you're already explaining a delay to the client.
+This tool surfaces slippage the day it happens.
+
+WHAT YOU GET
+✔ A professional Excel/Google Sheets task tracker
+✔ Automatic days-remaining and overdue detection
+✔ A live Dashboard: total/completed/in-progress/overdue tasks, completion %
+✔ Color-coded status and urgency
+✔ Hebrew interface, right-to-left, built for Israeli tradespeople
+✔ Works on Excel, Excel Online, and Google Sheets
+
+WHO IT'S FOR
+Any contractor managing multi-stage projects with several people
+responsible for different parts.
+
+CALL TO ACTION
+Get Project Execution Dashboard and always know exactly where the
+project stands.
