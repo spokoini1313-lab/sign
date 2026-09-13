@@ -44,8 +44,11 @@ Completed so far:
   auto-generated Business Insights via INDEX/MATCH/MAX), keyed off שם
   פרויקט like every other product; full Hebrew doc set included.
 - [ ] Phase 7 — Documentation pass (root README, launch checklist)
-- [ ] Phase 8 — Landing Page (Hebrew, one-sentence pitch per product,
-  pricing: 39₪ per individual product, 299₪ for Product 11 / Ultimate)
+- [x] Phase 8 — Landing Page (`Landing-Page/index.html`) — Hebrew RTL,
+  one-sentence pitch per product (each paired with a real status chip
+  from that product's own workbook), Product 11 spotlight with
+  before/after pricing math, pricing table, FAQ, lead form (mailto to
+  SALES_EMAIL). Published as a live Artifact.
 - [ ] Phase 9 — Marketing Assets
 - [ ] Phase 10 — Video Assets
 - [ ] Phase 11 — Full QA
