@@ -1,0 +1,23 @@
+Product Cover Concept — מרכז הבקרה העסקי (Product 11 — Premium)
+====================================================================
+STYLE: Premium, clean, construction-business, modern SaaS — visually
+the most premium of the 11 covers, signaling this is the flagship /
+Ultimate product.
+
+LAYOUT (1200x1500 portrait): Dark Navy full background (not split like
+the other 10 — full-bleed navy signals premium tier). Gold/light-blue
+accent line under the wordmark. "[ContractorOS]" wordmark top-left,
+slightly larger than other covers. Product name center, white bold
+44px: "מרכז הבקרה העסקי" with English subtitle "Business Control
+Center" smaller beneath. Tagline: "כל העסק שלכם, במבט אחד."
+Middle: a composite mock dashboard — 4 small KPI tiles arranged in a
+grid (revenue, margin, cash, active projects), suggesting it aggregates
+everything the other 10 covers show individually. Bottom: 10 small
+numbered dots/icons (1-10) converging into a single "11" badge in
+Professional Blue — visually saying "all 10 products become 1."
+Badge: "Excel + Google Sheets — המוצר המלא".
+
+COLOR USE: Dark Navy #17365D dominant · Professional Blue #1F4E78 ·
+Light Blue #D9EAF7 accents only.
+
+DELIVERABLES: Square 1000x1000, Portrait 1200x1500, Wide 1600x900.

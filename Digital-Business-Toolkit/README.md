@@ -38,10 +38,14 @@ Completed so far:
   - All 4 supporting docs per product (Product_Description, Sales_Copy,
     FAQ, Social_Media_Copy) rewritten in Hebrew; every README.html/
     Quick_Start.html title and tagline translated.
-- [ ] Phase 6 — Product 11: Business Control Center (must key off שם
-  פרויקט like the rest of the line)
-- [ ] Phase 7 — Documentation pass
-- [ ] Phase 8 — Landing Page
+- [x] Phase 6 — Product 11: מרכז הבקרה העסקי (`11-Business-Control-Center/`)
+  — self-contained workbook (Projects / Sales & Leads / Cash Flow /
+  Inventory / Labor sheets + Executive Dashboard with 12 KPIs and
+  auto-generated Business Insights via INDEX/MATCH/MAX), keyed off שם
+  פרויקט like every other product; full Hebrew doc set included.
+- [ ] Phase 7 — Documentation pass (root README, launch checklist)
+- [ ] Phase 8 — Landing Page (Hebrew, one-sentence pitch per product,
+  pricing: 39₪ per individual product, 299₪ for Product 11 / Ultimate)
 - [ ] Phase 9 — Marketing Assets
 - [ ] Phase 10 — Video Assets
 - [ ] Phase 11 — Full QA
