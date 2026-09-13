@@ -1,250 +1,704 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>חתימה על מסמך</title>
+<meta charset="utf-8">
+<title>JobMargin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&family=Assistant:wght@400;500;600;700&display=swap">
 <style>
+  /* ============ TOKENS ============ */
   :root{
-    --bg:#eef1ee; --paper:#ffffff; --ink:#1b2624; --muted:#62716c; --line:#c9d2cc;
-    --accent:#d4620f; --accent-hover:#b95309; --good:#3a7a4e; --good-soft:#dcefe0;
-    --radius:12px; --shadow:0 4px 6px -1px rgba(0,0,0,.1);
+    --bg:#F7F9FC;
+    --surface:#FFFFFF;
+    --surface-alt:#EEF3FA;
+    --surface-sunken:#E7EEF6;
+    --ink:#16233A;
+    --ink-soft:#4E5C71;
+    --ink-faint:#8493A8;
+    --line:#DCE5F0;
+    --line-strong:#C3D1E3;
+    --accent:#1F4E78;
+    --accent-strong:#143753;
+    --accent-soft:#D9EAF7;
+    --gold:#B9822A;
+    --gold-strong:#8F621A;
+    --gold-soft:#F6E7CB;
+    --good:#2F7A44;
+    --good-soft:#E2F0D9;
+    --warn:#96700C;
+    --warn-soft:#FFF2CC;
+    --bad:#A93E34;
+    --bad-soft:#F4CCCC;
+    --radius:10px;
+    --radius-sm:6px;
+    --shadow:0 1px 2px rgba(20,40,70,.05), 0 10px 28px -16px rgba(20,40,70,.22);
   }
-  *{ box-sizing:border-box; }
-  html{ direction:rtl; }
-  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Heebo',Arial,sans-serif; line-height:1.6; padding:20px 14px 60px; }
-  .wrap{ max-width:640px; margin:0 auto; }
-  h1{ font-size:1.3rem; margin:0 0 4px; }
-  h2{ font-size:1.05rem; margin:0 0 6px; }
-  .muted{ color:var(--muted); }
-  .card{ background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; margin-bottom:16px; }
-  table{ width:100%; border-collapse:collapse; font-size:.9rem; }
-  th{ text-align:right; border-bottom:2px solid var(--ink); padding:6px 8px; font-size:.72rem; color:var(--muted); text-transform:uppercase; }
-  td{ padding:8px; border-bottom:1px solid #eee; }
-  .total{ text-align:left; font-size:1.25rem; font-weight:700; margin-top:12px; }
-  label{ display:block; font-size:.78rem; color:var(--muted); margin-bottom:5px; font-weight:500; }
-  input[type=text]{ width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:1rem; background:var(--paper); color:var(--ink); }
-  .field{ margin-bottom:16px; }
-  .sign-pad-wrap{ border:2px dashed var(--line); border-radius:8px; background:#fff; margin-bottom:12px; touch-action:none; overflow:hidden; }
-  #pad{ width:100%; height:180px; display:block; touch-action:none; cursor:crosshair; }
-  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:44px; padding:11px 20px; border-radius:var(--radius); border:1px solid var(--line); background:var(--paper); color:var(--ink); text-decoration:none; font-size:.9rem; font-weight:500; font-family:inherit; cursor:pointer; box-shadow:0 2px 5px -2px rgba(0,0,0,.15); }
-  .btn.primary{ background:linear-gradient(180deg,var(--accent),var(--accent-hover)); border-color:var(--accent-hover); color:#fff; font-weight:700; width:100%; }
-  .btn.block{ width:100%; }
-  .row{ display:flex; gap:8px; }
-  .row .btn{ flex:1; }
-  .done{ text-align:center; }
-  .done .ok{ font-size:2.4rem; margin-bottom:6px; }
-  .foot{ text-align:center; color:var(--muted); font-size:.72rem; margin-top:20px; }
-  .spinner{ display:inline-block; width:16px; height:16px; border:2px solid var(--line); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; }
-  @keyframes spin{ to{ transform:rotate(360deg); } }
-  #err{ display:none; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0D1420;
+      --surface:#141F2E;
+      --surface-alt:#1A2536;
+      --surface-sunken:#0F1826;
+      --ink:#E9EFF8;
+      --ink-soft:#AEBED4;
+      --ink-faint:#75879E;
+      --line:#263449;
+      --line-strong:#324259;
+      --accent:#7FB1DE;
+      --accent-strong:#9FC7EA;
+      --accent-soft:#1D3450;
+      --gold:#E7BD6A;
+      --gold-strong:#F2CE8B;
+      --gold-soft:#3A2E14;
+      --good:#7BC492;
+      --good-soft:#1C3524;
+      --warn:#E4C167;
+      --warn-soft:#3B300E;
+      --bad:#E39A93;
+      --bad-soft:#3B1E1B;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 16px 34px -16px rgba(0,0,0,.65);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0D1420;
+    --surface:#141F2E;
+    --surface-alt:#1A2536;
+    --surface-sunken:#0F1826;
+    --ink:#E9EFF8;
+    --ink-soft:#AEBED4;
+    --ink-faint:#75879E;
+    --line:#263449;
+    --line-strong:#324259;
+    --accent:#7FB1DE;
+    --accent-strong:#9FC7EA;
+    --accent-soft:#1D3450;
+    --gold:#E7BD6A;
+    --gold-strong:#F2CE8B;
+    --gold-soft:#3A2E14;
+    --good:#7BC492;
+    --good-soft:#1C3524;
+    --warn:#E4C167;
+    --warn-soft:#3B300E;
+    --bad:#E39A93;
+    --bad-soft:#3B1E1B;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 16px 34px -16px rgba(0,0,0,.65);
+  }
+
+  /* ============ RESET / BASE ============ */
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Assistant',system-ui,'Segoe UI',Arial,sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+    padding-inline:20px;
+  }
+  h1,h2,h3{ font-family:'Heebo',system-ui,Arial,sans-serif; text-wrap:balance; margin:0; color:var(--ink); }
+  p{ margin:0; }
+  .num{ font-variant-numeric:tabular-nums; }
+  a{ color:inherit; }
+  ::selection{ background:var(--gold-soft); color:var(--ink); }
+
+  .shell{ max-width:1120px; margin-inline:auto; }
+  .prose{ max-width:65ch; }
+
+  /* ============ NAV ============ */
+  nav.top{
+    position:sticky; top:0; z-index:40;
+    background:color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.top .row{
+    max-width:1120px; margin-inline:auto;
+    display:flex; align-items:center; justify-content:space-between;
+    padding-block:14px; gap:16px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:'Heebo'; font-weight:900; font-size:1.15rem; letter-spacing:.01em; }
+  .brand .mark{
+    width:30px; height:30px; border-radius:7px; background:var(--accent-strong);
+    display:grid; place-items:center; color:#fff; font-size:.8rem; font-weight:900; flex:none;
+  }
+  .navlinks{ display:flex; gap:26px; font-size:.92rem; color:var(--ink-soft); }
+  .navlinks a{ text-decoration:none; }
+  .navlinks a:hover{ color:var(--ink); }
+  @media (max-width:720px){ .navlinks{ display:none; } }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:11px 20px; border-radius:var(--radius-sm); font-weight:700; font-size:.94rem;
+    border:1px solid transparent; cursor:pointer; text-decoration:none; white-space:nowrap;
+    transition:transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+  }
+  .btn:active{ transform:translateY(1px); }
+  .btn-gold{ background:var(--gold); color:#241a08; }
+  .btn-gold:hover{ background:var(--gold-strong); }
+  .btn-outline{ background:transparent; color:var(--ink); border-color:var(--line-strong); }
+  .btn-outline:hover{ background:var(--surface-alt); }
+  .btn-ghost-inv{ background:rgba(255,255,255,.1); color:#fff; border-color:rgba(255,255,255,.35); }
+  .btn-ghost-inv:hover{ background:rgba(255,255,255,.18); }
+
+  /* ============ HERO ============ */
+  .hero{ padding-block:56px 40px; }
+  .hero-grid{ display:grid; grid-template-columns:1.05fr .95fr; gap:48px; align-items:center; }
+  @media (max-width:880px){ .hero-grid{ grid-template-columns:1fr; } }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; font-size:.8rem; font-weight:700;
+    color:var(--accent); background:var(--accent-soft); border-radius:100px;
+    padding:6px 13px; margin-bottom:18px; letter-spacing:.02em;
+  }
+  .hero h1{ font-size:clamp(2rem,4.4vw,3.1rem); font-weight:900; line-height:1.14; margin-bottom:18px; }
+  .hero h1 em{ font-style:normal; color:var(--accent-strong); }
+  .hero .lede{ font-size:1.12rem; color:var(--ink-soft); max-width:52ch; margin-bottom:28px; }
+  .hero .ctas{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px; }
+  .hero .fine{ font-size:.85rem; color:var(--ink-faint); }
+
+  /* mock workbook card in hero */
+  .mock{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    box-shadow:var(--shadow); overflow:hidden;
+  }
+  .mock-bar{
+    background:var(--accent-strong); color:#fff; padding:12px 16px;
+    display:flex; align-items:center; justify-content:space-between; font-size:.78rem;
+  }
+  .mock-bar .tabs{ display:flex; gap:6px; }
+  .mock-bar .tab{ padding:4px 10px; border-radius:5px; background:rgba(255,255,255,.12); font-weight:700; }
+  .mock-bar .tab.active{ background:rgba(255,255,255,.28); }
+  .mock-body{ padding:16px; }
+  .mock-kpis{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:14px; }
+  .mock-kpi{ background:var(--surface-alt); border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px 12px; }
+  .mock-kpi .label{ font-size:.7rem; color:var(--ink-faint); font-weight:700; margin-bottom:4px; }
+  .mock-kpi .value{ font-size:1.28rem; font-weight:800; font-family:'Heebo'; }
+  .mock-kpi .value.good{ color:var(--good); }
+  .mock-table{ border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; font-size:.76rem; }
+  .mock-row{ display:grid; grid-template-columns:1.6fr .8fr .8fr; }
+  .mock-row + .mock-row{ border-top:1px solid var(--line); }
+  .mock-row > div{ padding:8px 10px; }
+  .mock-row.head{ background:var(--accent-strong); color:#fff; font-weight:700; }
+  .mock-row:not(.head) > div:first-child{ color:var(--ink-soft); }
+  .chip{ display:inline-block; font-size:.72rem; font-weight:700; padding:2px 9px; border-radius:100px; }
+  .chip.good{ background:var(--good-soft); color:var(--good); }
+  .chip.warn{ background:var(--warn-soft); color:var(--warn); }
+  .chip.bad{ background:var(--bad-soft); color:var(--bad); }
+
+  /* ============ SECTION HEADS ============ */
+  section{ padding-block:52px; }
+  .section-head{ margin-bottom:34px; max-width:60ch; }
+  .kicker{ font-size:.78rem; font-weight:700; color:var(--accent); letter-spacing:.06em; text-transform:uppercase; margin-bottom:8px; }
+  .section-head h2{ font-size:clamp(1.5rem,2.6vw,2.05rem); margin-bottom:10px; }
+  .section-head p{ color:var(--ink-soft); font-size:1.02rem; }
+
+  /* ============ PROBLEM / SOLUTION ============ */
+  .split{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  @media (max-width:820px){ .split{ grid-template-columns:1fr; } }
+  .problem-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 20px;
+  }
+  .problem-card .before{ color:var(--bad); font-size:.82rem; font-weight:700; margin-bottom:8px; }
+  .problem-card h3{ font-size:1.08rem; margin-bottom:8px; }
+  .problem-card p{ color:var(--ink-soft); font-size:.94rem; }
+
+  /* ============ PRODUCT GRID ============ */
+  .grid10{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  @media (max-width:920px){ .grid10{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:600px){ .grid10{ grid-template-columns:1fr; } }
+  .pcard{
+    display:flex; flex-direction:column; gap:12px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px; position:relative;
+  }
+  .pcard .idx{
+    font-family:'Heebo'; font-weight:900; font-size:.78rem; color:var(--ink-faint);
+  }
+  .pcard h3{ font-size:1.08rem; line-height:1.3; }
+  .pcard .pitch{ color:var(--ink-soft); font-size:.9rem; flex:1; }
+  .pcard .foot{ display:flex; align-items:center; justify-content:space-between; padding-top:10px; border-top:1px solid var(--line); }
+  .pcard .price{ font-family:'Heebo'; font-weight:800; font-size:1.15rem; }
+  .pcard .price .cur{ font-size:.75rem; font-weight:700; color:var(--ink-faint); margin-inline-start:2px; }
+
+  /* ============ PRODUCT 11 SPOTLIGHT ============ */
+  .p11{
+    background:var(--accent-strong); color:#fff; border-radius:18px;
+    padding:48px 40px; position:relative; overflow:hidden;
+  }
+  .p11::before{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(560px 260px at 88% -10%, rgba(255,255,255,.10), transparent 60%),
+      radial-gradient(420px 220px at 4% 110%, rgba(255,255,255,.06), transparent 60%);
+    pointer-events:none;
+  }
+  .p11-grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:44px; align-items:center; position:relative; }
+  @media (max-width:880px){ .p11-grid{ grid-template-columns:1fr; } }
+  .p11 .eyebrow{ background:rgba(255,255,255,.14); color:#fff; }
+  .p11 h2{ color:#fff; font-size:clamp(1.6rem,3vw,2.3rem); margin-bottom:14px; }
+  .p11 .lede{ color:rgba(255,255,255,.82); font-size:1.05rem; max-width:48ch; margin-bottom:22px; }
+  .p11-list{ list-style:none; margin:0 0 26px; padding:0; display:grid; gap:10px; }
+  .p11-list li{ display:flex; gap:10px; align-items:flex-start; color:rgba(255,255,255,.9); font-size:.94rem; }
+  .p11-list li .tick{
+    flex:none; width:18px; height:18px; border-radius:5px; background:var(--gold);
+    display:grid; place-items:center; color:#241a08; font-size:.7rem; font-weight:900; margin-top:2px;
+  }
+  .p11-price-box{
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18);
+    border-radius:var(--radius); padding:26px 24px;
+  }
+  .p11-price-box .was{ color:rgba(255,255,255,.6); text-decoration:line-through; font-size:.95rem; }
+  .p11-price-box .now{ font-family:'Heebo'; font-weight:900; font-size:2.6rem; color:#fff; line-height:1; margin:6px 0 4px; }
+  .p11-price-box .now .cur{ font-size:1rem; color:rgba(255,255,255,.75); font-weight:700; margin-inline-start:4px; }
+  .p11-price-box .save{ display:inline-block; background:var(--gold); color:#241a08; font-weight:800; font-size:.82rem; padding:3px 10px; border-radius:100px; margin-bottom:14px; }
+  .p11-mock{ background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.14); border-radius:var(--radius-sm); padding:14px; margin-top:18px; }
+  .p11-mock .row{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .p11-mock .tile{ background:rgba(255,255,255,.07); border-radius:6px; padding:8px 10px; }
+  .p11-mock .tile .l{ font-size:.62rem; color:rgba(255,255,255,.6); font-weight:700; margin-bottom:3px; }
+  .p11-mock .tile .v{ font-family:'Heebo'; font-weight:800; font-size:.98rem; color:#fff; }
+
+  /* ============ PRICING TABLE ============ */
+  .pricing-table{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    overflow:hidden; box-shadow:var(--shadow);
+  }
+  .pt-row{ display:grid; grid-template-columns:1.4fr 1fr 1fr; }
+  @media (max-width:640px){ .pt-row{ grid-template-columns:1fr; } }
+  .pt-row + .pt-row{ border-top:1px solid var(--line); }
+  .pt-row > div{ padding:16px 18px; font-size:.92rem; }
+  .pt-row.head > div{ background:var(--surface-alt); font-weight:800; font-family:'Heebo'; font-size:.85rem; color:var(--ink-soft); }
+  .pt-row .cell-price{ font-family:'Heebo'; font-weight:800; }
+  .pt-row .yes{ color:var(--good); font-weight:700; }
+  .pt-row .no{ color:var(--ink-faint); }
+
+  /* ============ FAQ ============ */
+  .faq{ display:grid; gap:10px; max-width:74ch; }
+  .faq details{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:4px 18px;
+  }
+  .faq summary{
+    cursor:pointer; padding:14px 0; font-weight:700; font-size:.98rem;
+    list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px;
+  }
+  .faq summary::-webkit-details-marker{ display:none; }
+  .faq summary::after{ content:"+"; font-family:'Heebo'; font-weight:900; color:var(--accent); font-size:1.2rem; flex:none; }
+  .faq details[open] summary::after{ content:"–"; }
+  .faq .a{ padding-bottom:16px; color:var(--ink-soft); font-size:.93rem; max-width:60ch; }
+  .faq details:focus-within{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  /* ============ LEAD FORM ============ */
+  .lead-wrap{
+    background:var(--surface-alt); border:1px solid var(--line); border-radius:18px;
+    padding:40px; display:grid; grid-template-columns:.9fr 1.1fr; gap:40px;
+  }
+  @media (max-width:820px){ .lead-wrap{ grid-template-columns:1fr; padding:26px; } }
+  .lead-form{ display:grid; gap:12px; }
+  .field{ display:grid; gap:6px; }
+  .field label{ font-size:.82rem; font-weight:700; color:var(--ink-soft); }
+  .field input, .field select{
+    font:inherit; padding:11px 12px; border-radius:var(--radius-sm); border:1px solid var(--line-strong);
+    background:var(--surface); color:var(--ink);
+  }
+  .field input:focus, .field select:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:480px){ .row2{ grid-template-columns:1fr; } }
+  #leadStatus{ font-size:.86rem; color:var(--good); min-height:1.2em; }
+
+  .lead-confirm{
+    margin-top:18px; background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:20px 22px;
+  }
+  .lc-icon{
+    width:34px; height:34px; border-radius:50%; background:var(--good-soft); color:var(--good);
+    display:grid; place-items:center; font-weight:900; margin-bottom:10px;
+  }
+  .lead-confirm h3{ font-size:1.05rem; margin-bottom:6px; }
+  .lc-copy{ color:var(--ink-soft); font-size:.9rem; margin-bottom:14px; }
+  .lc-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+  .lc-details{
+    white-space:pre-wrap; font-family:'Assistant',sans-serif; font-size:.84rem; color:var(--ink-soft);
+    background:var(--surface-alt); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:12px 14px; margin:0;
+  }
+
+  /* ============ FOOTER ============ */
+  footer{ border-top:1px solid var(--line); padding-block:32px 44px; margin-top:20px; }
+  footer .row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+  footer .fine{ color:var(--ink-faint); font-size:.85rem; }
+
+  /* reveal-on-load (never opacity:0 at rest — this only affects elements below the fold via animation, resting state is visible) */
+  @keyframes rise{ from{ transform:translateY(10px); opacity:.001; } to{ transform:translateY(0); opacity:1; } }
+  .reveal{ animation:rise .5s ease both; }
 </style>
 </head>
 <body>
-<div class="wrap" id="app">
-  <div class="card"><p class="muted" style="margin:0;">טוען מסמך...</p></div>
-</div>
 
-<div id="print-root" style="display:none;"></div>
+<nav class="top">
+  <div class="row shell">
+    <div class="brand"><span class="mark">J</span>JobMargin</div>
+    <div class="navlinks">
+      <a href="#products">המוצרים</a>
+      <a href="#p11">מוצר 11</a>
+      <a href="#pricing">מחירים</a>
+      <a href="#faq">שאלות נפוצות</a>
+    </div>
+    <a class="btn btn-gold" href="#lead">קבלו פרטים</a>
+  </div>
+</nav>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<header class="hero shell">
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow">חבילת כלים לבעלי מקצוע ולקבלנים</span>
+      <h1>10 כלים חכמים לניהול העסק שלך — <em>ומערכת אחת שמאחדת ביניהם</em>.</h1>
+      <p class="lede">חבילת Excel / Google Sheets מקצועית לחשמלאים, אינסטלטורים, קבלנים ובעלי מקצוע: תמחור, פרויקטים, גבייה, תזרים, לידים, מלאי ועוד — כל כלי פותר בעיה אחת ברורה, בלי ללמוד תוכנה חדשה.</p>
+      <div class="ctas">
+        <a class="btn btn-gold" href="#products">ראו את 10 הכלים — ‎39₪‎ לכלי</a>
+        <a class="btn btn-outline" href="#p11">החבילה המלאה — ‎299₪‎</a>
+      </div>
+      <p class="fine">קבצי Excel אמיתיים · עובד גם ב-Google Sheets · בעברית מלאה, RTL · ללא מנוי</p>
+    </div>
+
+    <div class="mock" aria-hidden="true">
+      <div class="mock-bar">
+        <div class="tabs">
+          <span class="tab active">לוח בקרה</span>
+          <span class="tab">שולחן עבודה</span>
+        </div>
+        <span>Product.xlsx</span>
+      </div>
+      <div class="mock-body">
+        <div class="mock-kpis">
+          <div class="mock-kpi"><div class="label">רווח % (Margin)</div><div class="value good num">27.4%</div></div>
+          <div class="mock-kpi"><div class="label">יתרה לגבייה</div><div class="value num">4,200 ₪</div></div>
+        </div>
+        <div class="mock-table">
+          <div class="mock-row head"><div>שם פרויקט</div><div>מרג'ין</div><div>סטטוס</div></div>
+          <div class="mock-row"><div>שיפוץ מטבח - וילה כהן</div><div class="num">27%</div><div><span class="chip good">תקין</span></div></div>
+          <div class="mock-row"><div>התקנת מיזוג 3 יח'</div><div class="num">12%</div><div><span class="chip warn">מרג'ין נמוך</span></div></div>
+          <div class="mock-row"><div>ריצוף חדר אמבטיה</div><div class="num">—</div><div><span class="chip bad">חריגת תקציב</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="shell">
+  <div class="section-head">
+    <div class="kicker">הבעיה</div>
+    <h2>העבודה מתקדמת. הניהול נשאר בראש.</h2>
+    <p>שלושה דברים שכל בעל מקצוע מכיר — ושלושת המוצרים שנועדו בדיוק בשבילם.</p>
+  </div>
+  <div class="split">
+    <div class="problem-card">
+      <div class="before">בלי הכלי</div>
+      <h3>תמחור לפי תחושת בטן</h3>
+      <p>עבודה שנראית רווחית על הנייר מסתיימת בקושי בנקודת האיזון — כי נסיעות, תקורה ושעות נוספות נשכחות.</p>
+    </div>
+    <div class="problem-card">
+      <div class="before">בלי הכלי</div>
+      <h3>חשבונית שנשכחה</h3>
+      <p>3 לקוחות באיחור בתשלום ואף אחד לא שם לב, עד שהתזרים כבר בבעיה.</p>
+    </div>
+    <div class="problem-card">
+      <div class="before">בלי הכלי</div>
+      <h3>ליד חם שהתקרר</h3>
+      <p>פנייה שהייתה יכולה להיות עבודה — נשכחת בוואטסאפ, בלי פולואפ ובלי מעקב.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shell" id="products">
+  <div class="section-head">
+    <div class="kicker">10 הכלים</div>
+    <h2>כל כלי פותר בעיה אחת. תבחרו מה שרלוונטי לכם.</h2>
+    <p>כל מוצר הוא קובץ Excel עצמאי ומלא: לוח בקרה, שולחן עבודה, נתוני דוגמה, מדריך שימוש — מוכן לעבודה תוך דקות. ‎39₪‎ לכלי, ללא התחייבות.</p>
+  </div>
+
+  <div class="grid10">
+
+    <article class="pcard">
+      <span class="idx">01</span>
+      <h3>מחשבון תמחור ורווחיות חכם</h3>
+      <p class="pitch">דעו את הרווח האמיתי שלכם על כל עבודה — לפני שאתם שולחים הצעת מחיר.</p>
+      <div class="foot"><span class="chip good">עבודה רווחית</span><span class="price num">39<span class="cur">₪</span></span></div>
+    </article>
+
+    <article class="pcard">
+      <span class="idx">02</span>
+      <h3>בקרת תקציב פרויקט</h3>
+      <p class="pitch">הישארו צעד לפני כל חריגת תקציב, קטגוריה אחר קטגוריה.</p>
+      <div class="foot"><span class="chip warn">דורש תשומת לב</span><span class="price num">39<span class="cur">₪</span></span></div>
+    </article>
+
+    <article class="pcard">
+      <span class="idx">03</span>
+      <h3>בניית הצעת מחיר חכמה</h3>
+      <p class="pitch">שלחו הצעות מחיר מקצועיות ומחושבות אוטומטית — וסגרו יותר עבודות.</p>
+      <div class="foot"><span class="chip good">אושרה</span><span class="price num">39<span class="cur">₪</span></span></div>
+    </article>
+
+    <article class="pcard">
+      <span class="idx">04</span>
+      <h3>ניהול גבייה ותשלומים</h3>
+      <p class="pitch">כל חשבונית, כל תשלום וכל איחור — נעקבים אוטומטית.</p>
+      <div class="foot"><span class="chip bad">באיחור</span><span class="price num">39<span class="cur">₪</span></span></div>
+    </article>
+
+    <article class="pcard">
+      <span class="idx">05</span>
+      <h3>תכנון תזרים מזומנים</h3>
+      <p class="pitch">דעו כמה זמן המזומן שלכם יחזיק — חודשים לפני שזו בעיה.</p>
+      <div class="foot"><span class="chip good">תקין</span><span class="price num">39<span class="cur">₪</span></span></div>
+    </article>
+
+    <article class="pcard">
+      <span class="idx">06</span>
+      <h3>מעקב שעות ועלות עובדים</h3>
+      <p class="pitch">שעת התחלה וסיום, והכלי מחשב לכם עלות עבודה אמיתית לכל פרויקט.</p>
+      <div class="foot"><span class="chip warn">שעות נוספות</span><span class="price num">39<span class="cur">₪</span></span></div>
+    </article>
+
+    <article class="pcard">
+      <span class="idx">07</span>
+      <h3>ניהול לקוחות ולידים</h3>
+      <p class="pitch">מעקב לידים בצינור מכירות של 7 שלבים — אף ליד לא ייעלם יותר.</p>
+      <div class="foot"><span class="chip bad">חם</span><span class="price num">39<span class="cur">₪</span></span></div>
+    </article>
+
+    <article class="pcard">
+      <span class="idx">08</span>
+      <h3>ניהול מלאי וחומרים</h3>
+      <p class="pitch">שווי מלאי וסטטוס הזמנה מחושבים אוטומטית — לעולם לא תיתקעו בלי חומר.</p>
+      <div class="foot"><span class="chip warn">מלאי נמוך - להזמין</span><span class="price num">39<span class="cur">₪</span></span></div>
+    </article>
+
+    <article class="pcard">
+      <span class="idx">09</span>
+      <h3>ניהול תוספות וחריגים</h3>
+      <p class="pitch">כל "תוסיף לי גם..." נרשם ונחשב — ותמיד תקבלו עליו תשלום.</p>
+      <div class="foot"><span class="chip warn">ממתין לאישור</span><span class="price num">39<span class="cur">₪</span></span></div>
+    </article>
+
+    <article class="pcard">
+      <span class="idx">10</span>
+      <h3>ניהול ביצוע פרויקט</h3>
+      <p class="pitch">פרקו כל פרויקט למשימות ותדעו מיד מה באיחור ומה בלוח זמנים.</p>
+      <div class="foot"><span class="chip good">הושלם</span><span class="price num">39<span class="cur">₪</span></span></div>
+    </article>
+
+  </div>
+</section>
+
+<section class="shell" id="p11">
+  <div class="p11">
+    <div class="p11-grid">
+      <div>
+        <span class="eyebrow">מוצר 11 · החבילה המלאה</span>
+        <h2>מרכז הבקרה העסקי — כל העסק שלכם, במבט אחד.</h2>
+        <p class="lede">מאחד את כל 10 הכלים לתמונת מצב עסקית אחת: הכנסות, פרויקטים, גבייה, תזרים, לידים ומלאי — עם תובנות עסקיות אוטומטיות שמזהות בעצמן איזה פרויקט חרג מתקציב ואיזה הכי רווחי.</p>
+        <ul class="p11-list">
+          <li><span class="tick">✓</span> לוח בקרה למנהלים עם 12 מדדי-על</li>
+          <li><span class="tick">✓</span> תובנות עסקיות חכמות שמתעדכנות לבד</li>
+          <li><span class="tick">✓</span> כולל את כל 10 המוצרים הבודדים</li>
+        </ul>
+        <a class="btn btn-ghost-inv" href="#lead">קבלו את מרכז הבקרה העסקי</a>
+      </div>
+      <div>
+        <div class="p11-price-box">
+          <div class="was num">10 מוצרים בנפרד: 390 ₪</div>
+          <div class="now"><span class="num">299</span><span class="cur">₪</span></div>
+          <div class="save">חיסכון של ‎91₪‎ + מרכז הבקרה בחינם</div>
+          <div class="p11-mock">
+            <div class="row">
+              <div class="tile"><div class="l">הכנסה</div><div class="v num">78,400 ₪</div></div>
+              <div class="tile"><div class="l">מרג'ין ממוצע</div><div class="v num">31.2%</div></div>
+              <div class="tile"><div class="l">פרויקטים בסיכון</div><div class="v num">1</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="shell" id="pricing">
+  <div class="section-head">
+    <div class="kicker">מחירים</div>
+    <h2>פשוט וברור — בלי מנוי, בלי הפתעות.</h2>
+  </div>
+  <div class="pricing-table">
+    <div class="pt-row head"><div>אפשרות</div><div>מה כלול</div><div>מחיר</div></div>
+    <div class="pt-row">
+      <div>כלי בודד</div>
+      <div>קובץ Excel אחד מתוך ה-10, מלא ומוכן לעבודה</div>
+      <div class="cell-price num">39 ₪</div>
+    </div>
+    <div class="pt-row">
+      <div>כמה כלים לבחירה</div>
+      <div>כל שילוב שמתאים לעסק שלכם</div>
+      <div class="cell-price num">39 ₪ × כלי</div>
+    </div>
+    <div class="pt-row">
+      <div><strong>מרכז הבקרה העסקי (מוצר 11)</strong></div>
+      <div>כל 10 הכלים + לוח הבקרה המאוחד ותובנות עסקיות אוטומטיות</div>
+      <div class="cell-price num">299 ₪</div>
+    </div>
+  </div>
+</section>
+
+<section class="shell" id="faq">
+  <div class="section-head">
+    <div class="kicker">שאלות נפוצות</div>
+    <h2>מה שכדאי לדעת לפני שמתחילים</h2>
+  </div>
+  <div class="faq">
+    <details>
+      <summary>זה עובד גם ב-Google Sheets, או רק ב-Excel?</summary>
+      <div class="a">שניהם. כל קובץ הוא ‎.xlsx‎ רגיל — פותחים אותו ב-Excel, או מעלים ל-Google Drive ופותחים עם Google Sheets. כל הנוסחאות והעיצוב עוברים כמו שהם.</div>
+    </details>
+    <details>
+      <summary>אני לא טוב באקסל. יהיה לי קשה להשתמש בזה?</summary>
+      <div class="a">לא. בכל קובץ מקלידים רק בתאים הצהובים — כל השאר מחושב אוטומטית. לכל מוצר יש לשונית "התחלה מהירה" שמסבירה הכל ב-5 צעדים.</div>
+    </details>
+    <details>
+      <summary>מה ההבדל בין לקנות כלי בודד לבין מרכז הבקרה העסקי?</summary>
+      <div class="a">כל כלי בודד פותר בעיה ספציפית אחת (תמחור, גבייה, מלאי וכו'). מרכז הבקרה העסקי (מוצר 11) כולל את כל 10 הכלים, בתוספת לוח בקרה מאוחד שמראה את כל העסק במבט אחד — ועולה פחות מסכום 10 הכלים בנפרד.</div>
+    </details>
+    <details>
+      <summary>איך הפרויקטים מקושרים בין המוצרים השונים?</summary>
+      <div class="a">לפי שם הפרויקט — לא מספר. מקלידים את אותו שם פרויקט (למשל "שיפוץ מטבח - וילה כהן") בכל מוצר שבו הוא מופיע, וכך הנתונים מתחברים נכון בין הכלים.</div>
+    </details>
+    <details>
+      <summary>איך מקבלים את הקבצים אחרי הרכישה?</summary>
+      <div class="a">השאירו פרטים בטופס למטה ונחזור אליכם עם קישור להורדה של הקבצים שבחרתם.</div>
+    </details>
+  </div>
+</section>
+
+<section class="shell" id="lead">
+  <div class="lead-wrap reveal">
+    <div>
+      <div class="kicker">בואו נתחיל</div>
+      <h2 style="margin-bottom:12px;">קבלו פרטים על החבילה</h2>
+      <p class="prose" style="color:var(--ink-soft);">השאירו פרטים ונחזור אליכם עם כל המידע — אילו כלים הכי מתאימים לתחום שלכם, ואיך לקבל אותם.</p>
+    </div>
+    <form class="lead-form" id="leadForm">
+      <div class="row2">
+        <div class="field">
+          <label for="lf-name">שם מלא</label>
+          <input id="lf-name" name="name" type="text" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="lf-phone">טלפון</label>
+          <input id="lf-phone" name="phone" type="tel" required autocomplete="tel">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="lf-email">אימייל</label>
+          <input id="lf-email" name="email" type="email" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="lf-field">תחום העסק</label>
+          <select id="lf-field" name="field">
+            <option>חשמל</option><option>אינסטלציה</option><option>מיזוג אוויר</option>
+            <option>בנייה ושיפוצים</option><option>צבע</option><option>נגרות</option>
+            <option>אלומיניום וזיגוג</option><option>גבס</option><option>איטום</option>
+            <option>אחר</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="lf-headcount">מספר עובדים</label>
+        <select id="lf-headcount" name="headcount">
+          <option>עצמאי (רק אני)</option><option>2–5</option><option>6–15</option><option>16+</option>
+        </select>
+      </div>
+      <button class="btn btn-gold" type="submit" style="margin-top:6px;">שלחו לי פרטים על החבילה</button>
+      <p id="leadStatus" role="status" aria-live="polite"></p>
+    </form>
+
+    <div id="leadConfirm" class="lead-confirm" hidden>
+      <div class="lc-icon">✓</div>
+      <h3>הפנייה שלכם מוכנה לשליחה</h3>
+      <p class="lc-copy">נפתחה תוכנת המייל שלכם עם כל הפרטים, מוכנה לשליחה — פשוט לחצו "שלח". אם היא לא נפתחה, השתמשו באחת מהאפשרויות הבאות כדי שהפנייה בטוח תגיע:</p>
+      <div class="lc-actions">
+        <a id="lcWhatsapp" class="btn btn-outline" href="#" target="_blank" rel="noopener">📲 שלחו בוואטסאפ</a>
+        <button id="lcCopy" class="btn btn-outline" type="button">העתיקו את הפרטים</button>
+      </div>
+      <pre id="lcDetails" class="lc-details"></pre>
+    </div>
+  </div>
+</section>
+
+<footer class="shell">
+  <div class="row">
+    <div class="brand" style="font-size:1rem;"><span class="mark" style="width:24px;height:24px;font-size:.7rem;">J</span>JobMargin</div>
+    <p class="fine">© JobMargin — כלים לבעלי מקצוע ולקבלנים. כל הזכויות שמורות.</p>
+  </div>
+</footer>
+
 <script>
-(function(){
-"use strict";
+  // ---- config ----
+  const SALES_EMAIL = "spokoini1313@gmail.com";
+  const SALES_WHATSAPP = "972547413005"; // international format, no leading 0/+
 
-function esc(s){
-  if (s === null || s === undefined) return "";
-  return String(s).replace(/[&<>"']/g, function(c){
-    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  // ---- lead form -> mailto (primary) + WhatsApp / copy (backup so no lead is lost) ----
+  const form = document.getElementById('leadForm');
+  const status = document.getElementById('leadStatus');
+  const confirmBox = document.getElementById('leadConfirm');
+  const lcWhatsapp = document.getElementById('lcWhatsapp');
+  const lcCopy = document.getElementById('lcCopy');
+  const lcDetails = document.getElementById('lcDetails');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const data = new FormData(form);
+    const name = data.get('name') || '';
+    const phone = data.get('phone') || '';
+    const email = data.get('email') || '';
+    const field = data.get('field') || '';
+    const headcount = data.get('headcount') || '';
+
+    const detailsText =
+      'ליד חדש מדף הנחיתה של JobMargin\n' +
+      'שם: ' + name + '\n' +
+      'טלפון: ' + phone + '\n' +
+      'אימייל: ' + email + '\n' +
+      'תחום העסק: ' + field + '\n' +
+      'מספר עובדים: ' + headcount;
+
+    const subject = 'בקשת פרטים על חבילת JobMargin';
+
+    // primary channel: mailto, opens pre-filled and addressed to the owner
+    const mailto = 'mailto:' + encodeURIComponent(SALES_EMAIL) +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(detailsText);
+    window.location.href = mailto;
+
+    // backup channels, shown immediately so the lead is never lost if the
+    // visitor's device has no mail app configured
+    lcWhatsapp.href = 'https://wa.me/' + SALES_WHATSAPP + '?text=' + encodeURIComponent(detailsText);
+    lcDetails.textContent = detailsText;
+    confirmBox.hidden = false;
+    confirmBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    status.textContent = 'נפתחת תוכנת המייל שלכם עם הפנייה מוכנה לשליחה.';
   });
-}
-function ils(v){
-  var n = parseFloat(v);
-  if (isNaN(n)) return "₪0";
-  return "₪" + n.toLocaleString("he-IL", {maximumFractionDigits:0});
-}
-function decodePayload(s){
-  s = s.replace(/-/g,'+').replace(/_/g,'/');
-  while (s.length % 4) s += '=';
-  var json = decodeURIComponent(escape(atob(s)));
-  return JSON.parse(json);
-}
 
-var app = document.getElementById("app");
-var hash = location.hash.slice(1);
-var m = hash.match(/(?:^|&)d=([^&]+)/);
-if (!m){
-  app.innerHTML = '<div class="card"><h2>קישור לא תקין</h2><p class="muted">חסרים פרטי המסמך בקישור. יש לבקש קישור חדש מבעל העסק.</p></div>';
-  return;
-}
-var data;
-try { data = decodePayload(m[1]); }
-catch(e){
-  app.innerHTML = '<div class="card"><h2>קישור לא תקין</h2><p class="muted">לא ניתן לקרוא את פרטי המסמך. יש לבקש קישור חדש.</p></div>';
-  return;
-}
-
-function buildDocHtml(){
-  var head = '<div style="display:flex;align-items:center;gap:14px;border-bottom:4px solid #d4620f;padding-bottom:14px;margin-bottom:20px;">' +
-    '<div><h1 style="margin:0;font-size:1.5rem;">' + esc(data.bn||"") + '</h1>' +
-    (data.tid ? '<div style="color:#666;font-size:.82rem;">ח.פ / עוסק: ' + esc(data.tid) + '</div>' : '') +
-    '</div></div>';
-  var title = data.k === "co" ? "כתב תוספת עבודה" : "הצעת מחיר";
-  var body = '<h2 style="margin:0 0 4px;font-size:1.25rem;">' + esc(title) + (data.t ? ' — ' + esc(data.t) : '') + '</h2>' +
-    '<div style="color:#666;font-size:.85rem;margin-bottom:16px;">' + esc(data.cn||"") + (data.ca ? ' · ' + esc(data.ca) : '') + '</div>';
-  if (data.k === "co"){
-    body += '<p style="white-space:pre-wrap;line-height:1.6;">' + esc(data.ds||"") + '</p>' +
-      '<div style="text-align:left;margin-top:16px;font-size:1.25em;font-weight:bold;">עלות נוספת: ' + ils(data.tot) + '</div>';
-  } else {
-    body += '<table><thead><tr><th>תיאור</th><th>כמות</th><th>מחיר יח׳</th><th>סה"כ</th></tr></thead><tbody>' +
-      (data.ln||[]).map(function(l){
-        var d=l[0], q=l[1], p=l[2];
-        return '<tr><td>'+esc(d)+'</td><td>'+q+'</td><td>'+ils(p)+'</td><td>'+ils(q*p)+'</td></tr>';
-      }).join("") + '</tbody></table>' +
-      '<div class="total">סה"כ: ' + ils(data.tot) + '</div>';
-  }
-  return head + body;
-}
-
-function renderMain(){
-  app.innerHTML =
-    '<div class="card">' + buildDocHtml() + '</div>' +
-    '<div class="card">' +
-    '<div class="field"><label>שם החותם/ת *</label><input type="text" id="sign-name" placeholder="שם מלא"></div>' +
-    '<label>חתימה *</label>' +
-    '<div class="sign-pad-wrap"><canvas id="pad"></canvas></div>' +
-    '<div class="row" style="margin-bottom:0;">' +
-    '<button class="btn" id="clear-btn" style="flex:none;">ניקוי</button>' +
-    '<button class="btn primary" id="submit-btn">✓ אישור וחתימה</button>' +
-    '</div>' +
-    '</div>' +
-    '<div class="foot">מסמך זה נשלח אליך ישירות על ידי ' + esc(data.bn||"העסק") + '. החתימה נשמרת רק על המכשיר שלך עד שתשלח אותה בחזרה.</div>';
-
-  var canvas = document.getElementById("pad");
-  setupPad(canvas);
-  document.getElementById("clear-btn").onclick = function(){ clearPad(canvas); };
-  document.getElementById("submit-btn").onclick = function(){ submit(canvas); };
-}
-
-function setupPad(canvas){
-  var ratio = window.devicePixelRatio || 1;
-  var rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width * ratio;
-  canvas.height = rect.height * ratio;
-  var ctx = canvas.getContext("2d");
-  ctx.scale(ratio, ratio);
-  ctx.lineWidth = 2.2; ctx.lineCap = "round"; ctx.lineJoin = "round";
-  ctx.strokeStyle = "#161f1d";
-  canvas._hasDrawn = false;
-  var drawing = false, last = null;
-  function pos(e){ var r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
-  function start(e){ drawing = true; last = pos(e); try{ canvas.setPointerCapture(e.pointerId); }catch(_){} }
-  function move(e){
-    if (!drawing) return;
-    var p = pos(e);
-    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
-    last = p; canvas._hasDrawn = true;
-  }
-  function end(){ drawing = false; }
-  canvas.addEventListener("pointerdown", start);
-  canvas.addEventListener("pointermove", move);
-  canvas.addEventListener("pointerup", end);
-  canvas.addEventListener("pointerleave", end);
-}
-function clearPad(canvas){
-  var ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  canvas._hasDrawn = false;
-}
-
-async function submit(canvas){
-  var name = document.getElementById("sign-name").value.trim();
-  if (!name){ alert("יש להזין שם"); return; }
-  if (!canvas._hasDrawn){ alert("יש לחתום לפני האישור"); return; }
-  var btn = document.getElementById("submit-btn");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> מכין PDF...';
-
-  try {
-    var sigDataUrl = canvas.toDataURL("image/png");
-    var root = document.getElementById("print-root");
-    root.style.cssText = "display:block;position:fixed;inset-inline-start:-9999px;top:0;width:780px;background:#fff;color:#161f1d;padding:36px;font-family:'Heebo',Arial,sans-serif;direction:rtl;";
-    root.innerHTML = buildDocHtml() +
-      '<div style="margin-top:30px;padding-top:14px;border-top:1px solid #ddd;">' +
-      '<div style="font-size:.8rem;color:#666;margin-bottom:6px;">✓ נחתם דיגיטלית על ידי ' + esc(name) + ' · ' + esc(new Date().toLocaleDateString("he-IL")) + '</div>' +
-      '<img src="' + sigDataUrl + '" style="height:64px;">' +
-      '</div>' +
-      '<div style="margin-top:30px;padding-top:14px;border-top:1px solid #ddd;color:#999;font-size:.72rem;">נחתם דרך קבלן פלוס · ' + esc(new Date().toLocaleDateString("he-IL")) + '</div>';
-
-    await new Promise(function(r){ setTimeout(r, 60); });
-    var canvasImg = await html2canvas(root, {scale:2, backgroundColor:"#ffffff", useCORS:true});
-    root.style.display = "none"; root.innerHTML = "";
-
-    var jsPDF = window.jspdf.jsPDF;
-    var pdf = new jsPDF({unit:"pt", format:"a4"});
-    var pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight();
-    var imgW = pageW, imgH = canvasImg.height * (imgW / canvasImg.width);
-    var imgData = canvasImg.toDataURL("image/jpeg", 0.92);
-    var heightLeft = imgH, position = 0;
-    pdf.addImage(imgData, "JPEG", 0, position, imgW, imgH);
-    heightLeft -= pageH;
-    while (heightLeft > 0){
-      position = heightLeft - imgH;
-      pdf.addPage();
-      pdf.addImage(imgData, "JPEG", 0, position, imgW, imgH);
-      heightLeft -= pageH;
+  lcCopy.addEventListener('click', async function(){
+    const text = lcDetails.textContent;
+    try{
+      await navigator.clipboard.writeText(text);
+      lcCopy.textContent = 'הועתק ✓';
+      setTimeout(function(){ lcCopy.textContent = 'העתיקו את הפרטים'; }, 2200);
+    }catch(err){
+      // clipboard API unavailable/denied — details are already visible in the <pre> to copy manually
+      lcCopy.textContent = 'סמנו והעתיקו ידנית';
     }
-    var blob = pdf.output("blob");
-    var filename = (data.k === "co" ? "כתב-תוספת-חתום" : "הצעה-חתומה") + ".pdf";
-
-    showDone(blob, filename);
-  } catch(err){
-    btn.disabled = false;
-    btn.textContent = "✓ אישור וחתימה";
-    alert("שגיאה בהכנת המסמך. נסה שוב.");
-  }
-}
-
-function showDone(blob, filename){
-  app.innerHTML =
-    '<div class="card done">' +
-    '<div class="ok">✅</div>' +
-    '<h2>המסמך נחתם!</h2>' +
-    '<p class="muted">עכשיו יש לשלוח את הקובץ החתום בחזרה ל-' + esc(data.bn||"בעל העסק") + ' — בוואטסאפ הכי פשוט.</p>' +
-    '<div class="row">' +
-    '<button class="btn primary" id="share-btn">📲 שליחה בוואטסאפ</button>' +
-    '</div>' +
-    '<div class="row" style="margin-top:8px;">' +
-    '<button class="btn" id="dl-btn">⬇ הורדת הקובץ</button>' +
-    '</div>' +
-    '</div>' +
-    '<div class="foot">אם השליחה לא נפתחת אוטומטית, הורד את הקובץ ושלח אותו ידנית כקובץ מצורף.</div>';
-
-  document.getElementById("dl-btn").onclick = function(){
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
-  };
-  document.getElementById("share-btn").onclick = async function(){
-    try {
-      var file = new File([blob], filename, {type:"application/pdf"});
-      if (navigator.canShare && navigator.canShare({files:[file]})){
-        await navigator.share({files:[file], title:filename, text:"מסמך חתום — " + (data.bn||"")});
-        return;
-      }
-    } catch(e){ if (e && e.name === "AbortError") return; }
-    document.getElementById("dl-btn").click();
-    alert("שיתוף ישיר לא נתמך בדפדפן הזה — הקובץ ירד למכשיר, יש לשלוח אותו ידנית בוואטסאפ כקובץ מצורף.");
-  };
-}
-
-renderMain();
-})();
+  });
 </script>
 </body>
 </html>
