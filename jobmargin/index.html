@@ -315,7 +315,15 @@
   }
   .lead-confirm h3{ font-size:1.05rem; margin-bottom:6px; }
   .lc-copy{ color:var(--ink-soft); font-size:.9rem; margin-bottom:14px; }
-  .lc-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+  .lc-more{ margin-top:4px; }
+  .lc-more summary{
+    cursor:pointer; font-size:.86rem; font-weight:700; color:var(--accent);
+    list-style:none; padding-block:4px;
+  }
+  .lc-more summary::-webkit-details-marker{ display:none; }
+  .lc-more summary::before{ content:"▸ "; }
+  .lc-more[open] summary::before{ content:"▾ "; }
+  .lc-actions{ display:flex; gap:10px; flex-wrap:wrap; margin:12px 0; }
   .lc-details{
     white-space:pre-wrap; font-family:'Assistant',sans-serif; font-size:.84rem; color:var(--ink-soft);
     background:var(--surface-alt); border:1px solid var(--line); border-radius:var(--radius-sm);
@@ -622,13 +630,16 @@
 
     <div id="leadConfirm" class="lead-confirm" hidden>
       <div class="lc-icon">✓</div>
-      <h3>הפנייה שלכם מוכנה לשליחה</h3>
-      <p class="lc-copy">נפתחה תוכנת המייל שלכם עם כל הפרטים, מוכנה לשליחה — פשוט לחצו "שלח". אם היא לא נפתחה, השתמשו באחת מהאפשרויות הבאות כדי שהפנייה בטוח תגיע:</p>
-      <div class="lc-actions">
-        <a id="lcWhatsapp" class="btn btn-outline" href="#" target="_blank" rel="noopener">📲 שלחו בוואטסאפ</a>
-        <button id="lcCopy" class="btn btn-outline" type="button">העתיקו את הפרטים</button>
-      </div>
-      <pre id="lcDetails" class="lc-details"></pre>
+      <h3 id="lcHeadline">תודה! קיבלנו את הפנייה שלך</h3>
+      <p class="lc-copy" id="lcBody">ניצור איתך קשר בהקדם האפשרי.</p>
+      <details class="lc-more">
+        <summary>רוצים לזרז את זה? אפשר גם לשלוח בעצמכם</summary>
+        <div class="lc-actions">
+          <a id="lcWhatsapp" class="btn btn-outline" href="#" target="_blank" rel="noopener">📲 שלחו בוואטסאפ</a>
+          <button id="lcCopy" class="btn btn-outline" type="button">העתיקו את הפרטים</button>
+        </div>
+        <pre id="lcDetails" class="lc-details"></pre>
+      </details>
     </div>
   </div>
 </section>
@@ -649,6 +660,8 @@
   const form = document.getElementById('leadForm');
   const status = document.getElementById('leadStatus');
   const confirmBox = document.getElementById('leadConfirm');
+  const lcHeadline = document.getElementById('lcHeadline');
+  const lcBody = document.getElementById('lcBody');
   const lcWhatsapp = document.getElementById('lcWhatsapp');
   const lcCopy = document.getElementById('lcCopy');
   const lcDetails = document.getElementById('lcDetails');
@@ -659,12 +672,14 @@
 
     try{
       const data = new FormData(form);
-      const name = data.get('name') || '';
+      const name = (data.get('name') || '').trim();
       const phone = data.get('phone') || '';
       const email = data.get('email') || '';
       const field = data.get('field') || '';
       const headcount = data.get('headcount') || '';
 
+      // Full structured lead — this is what the SELLER receives (by email/
+      // WhatsApp), never shown to the visitor as their main confirmation.
       const detailsText =
         'ליד חדש מדף הנחיתה של JobMargin\n' +
         'שם: ' + name + '\n' +
@@ -674,14 +689,18 @@
         'מספר עובדים: ' + headcount;
 
       const subject = 'בקשת פרטים על חבילת JobMargin';
+      const firstName = name ? name.split(/\s+/)[0] : '';
 
-      // Always show the backup panel first — this is guaranteed to work
-      // regardless of whether the visitor has a mail app configured, so a
-      // lead is never lost even if the mailto attempt below does nothing.
+      // What the VISITOR (the lead) sees: a short, warm, personal thank-you
+      // — not the raw internal lead dump. The raw details still exist
+      // (below, collapsed) only as a manual-send backup.
+      lcHeadline.textContent = firstName ? ('תודה, ' + firstName + '! קיבלנו את הפנייה שלך') : 'תודה! קיבלנו את הפנייה שלך';
+      lcBody.textContent = 'ניצור איתך קשר בהקדם האפשרי' + (field ? (' בנוגע לתחום ' + field) : '') + '.';
+
       lcWhatsapp.href = 'https://wa.me/' + SALES_WHATSAPP + '?text=' + encodeURIComponent(detailsText);
       lcDetails.textContent = detailsText;
       confirmBox.hidden = false;
-      status.textContent = 'הפנייה נקלטה. בחרו למטה איך לשלוח אותה.';
+      status.textContent = 'הפנייה נקלטה, תודה!';
       confirmBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       // Best-effort: try to open the visitor's mail app too, via a
