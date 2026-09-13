@@ -1,0 +1,23 @@
+FAQ — Contractor CRM (ContractorOS)
+======================================
+
+Q: What are the pipeline stages?
+A: New Lead, Contacted, Meeting Scheduled, Quote Sent, Negotiation, Won,
+Lost — pick from a dropdown in the Status column.
+
+Q: What does "Lead Temperature" mean?
+A: A quick read of urgency/interest: Hot, Warm, Cold — helps you decide
+who to call first.
+
+Q: How does the Dashboard know which follow-ups are due?
+A: It compares each lead's "Next Follow-Up" date to today's date and
+counts anything due or overdue automatically.
+
+Q: Can I track where my leads come from?
+A: Yes — the Source column (referral, Facebook, Instagram, Google,
+WhatsApp, signage, repeat client, other) lets you filter or count by
+source to see what's working.
+
+Q: Does closing a lead update revenue automatically?
+A: Yes — mark it "Won" and its potential amount counts automatically
+toward "Won Revenue" on the Dashboard.

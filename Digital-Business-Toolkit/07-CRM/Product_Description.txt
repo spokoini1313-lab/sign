@@ -1,0 +1,33 @@
+ContractorOS — Contractor CRM
+================================
+
+WHAT IT IS
+A lead- and client-tracking workbook built for how contractors actually
+sell: phone calls, WhatsApp, a site visit, a quote, then a yes or no.
+
+WHO IT'S FOR
+Any tradesperson or contractor who gets inbound leads (referrals, social
+media, Google, signage) and wants to stop losing track of them.
+
+THE PROBLEM IT SOLVES
+Leads that fall through the cracks because there's no simple system
+tracking who to follow up with, and when.
+
+WHAT'S INSIDE
+- Main Workspace: one row per lead — contact info, source, job type,
+  area, potential value, pipeline stage, lead temperature, next follow-up
+- 7-stage pipeline: New Lead → Contacted → Meeting → Quote Sent →
+  Negotiation → Won → Lost
+- Dashboard with live KPIs: total leads, conversion rate, total
+  potential revenue, won revenue, open hot leads
+- Color-coded stage and temperature, follow-up alerts
+- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+
+HOW IT WORKS
+1. Log every new lead as it comes in.
+2. Update its pipeline stage and temperature as it progresses.
+3. Set a next follow-up date — the Dashboard flags anything due today or overdue.
+4. Track conversion rate and revenue won automatically.
+
+COMPATIBILITY
+Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.
