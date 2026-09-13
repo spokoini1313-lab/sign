@@ -2,7 +2,7 @@ Product Cover Concept — Cash Flow Planner
 ============================================
 STYLE: Premium, clean, construction-business, modern SaaS.
 LAYOUT (1200x1500 portrait): Dark Navy top two-thirds / Light Background
-bottom third. "[ContractorOS]" wordmark top-left. Product name center,
+bottom third. "[JobMargin]" wordmark top-left. Product name center,
 white bold 52px: "Cash Flow Planner". Tagline: "Know your runway before
 it's a problem." Middle-right: mock line-chart card showing a 12-month
 balance trend line dipping and recovering. Bottom chips: "📈 12-Month

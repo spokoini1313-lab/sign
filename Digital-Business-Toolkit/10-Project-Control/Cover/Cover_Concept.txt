@@ -2,7 +2,7 @@ Product Cover Concept — Project Execution Dashboard
 ======================================================
 STYLE: Premium, clean, construction-business, modern SaaS.
 LAYOUT (1200x1500 portrait): Dark Navy top two-thirds / Light Background
-bottom third. "[ContractorOS]" wordmark top-left. Product name center,
+bottom third. "[JobMargin]" wordmark top-left. Product name center,
 white bold 44px: "Project Execution Dashboard". Tagline: "Run every
 project on schedule." Middle-right: mock Gantt-style task list card with
 progress bars, one row highlighted red "Overdue". Bottom chips: "✅ Task

@@ -1,4 +1,4 @@
-# ContractorOS — Digital Business Toolkit for Contractors & Tradespeople
+# JobMargin — Digital Business Toolkit for Contractors & Tradespeople
 
 A line of 11 commercial-grade Excel/Google Sheets products for
 electricians, plumbers, HVAC techs, painters, carpenters, renovation
@@ -8,7 +8,7 @@ contractors, and every project-based small business owner.
 This build is proceeding in phases (see `Documentation/Architecture.md`).
 Completed so far:
 - [x] Phase 1 — Architecture (`Documentation/Architecture.md`)
-- [x] Phase 2 — Brand (`Brand/Brand_Kit.md`) → working brand name **ContractorOS**
+- [x] Phase 2 — Brand (`Brand/Brand_Kit.md`) → working brand name **JobMargin**
 - [x] Phase 3 — Product 1: Smart Pricing & Profit Calculator (`01-Pricing/`)
 - [x] Phase 4 — QA Product 1 (manual review; automated LibreOffice recalc unavailable in this sandbox — see `01-Pricing/QA_Notes.txt`)
 - [x] Phase 5 — Products 2–10, each with לוח בקרה/שולחן עבודה/התחלה מהירה/מדריך שימוש + full sales/marketing package:
@@ -24,7 +24,7 @@ Completed so far:
 - [x] **Hebrew pass (post-Phase-5 revision)** — all 10 products fully
   reworked per user request:
   - Every sheet tab, title, KPI label, alert, guide and FAQ text is now
-    Hebrew (brand name **ContractorOS**, Excel/Google Sheets product
+    Hebrew (brand name **JobMargin**, Excel/Google Sheets product
     names, and standard finance terms like Margin/Markup kept as-is —
     same convention used in Hebrew business documents generally).
   - Cross-product linking key changed from a numeric Project ID

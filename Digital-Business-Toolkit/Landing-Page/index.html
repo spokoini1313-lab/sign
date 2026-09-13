@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<title>ContractorOS</title>
+<title>JobMargin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -305,6 +305,23 @@
   @media (max-width:480px){ .row2{ grid-template-columns:1fr; } }
   #leadStatus{ font-size:.86rem; color:var(--good); min-height:1.2em; }
 
+  .lead-confirm{
+    margin-top:18px; background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:20px 22px;
+  }
+  .lc-icon{
+    width:34px; height:34px; border-radius:50%; background:var(--good-soft); color:var(--good);
+    display:grid; place-items:center; font-weight:900; margin-bottom:10px;
+  }
+  .lead-confirm h3{ font-size:1.05rem; margin-bottom:6px; }
+  .lc-copy{ color:var(--ink-soft); font-size:.9rem; margin-bottom:14px; }
+  .lc-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+  .lc-details{
+    white-space:pre-wrap; font-family:'Assistant',sans-serif; font-size:.84rem; color:var(--ink-soft);
+    background:var(--surface-alt); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:12px 14px; margin:0;
+  }
+
   /* ============ FOOTER ============ */
   footer{ border-top:1px solid var(--line); padding-block:32px 44px; margin-top:20px; }
   footer .row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
@@ -319,7 +336,7 @@
 
 <nav class="top">
   <div class="row shell">
-    <div class="brand"><span class="mark">C</span>ContractorOS</div>
+    <div class="brand"><span class="mark">J</span>JobMargin</div>
     <div class="navlinks">
       <a href="#products">המוצרים</a>
       <a href="#p11">מוצר 11</a>
@@ -602,23 +619,40 @@
       <button class="btn btn-gold" type="submit" style="margin-top:6px;">שלחו לי פרטים על החבילה</button>
       <p id="leadStatus" role="status" aria-live="polite"></p>
     </form>
+
+    <div id="leadConfirm" class="lead-confirm" hidden>
+      <div class="lc-icon">✓</div>
+      <h3>הפנייה שלכם מוכנה לשליחה</h3>
+      <p class="lc-copy">נפתחה תוכנת המייל שלכם עם כל הפרטים, מוכנה לשליחה — פשוט לחצו "שלח". אם היא לא נפתחה, השתמשו באחת מהאפשרויות הבאות כדי שהפנייה בטוח תגיע:</p>
+      <div class="lc-actions">
+        <a id="lcWhatsapp" class="btn btn-outline" href="#" target="_blank" rel="noopener">📲 שלחו בוואטסאפ</a>
+        <button id="lcCopy" class="btn btn-outline" type="button">העתיקו את הפרטים</button>
+      </div>
+      <pre id="lcDetails" class="lc-details"></pre>
+    </div>
   </div>
 </section>
 
 <footer class="shell">
   <div class="row">
-    <div class="brand" style="font-size:1rem;"><span class="mark" style="width:24px;height:24px;font-size:.7rem;">C</span>ContractorOS</div>
-    <p class="fine">© ContractorOS — כלים לבעלי מקצוע ולקבלנים. כל הזכויות שמורות.</p>
+    <div class="brand" style="font-size:1rem;"><span class="mark" style="width:24px;height:24px;font-size:.7rem;">J</span>JobMargin</div>
+    <p class="fine">© JobMargin — כלים לבעלי מקצוע ולקבלנים. כל הזכויות שמורות.</p>
   </div>
 </footer>
 
 <script>
   // ---- config ----
   const SALES_EMAIL = "spokoini1313@gmail.com";
+  const SALES_WHATSAPP = "972547413005"; // international format, no leading 0/+
 
-  // ---- lead form -> mailto ----
+  // ---- lead form -> mailto (primary) + WhatsApp / copy (backup so no lead is lost) ----
   const form = document.getElementById('leadForm');
   const status = document.getElementById('leadStatus');
+  const confirmBox = document.getElementById('leadConfirm');
+  const lcWhatsapp = document.getElementById('lcWhatsapp');
+  const lcCopy = document.getElementById('lcCopy');
+  const lcDetails = document.getElementById('lcDetails');
+
   form.addEventListener('submit', function(e){
     e.preventDefault();
     const data = new FormData(form);
@@ -628,20 +662,42 @@
     const field = data.get('field') || '';
     const headcount = data.get('headcount') || '';
 
-    const subject = 'בקשת פרטים על חבילת ContractorOS';
-    const body =
+    const detailsText =
+      'ליד חדש מדף הנחיתה של JobMargin\n' +
       'שם: ' + name + '\n' +
       'טלפון: ' + phone + '\n' +
       'אימייל: ' + email + '\n' +
       'תחום העסק: ' + field + '\n' +
       'מספר עובדים: ' + headcount;
 
+    const subject = 'בקשת פרטים על חבילת JobMargin';
+
+    // primary channel: mailto, opens pre-filled and addressed to the owner
     const mailto = 'mailto:' + encodeURIComponent(SALES_EMAIL) +
       '?subject=' + encodeURIComponent(subject) +
-      '&body=' + encodeURIComponent(body);
-
+      '&body=' + encodeURIComponent(detailsText);
     window.location.href = mailto;
-    status.textContent = 'נפתחת תוכנת המייל שלכם לשליחת הפנייה — אם לא נפתחה אוטומטית, כתבו לנו ל-' + SALES_EMAIL;
+
+    // backup channels, shown immediately so the lead is never lost if the
+    // visitor's device has no mail app configured
+    lcWhatsapp.href = 'https://wa.me/' + SALES_WHATSAPP + '?text=' + encodeURIComponent(detailsText);
+    lcDetails.textContent = detailsText;
+    confirmBox.hidden = false;
+    confirmBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    status.textContent = 'נפתחת תוכנת המייל שלכם עם הפנייה מוכנה לשליחה.';
+  });
+
+  lcCopy.addEventListener('click', async function(){
+    const text = lcDetails.textContent;
+    try{
+      await navigator.clipboard.writeText(text);
+      lcCopy.textContent = 'הועתק ✓';
+      setTimeout(function(){ lcCopy.textContent = 'העתיקו את הפרטים'; }, 2200);
+    }catch(err){
+      // clipboard API unavailable/denied — details are already visible in the <pre> to copy manually
+      lcCopy.textContent = 'סמנו והעתיקו ידנית';
+    }
   });
 </script>
 </body>

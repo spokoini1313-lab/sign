@@ -6,7 +6,7 @@ No decorative/ornate elements. Flat color, strong grid, confident type.
 
 LAYOUT (1200x1500px recommended, portrait, Gumroad/Etsy-ready)
 - Background: Dark Navy (#17365D) top two-thirds, Light Background (#F8FAFC) bottom third
-- Top-left: small bracket wordmark "[ContractorOS]" in white, Calibri Bold, 22px
+- Top-left: small bracket wordmark "[JobMargin]" in white, Calibri Bold, 22px
 - Center: Product name in white, Calibri/Heebo Bold, 54px:
     "Smart Pricing &
      Profit Calculator"

@@ -5,7 +5,7 @@ STYLE: Premium, clean, construction-business, modern SaaS, professional.
 
 LAYOUT (1200x1500px, portrait)
 - Background: Dark Navy top two-thirds, Light Background bottom third
-- Top-left: "[ContractorOS]" wordmark, white, 22px
+- Top-left: "[JobMargin]" wordmark, white, 22px
 - Center: Product name, white, Calibri/Heebo Bold, 50px:
     "Project Budget
      Controller"

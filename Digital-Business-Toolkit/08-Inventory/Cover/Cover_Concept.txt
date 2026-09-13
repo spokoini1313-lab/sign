@@ -2,7 +2,7 @@ Product Cover Concept — Inventory & Materials Manager
 ========================================================
 STYLE: Premium, clean, construction-business, modern SaaS.
 LAYOUT (1200x1500 portrait): Dark Navy top two-thirds / Light Background
-bottom third. "[ContractorOS]" wordmark top-left. Product name center,
+bottom third. "[JobMargin]" wordmark top-left. Product name center,
 white bold 44px: "Inventory & Materials Manager". Tagline: "Never run
 out mid-job." Middle-right: mock warehouse-shelf icon card with stacked
 boxes, one row highlighted red "Low Stock". Bottom chips: "📦 Stock

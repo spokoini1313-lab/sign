@@ -2,7 +2,7 @@ Product Cover Concept — Smart Quote Builder
 ==============================================
 STYLE: Premium, clean, construction-business, modern SaaS.
 LAYOUT (1200x1500 portrait): Dark Navy top two-thirds / Light Background
-bottom third. "[ContractorOS]" wordmark top-left. Product name center,
+bottom third. "[JobMargin]" wordmark top-left. Product name center,
 white bold 50px: "Smart Quote Builder". Tagline: "Send quotes that win
 jobs." Middle-right: mock document card with line items and a total row
 highlighted in green. Bottom chips: "📄 Itemized Quotes" "🧮 Auto VAT"

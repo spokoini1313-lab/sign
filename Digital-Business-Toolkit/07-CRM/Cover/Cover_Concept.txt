@@ -2,7 +2,7 @@ Product Cover Concept — Contractor CRM
 =========================================
 STYLE: Premium, clean, construction-business, modern SaaS.
 LAYOUT (1200x1500 portrait): Dark Navy top two-thirds / Light Background
-bottom third. "[ContractorOS]" wordmark top-left. Product name center,
+bottom third. "[JobMargin]" wordmark top-left. Product name center,
 white bold 56px: "Contractor CRM". Tagline: "Never lose a lead again."
 Middle-right: mock pipeline card with 4 stage columns and colored lead
 chips (red=hot, yellow=warm, blue=cold). Bottom chips: "📞 Lead Tracking"

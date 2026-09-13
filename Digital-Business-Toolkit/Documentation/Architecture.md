@@ -1,8 +1,8 @@
-# ContractorOS — Architecture & Build Plan
+# JobMargin — Architecture & Build Plan
 
 ## Brand
-Working brand name: **ContractorOS** (see `/Brand/Brand_Kit.md`). Single source of truth for the two variables every asset should reference:
-- `BRAND_NAME = ContractorOS`
+Working brand name: **JobMargin** (see `/Brand/Brand_Kit.md`). Single source of truth for the two variables every asset should reference:
+- `BRAND_NAME = JobMargin`
 - `SALES_EMAIL = spokoini1313@gmail.com`
 
 ## Product Line
