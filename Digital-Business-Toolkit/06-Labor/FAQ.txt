@@ -1,0 +1,23 @@
+FAQ — Employee & Labor Cost Tracker (ContractorOS)
+=====================================================
+
+Q: How is overtime calculated?
+A: Automatically — any hours beyond 8 in a single row (one work day for
+one employee) count as overtime, multiplied by your overtime multiplier
+(default 1.5x).
+
+Q: What if an employee worked on two projects in one day?
+A: Add two separate rows for that day, splitting the actual hours
+between the two Project IDs.
+
+Q: Can I see labor cost per project?
+A: Yes — filter or SUMIF the "Daily Cost" column by Project ID. Product
+11 (Business Control Center) rolls this up automatically across all
+modules.
+
+Q: What if the standard 8-hour threshold doesn't match my business?
+A: Edit the "8" in the Regular/Overtime formulas to your own threshold.
+
+Q: Does this handle payroll or tax deductions?
+A: No — this is a cost-tracking tool for project profitability, not a
+payroll system.

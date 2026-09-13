@@ -1,0 +1,35 @@
+ContractorOS — Employee & Labor Cost Tracker
+================================================
+
+WHAT IT IS
+A daily hours and labor-cost tracker that calculates regular hours,
+overtime, and true daily labor cost per employee per project —
+automatically, from start and end time.
+
+WHO IT'S FOR
+Contractors and tradespeople who manage a crew — even a small one — and
+need to know what labor actually costs, project by project.
+
+THE PROBLEM IT SOLVES
+Not knowing the real labor cost of a project until long after it's
+finished — overtime especially tends to disappear into a vague sense
+that "we worked a lot," without ever being tied to a number.
+
+WHAT'S INSIDE
+- Main Workspace: one row per employee per work day — date, employee,
+  project, start/end time, hourly rate, overtime multiplier
+- Automatic regular-hours (up to 8/day) and overtime-hours calculation
+- Automatic daily labor cost calculation
+- Dashboard with live KPIs: total hours, total labor cost, total
+  overtime, average hourly cost, logged work-days
+- Color-coded overtime flags, Business Insights alerts
+- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+
+HOW IT WORKS
+1. Add a row per employee per day, with start and end time.
+2. Set the hourly rate and overtime multiplier (default 1.5x).
+3. Regular hours, overtime hours, and daily cost calculate automatically.
+4. Use the shared Project ID to tie labor cost back to a specific job.
+
+COMPATIBILITY
+Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.

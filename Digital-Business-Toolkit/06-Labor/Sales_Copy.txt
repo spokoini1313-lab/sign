@@ -1,0 +1,27 @@
+ContractorOS — Employee & Labor Cost Tracker
+================================================
+
+HEADLINE
+Know exactly what your crew costs — every day, every project.
+
+SUBHEADLINE
+Log start and end times and this tool calculates regular hours,
+overtime, and true daily labor cost automatically.
+
+WHY YOU NEED THIS
+Overtime quietly eats margin. Without a system, you only feel it at the
+end of the month — this tool shows it to you the day it happens.
+
+WHAT YOU GET
+✔ A professional Excel/Google Sheets labor tracker
+✔ Automatic regular/overtime hours and daily cost calculation
+✔ A live Dashboard: total hours, total labor cost, overtime, avg cost
+✔ Color-coded overtime flags
+✔ Hebrew interface, right-to-left, built for Israeli tradespeople
+✔ Works on Excel, Excel Online, and Google Sheets
+
+WHO IT'S FOR
+Any contractor or tradesperson managing a crew, even a small one.
+
+CALL TO ACTION
+Get Employee & Labor Cost Tracker and know your true labor cost, every day.
