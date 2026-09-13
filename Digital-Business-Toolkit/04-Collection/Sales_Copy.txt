@@ -1,0 +1,30 @@
+ContractorOS — Payment & Collection Manager
+==============================================
+
+HEADLINE
+Stop losing track of who owes you money.
+
+SUBHEADLINE
+Every invoice, every payment, every overdue balance — tracked
+automatically, with a status that flips to "overdue" the moment a
+client misses their due date.
+
+WHY YOU NEED THIS
+Cash flow problems rarely come from one big loss — they come from a dozen
+small unpaid balances nobody was watching closely enough.
+
+WHAT YOU GET
+✔ A professional Excel/Google Sheets collections tracker
+✔ Automatic balance and overdue-status calculation
+✔ A live Dashboard: total billed, total paid, outstanding, collection rate
+✔ Color-coded status: paid / open / partial / overdue
+✔ Hebrew interface, right-to-left, built for Israeli tradespeople
+✔ Works on Excel, Excel Online, and Google Sheets
+
+WHO IT'S FOR
+Every trade that bills clients: electricians, plumbers, HVAC, painters,
+carpenters, renovation contractors.
+
+CALL TO ACTION
+Get Payment & Collection Manager and never lose track of an unpaid
+invoice again.

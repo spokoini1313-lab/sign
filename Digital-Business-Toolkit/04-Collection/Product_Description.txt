@@ -1,0 +1,34 @@
+ContractorOS — Payment & Collection Manager
+==============================================
+
+WHAT IT IS
+An Excel/Google Sheets workbook that tracks every invoice, what's been
+paid, what's still outstanding, and who is overdue — automatically.
+
+WHO IT'S FOR
+Any tradesperson or contractor who bills clients and needs to stay on
+top of collections without chasing a stack of paper invoices.
+
+THE PROBLEM IT SOLVES
+Cash flow problems caused by payments that quietly slip past their due
+date because nobody was tracking them closely enough.
+
+WHAT'S INSIDE
+- Main Workspace: one row per invoice — client, project, invoice number,
+  issue date, amount, amount paid, due date
+- Automatic balance and status calculation (paid / open / partially paid
+  / overdue) based on today's date vs. the due date
+- Dashboard with live KPIs: total billing, total paid, outstanding
+  balance, overdue count, collection rate
+- Color-coded status, Business Insights alerts
+- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+
+HOW IT WORKS
+1. Add one row per invoice as you issue it.
+2. Update "Amount Paid" as payments come in.
+3. Balance and status update automatically — including flipping to
+   "Overdue" the moment today passes the due date, if unpaid.
+4. Dashboard shows your full collections picture at a glance.
+
+COMPATIBILITY
+Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.
