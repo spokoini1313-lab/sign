@@ -1,0 +1,30 @@
+ContractorOS — Project Budget Controller
+==========================================
+
+HEADLINE
+Catch a budget overrun while you can still fix it.
+
+SUBHEADLINE
+Track planned vs. actual spend on every project, by category, with
+automatic variance alerts — so you find out about an overrun this week,
+not after the job wraps.
+
+WHY YOU NEED THIS
+Materials cost more than planned. A subcontractor runs over. Overhead
+creeps. By the time you tally it all up at the end, the damage is done.
+This tool flags it category-by-category, in real time.
+
+WHAT YOU GET
+✔ A professional Excel/Google Sheets budget tracker — ready in minutes
+✔ Automatic variance % and status per category
+✔ A live Dashboard showing total overrun and utilization across all projects
+✔ Color-coded status: on budget / watch / overrun
+✔ Hebrew interface, right-to-left, built for Israeli tradespeople
+✔ Works on Excel, Excel Online, and Google Sheets
+
+WHO IT'S FOR
+Renovation contractors • Electricians • Plumbers • HVAC crews • General
+contractors managing several jobs at once
+
+CALL TO ACTION
+Get Project Budget Controller and stop finding out about overruns too late.

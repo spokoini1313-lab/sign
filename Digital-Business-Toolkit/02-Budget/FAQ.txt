@@ -1,0 +1,26 @@
+FAQ — Project Budget Controller (ContractorOS)
+================================================
+
+Q: Can I track multiple projects in one file?
+A: Yes — every row carries a Project ID, so the Dashboard rolls up all
+projects together, and you can filter/sort by Project ID for a single-
+project view.
+
+Q: What counts as "on budget" vs "watch" vs "overrun"?
+A: Watch = spend up to 10% over the category budget. Overrun = more than
+10% over. On budget = at or under plan.
+
+Q: Can I add my own categories?
+A: Yes — either pick from the built-in dropdown list, or type a custom
+category directly into the cell.
+
+Q: Do I need to fill in every category for every project?
+A: No — only add rows for categories that apply to that specific project.
+
+Q: Does this replace accounting software?
+A: No — this is a fast, visual budget-control tool for the field, not a
+bookkeeping system. Pair it with Cash Flow Planner (Product 5) for a
+fuller financial picture.
+
+Q: Will this work in Google Sheets?
+A: Yes, fully — upload the .xlsx and open with Google Sheets.

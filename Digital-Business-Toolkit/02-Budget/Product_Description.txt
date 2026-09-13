@@ -1,0 +1,36 @@
+ContractorOS — Project Budget Controller
+==========================================
+
+WHAT IT IS
+An Excel/Google Sheets workbook that tracks planned budget vs. actual
+spend for every project, broken down by category, with automatic
+variance calculation and overrun alerts.
+
+WHO IT'S FOR
+Contractors and tradespeople running one or several projects at once who
+need to know — in real time, not after the job is finished — whether
+they're on budget.
+
+THE PROBLEM IT SOLVES
+Budget overruns are usually discovered too late to fix. This tool
+surfaces them the moment actual spend starts drifting from plan, category
+by category (materials, labor, subcontractors, tools, rentals, travel,
+transport, inspections, permits, overhead, other).
+
+WHAT'S INSIDE
+- Dashboard with live KPIs: total budget, total actual, total overrun,
+  utilization %, and count of categories in overrun
+- Main Workspace: one row per project + category, dropdown category list
+- Automatic Difference and Variance % calculation per row
+- Color-coded status per row (green = on budget, yellow = watch, red = over)
+- Business Insights alerts on the Dashboard
+- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+
+HOW IT WORKS
+1. For each project, add one row per budget category.
+2. Enter planned Budget and actual Actual spend.
+3. The sheet calculates Difference, Variance %, and Status automatically.
+4. The Dashboard rolls every project up into one budget control view.
+
+COMPATIBILITY
+Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.
