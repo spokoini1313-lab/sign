@@ -1,30 +1,29 @@
-ContractorOS — Contractor CRM
-================================
+ContractorOS — ניהול לקוחות ולידים
+========================================
 
-HEADLINE
-Never lose a lead again.
+כותרת ראשית
+אף ליד לא ייעלם יותר.
 
-SUBHEADLINE
-Track every lead from first contact to closed job — with automatic
-conversion rate, pipeline value, and follow-up reminders built for the
-way contractors actually sell.
+כותרת משנה
+עקבו אחרי כל ליד מהפנייה הראשונה ועד סגירת העבודה — עם אחוז המרה,
+שווי צינור מכירות והתראות פולואפ אוטומטיות, בנוי לאופן שבו קבלנים
+באמת מוכרים.
 
-WHY YOU NEED THIS
-A lead that doesn't get a follow-up call is a lead you paid for (in time
-or ad spend) and threw away. This tool makes sure that never happens
-silently.
+למה אתם צריכים את זה
+ליד שלא מקבל שיחת פולואפ הוא ליד ששילמתם עליו (בזמן או בכסף) וזרקתם.
+הכלי הזה מוודא שזה לעולם לא קורה בשקט.
 
-WHAT YOU GET
-✔ A professional Excel/Google Sheets CRM built for trades, not offices
-✔ A 7-stage sales pipeline with color-coded status
-✔ A live Dashboard: leads, conversion rate, pipeline value, revenue won
-✔ Automatic overdue-follow-up alerts
-✔ Hebrew interface, right-to-left, built for Israeli tradespeople
-✔ Works on Excel, Excel Online, and Google Sheets
+מה מקבלים
+✔ CRM מקצועי ב-Excel/Google Sheets, בנוי לבעלי מקצוע — לא למשרדים
+✔ צינור מכירות ב-7 שלבים עם סטטוס צבעוני
+✔ לוח בקרה חי: לידים, אחוז המרה, שווי צינור, הכנסה שנסגרה
+✔ התראות אוטומטיות לפולואפים שאיחרו
+✔ ממשק בעברית, מימין לשמאל, בנוי לבעלי מקצוע בישראל
+✔ עובד ב-Excel, Excel Online ו-Google Sheets
 
-WHO IT'S FOR
-Every trade that gets inbound leads: electricians, plumbers, HVAC,
-painters, carpenters, renovation contractors.
+למי זה מתאים
+כל תחום שמקבל לידים נכנסים: חשמלאים, אינסטלטורים, מיזוג אוויר,
+צבעים, נגרים, קבלני שיפוצים.
 
-CALL TO ACTION
-Get Contractor CRM and turn more leads into closed jobs.
+קריאה לפעולה
+קבלו את מערכת ניהול הלקוחות והלידים והפכו יותר לידים לעבודות סגורות.

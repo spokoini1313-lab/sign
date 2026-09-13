@@ -1,35 +1,36 @@
-ContractorOS — Employee & Labor Cost Tracker
-================================================
+ContractorOS — מעקב שעות ועלות עובדים
+===========================================
 
-WHAT IT IS
-A daily hours and labor-cost tracker that calculates regular hours,
-overtime, and true daily labor cost per employee per project —
-automatically, from start and end time.
+מה זה?
+מעקב שעות ועלות עבודה יומי שמחשב שעות רגילות, שעות נוספות ועלות
+עבודה יומית אמיתית לכל עובד ולכל פרויקט — אוטומטית, משעת התחלה
+ושעת סיום.
 
-WHO IT'S FOR
-Contractors and tradespeople who manage a crew — even a small one — and
-need to know what labor actually costs, project by project.
+למי זה מתאים?
+קבלנים ובעלי מקצוע שמנהלים צוות — גם צוות קטן — ורוצים לדעת מה
+העבודה באמת עולה, פרויקט אחר פרויקט.
 
-THE PROBLEM IT SOLVES
-Not knowing the real labor cost of a project until long after it's
-finished — overtime especially tends to disappear into a vague sense
-that "we worked a lot," without ever being tied to a number.
+איזו בעיה זה פותר?
+לא לדעת מה עלות העבודה האמיתית של פרויקט עד זמן רב אחרי שהוא נגמר —
+שעות נוספות בפרט נוטות "להיעלם" לתוך תחושה מעורפלת של "עבדנו הרבה",
+בלי שהן מתורגמות אי פעם למספר.
 
-WHAT'S INSIDE
-- Main Workspace: one row per employee per work day — date, employee,
-  project, start/end time, hourly rate, overtime multiplier
-- Automatic regular-hours (up to 8/day) and overtime-hours calculation
-- Automatic daily labor cost calculation
-- Dashboard with live KPIs: total hours, total labor cost, total
-  overtime, average hourly cost, logged work-days
-- Color-coded overtime flags, Business Insights alerts
-- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+מה בפנים?
+- שולחן עבודה: שורה אחת לכל עובד בכל יום עבודה — תאריך, שם פרויקט,
+  שעת התחלה/סיום, עלות שעה, מקדם שעות נוספות
+- חישוב אוטומטי של שעות רגילות (עד 8 ביום) ושעות נוספות
+- חישוב אוטומטי של עלות יומית
+- לוח בקרה עם מדדים חיים: סה"כ שעות, עלות עבודה כוללת, סה"כ שעות
+  נוספות, עלות שעה ממוצעת, ימי עבודה שנרשמו
+- סימון צבעוני לשעות נוספות, תובנות עסקיות אוטומטיות
+- ממשק עברית מלאה מימין לשמאל, לשונית התחלה מהירה ומדריך שימוש מלא
 
-HOW IT WORKS
-1. Add a row per employee per day, with start and end time.
-2. Set the hourly rate and overtime multiplier (default 1.5x).
-3. Regular hours, overtime hours, and daily cost calculate automatically.
-4. Use the shared Project ID to tie labor cost back to a specific job.
+איך זה עובד?
+1. הוסיפו שורה לכל עובד בכל יום עבודה, עם שעת התחלה וסיום.
+2. קבעו עלות שעה ומקדם שעות נוספות (בד"כ 1.5).
+3. שעות רגילות, שעות נוספות ועלות יומית מחושבות אוטומטית.
+4. השתמשו באותו שם פרויקט שנמצא בשאר המוצרים כדי לחבר את עלות
+   העבודה לפרויקט הנכון.
 
-COMPATIBILITY
-Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.
+תאימות
+Excel 2016+‎, Excel Online, Google Sheets. ללא מאקרו.

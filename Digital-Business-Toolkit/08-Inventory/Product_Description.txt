@@ -1,34 +1,32 @@
-ContractorOS — Inventory & Materials Manager
-================================================
+ContractorOS — ניהול מלאי וחומרים
+=======================================
 
-WHAT IT IS
-An Excel/Google Sheets inventory tracker for materials and tools, with
-automatic stock value and low-stock/out-of-stock alerts.
+מה זה?
+מעקב מלאי ל-Excel/Google Sheets לחומרים וציוד, עם חישוב אוטומטי של
+שווי מלאי והתראות מלאי נמוך/אזל.
 
-WHO IT'S FOR
-Contractors and tradespeople who keep a materials or tool stock — in a
-warehouse, a van, or a storage room — and don't want to discover a
-shortage mid-job.
+למי זה מתאים?
+קבלנים ובעלי מקצוע ששומרים מלאי חומרים או כלי עבודה — במחסן, ברכב או
+במחסנית — ולא רוצים לגלות חוסר באמצע עבודה.
 
-THE PROBLEM IT SOLVES
-Arriving on site and finding a critical material has run out — a full
-lost work day, or an emergency supplier run at a markup.
+איזו בעיה זה פותר?
+להגיע לשטח ולגלות שחומר קריטי אזל — יום עבודה שלם שהולך לאיבוד, או
+רכישת חירום ביוקר.
 
-WHAT'S INSIDE
-- Main Workspace: one row per item — SKU, name, category, unit,
-  quantity, minimum stock, unit cost, supplier
-- Automatic stock value calculation (quantity × unit cost)
-- Automatic status: OK / Low Stock - Reorder / Out of Stock
-- Dashboard with live KPIs: total inventory value, item count, low-stock
-  count, out-of-stock count, highest-value item
-- Color-coded status, Business Insights alerts
-- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+מה בפנים?
+- שולחן עבודה: שורה אחת לכל פריט — מק"ט, שם, קטגוריה, יחידה, כמות,
+  מלאי מינימום, עלות יחידה, ספק
+- חישוב אוטומטי של שווי מלאי (כמות × עלות יחידה)
+- חישוב אוטומטי של סטטוס: תקין / מלאי נמוך - להזמין / אזל מהמלאי
+- לוח בקרה עם מדדים חיים: שווי מלאי כולל, מספר פריטים, מלאי נמוך,
+  אזל מהמלאי, הפריט היקר ביותר
+- סטטוס צבעוני, תובנות עסקיות אוטומטיות
+- ממשק עברית מלאה מימין לשמאל, לשונית התחלה מהירה ומדריך שימוש מלא
 
-HOW IT WORKS
-1. Log every stock item with current quantity and your minimum
-   threshold.
-2. Stock value and status calculate automatically.
-3. The Dashboard flags anything at or below minimum, or fully out.
+איך זה עובד?
+1. תעדו כל פריט מלאי עם כמות נוכחית וסף מלאי מינימום שקבעתם.
+2. שווי המלאי והסטטוס מחושבים אוטומטית.
+3. לוח הבקרה מסמן כל דבר שהגיע או ירד מתחת למינימום, או אזל לגמרי.
 
-COMPATIBILITY
-Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.
+תאימות
+Excel 2016+‎, Excel Online, Google Sheets. ללא מאקרו.

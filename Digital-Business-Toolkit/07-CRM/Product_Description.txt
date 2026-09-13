@@ -1,33 +1,33 @@
-ContractorOS — Contractor CRM
-================================
+ContractorOS — ניהול לקוחות ולידים
+========================================
 
-WHAT IT IS
-A lead- and client-tracking workbook built for how contractors actually
-sell: phone calls, WhatsApp, a site visit, a quote, then a yes or no.
+מה זה?
+כלי מעקב לידים ולקוחות שבנוי לאופן שבו קבלנים באמת מוכרים: שיחת
+טלפון, וואטסאפ, ביקור בשטח, הצעת מחיר, ואז כן או לא.
 
-WHO IT'S FOR
-Any tradesperson or contractor who gets inbound leads (referrals, social
-media, Google, signage) and wants to stop losing track of them.
+למי זה מתאים?
+כל בעל מקצוע שמקבל פניות נכנסות (המלצות, סושיאל מדיה, גוגל, שילוט)
+ורוצה להפסיק לאבד עקבות אחריהן.
 
-THE PROBLEM IT SOLVES
-Leads that fall through the cracks because there's no simple system
-tracking who to follow up with, and when.
+איזו בעיה זה פותר?
+לידים שנופלים בין הכיסאות כי אין מערכת פשוטה שעוקבת אחרי מי צריך
+פולואפ, ומתי.
 
-WHAT'S INSIDE
-- Main Workspace: one row per lead — contact info, source, job type,
-  area, potential value, pipeline stage, lead temperature, next follow-up
-- 7-stage pipeline: New Lead → Contacted → Meeting → Quote Sent →
-  Negotiation → Won → Lost
-- Dashboard with live KPIs: total leads, conversion rate, total
-  potential revenue, won revenue, open hot leads
-- Color-coded stage and temperature, follow-up alerts
-- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+מה בפנים?
+- שולחן עבודה: שורה אחת לכל ליד — פרטי קשר, מקור, סוג עבודה, אזור,
+  סכום פוטנציאלי, שלב, חום ליד, פולואפ הבא
+- צינור מכירות ב-7 שלבים: ליד חדש → יצרנו קשר → נקבעה פגישה → הצעת
+  מחיר נשלחה → משא ומתן → נסגר בהצלחה → אבדנו
+- לוח בקרה עם מדדים חיים: סה"כ לידים, אחוז המרה, פוטנציאל כולל,
+  הכנסה שנסגרה, לידים חמים פתוחים
+- סטטוס וחום ליד צבעוניים, התראות פולואפ אוטומטיות
+- ממשק עברית מלאה מימין לשמאל, לשונית התחלה מהירה ומדריך שימוש מלא
 
-HOW IT WORKS
-1. Log every new lead as it comes in.
-2. Update its pipeline stage and temperature as it progresses.
-3. Set a next follow-up date — the Dashboard flags anything due today or overdue.
-4. Track conversion rate and revenue won automatically.
+איך זה עובד?
+1. תעדו כל ליד חדש מיד עם קבלתו.
+2. עדכנו שלב וחום ליד ככל שהוא מתקדם.
+3. קבעו תאריך פולואפ הבא — לוח הבקרה מסמן כל דבר שהגיע או עבר.
+4. אחוז המרה והכנסה שנסגרה נעקבים אוטומטית.
 
-COMPATIBILITY
-Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.
+תאימות
+Excel 2016+‎, Excel Online, Google Sheets. ללא מאקרו.

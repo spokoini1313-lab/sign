@@ -1,21 +1,22 @@
-FAQ — Payment & Collection Manager (ContractorOS)
-====================================================
+שאלות נפוצות — ניהול גבייה ותשלומים (ContractorOS)
+======================================================
 
-Q: How does "Overdue" get calculated?
-A: Automatically — if there's still a balance owed and today's date is
-past the due date, the row flips to "Overdue."
+ש: איך "באיחור" מחושב?
+ת: אוטומטית — אם עדיין קיימת יתרה לתשלום ותאריך היום עבר את תאריך
+היעד, השורה עוברת ל"באיחור".
 
-Q: What if a client pays part of the invoice?
-A: Enter the partial amount in "Amount Paid" — the balance updates and
-status shows "Partially Paid" (or "Overdue" if also past due).
+ש: מה אם לקוח משלם רק חלק מהחשבונית?
+ת: הזינו את הסכום החלקי בעמודת "תשלום שבוצע" — היתרה מתעדכנת
+והסטטוס יציג "שולם חלקית" (או "באיחור" אם גם חלף התאריך).
 
-Q: Can I track multiple invoices per project?
-A: Yes — just add one row per invoice; they all share the same Project
-name so you can filter/sort by project.
+ש: אפשר לעקוב אחרי כמה חשבוניות לאותו פרויקט?
+ת: כן — פשוט הוסיפו שורה לכל חשבונית, כולן עם אותו שם פרויקט, כך
+שאפשר לסנן/למיין לפי פרויקט.
 
-Q: Does this send payment reminders to clients?
-A: No — this is a tracking tool. Use the Dashboard's overdue count and
-alerts to know exactly who to follow up with.
+ש: הכלי שולח תזכורות תשלום ללקוחות?
+ת: לא — זהו כלי מעקב. השתמשו במונה החשבוניות באיחור ובתובנות
+העסקיות בלוח הבקרה כדי לדעת בדיוק את מי לפנות אליו.
 
-Q: Can I change the due-date payment terms per client?
-A: Yes — the due date is entered per invoice, so terms can vary freely.
+ש: אפשר לשנות את תנאי התשלום לכל לקוח?
+ת: כן — תאריך היעד מוזן לכל חשבונית בנפרד, כך שהתנאים יכולים
+להשתנות בחופשיות בין לקוחות.

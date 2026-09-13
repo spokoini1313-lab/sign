@@ -1,28 +1,27 @@
-ContractorOS — Change Order & Extras Manager
-================================================
+ContractorOS — ניהול תוספות וחריגים
+=========================================
 
-HEADLINE
-Get paid for every "can you also do this?"
+כותרת ראשית
+קבלו תשלום על כל "אפשר גם...".
 
-SUBHEADLINE
-Track every client extra from request to payment — so completed work
-never quietly goes unbilled.
+כותרת משנה
+עקבו אחרי כל תוספת שהלקוח מבקש, מהבקשה ועד התשלום — כך שעבודה
+שבוצעה לעולם לא נשארת בשקט בלי חיוב.
 
-WHY YOU NEED THIS
-Verbal add-ons are where margin disappears. A "sure, no problem" during
-a site visit is easy to forget by invoice time — this tool makes sure
-it doesn't.
+למה אתם צריכים את זה
+תוספות בעל פה הן המקום שבו הרווח נעלם. "בטח, אין בעיה" באמצע ביקור
+בשטח קל לשכוח עד זמן החשבונית — הכלי הזה מוודא שזה לא קורה.
 
-WHAT YOU GET
-✔ A professional Excel/Google Sheets extras tracker
-✔ Automatic totals per change order
-✔ A live Dashboard: approved value, pending approval, unbilled completed work
-✔ Color-coded approval status
-✔ Hebrew interface, right-to-left, built for Israeli tradespeople
-✔ Works on Excel, Excel Online, and Google Sheets
+מה מקבלים
+✔ מעקב תוספות מקצועי ב-Excel/Google Sheets
+✔ חישוב סכומים אוטומטי לכל בקשת שינוי
+✔ לוח בקרה חי: שווי מאושר, ממתין לאישור, עבודה שהושלמה ולא חויבה
+✔ סטטוס אישור צבעוני
+✔ ממשק בעברית, מימין לשמאל, בנוי לבעלי מקצוע בישראל
+✔ עובד ב-Excel, Excel Online ו-Google Sheets
 
-WHO IT'S FOR
-Any contractor who handles client-requested changes mid-project.
+למי זה מתאים
+כל קבלן שמטפל בשינויים שהלקוח מבקש באמצע פרויקט.
 
-CALL TO ACTION
-Get Change Order & Extras Manager and stop leaving completed work unbilled.
+קריאה לפעולה
+קבלו את ניהול התוספות והחריגים ותפסיקו להשאיר עבודה שבוצעה בלי חיוב.

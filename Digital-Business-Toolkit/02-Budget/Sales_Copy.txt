@@ -1,30 +1,29 @@
-ContractorOS — Project Budget Controller
-==========================================
+ContractorOS — בקרת תקציב פרויקט
+====================================
 
-HEADLINE
-Catch a budget overrun while you can still fix it.
+כותרת ראשית
+תפסו חריגת תקציב בזמן שעוד אפשר לתקן אותה.
 
-SUBHEADLINE
-Track planned vs. actual spend on every project, by category, with
-automatic variance alerts — so you find out about an overrun this week,
-not after the job wraps.
+כותרת משנה
+עקבו אחרי תקציב מתוכנן מול ביצוע בפועל בכל פרויקט, לפי קטגוריה, עם
+התראת חריגה אוטומטית — כך שתגלו על חריגה השבוע, לא אחרי שהעבודה נגמרה.
 
-WHY YOU NEED THIS
-Materials cost more than planned. A subcontractor runs over. Overhead
-creeps. By the time you tally it all up at the end, the damage is done.
-This tool flags it category-by-category, in real time.
+למה אתם צריכים את זה
+חומרים עולים יותר מהמתוכנן. קבלן משנה חורג. התקורה מטפסת. עד
+שמסכמים בסוף — הנזק כבר נעשה. הכלי הזה מדגיש את זה קטגוריה-קטגוריה,
+בזמן אמת.
 
-WHAT YOU GET
-✔ A professional Excel/Google Sheets budget tracker — ready in minutes
-✔ Automatic variance % and status per category
-✔ A live Dashboard showing total overrun and utilization across all projects
-✔ Color-coded status: on budget / watch / overrun
-✔ Hebrew interface, right-to-left, built for Israeli tradespeople
-✔ Works on Excel, Excel Online, and Google Sheets
+מה מקבלים
+✔ טבלת בקרת תקציב מקצועית ב-Excel/Google Sheets — מוכנה תוך דקות
+✔ חריגה % וסטטוס אוטומטיים לכל קטגוריה
+✔ לוח בקרה חי שמראה חריגה כוללת וניצול תקציב על פני כל הפרויקטים
+✔ סטטוס צבעוני: בתקציב / דורש תשומת לב / חריגה
+✔ ממשק בעברית, מימין לשמאל, בנוי לבעלי מקצוע בישראל
+✔ עובד ב-Excel, Excel Online ו-Google Sheets
 
-WHO IT'S FOR
-Renovation contractors • Electricians • Plumbers • HVAC crews • General
-contractors managing several jobs at once
+למי זה מתאים
+קבלני שיפוצים • חשמלאים • אינסטלטורים • טכנאי מיזוג אוויר • קבלנים
+כלליים שמנהלים כמה עבודות במקביל
 
-CALL TO ACTION
-Get Project Budget Controller and stop finding out about overruns too late.
+קריאה לפעולה
+קבלו את בקרת תקציב פרויקט ותפסיקו לגלות חריגות באיחור.

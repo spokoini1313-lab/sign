@@ -1,23 +1,22 @@
-FAQ — Contractor CRM (ContractorOS)
-======================================
+שאלות נפוצות — ניהול לקוחות ולידים (ContractorOS)
+=====================================================
 
-Q: What are the pipeline stages?
-A: New Lead, Contacted, Meeting Scheduled, Quote Sent, Negotiation, Won,
-Lost — pick from a dropdown in the Status column.
+ש: מהם שלבי צינור המכירות?
+ת: ליד חדש, יצרנו קשר, נקבעה פגישה, הצעת מחיר נשלחה, משא ומתן, נסגר
+בהצלחה, אבדנו — נבחרים מרשימה נפתחת בעמודת הסטטוס.
 
-Q: What does "Lead Temperature" mean?
-A: A quick read of urgency/interest: Hot, Warm, Cold — helps you decide
-who to call first.
+ש: מה זה "חום ליד"?
+ת: קריאה מהירה של דחיפות/עניין: חם, פושר, קר — עוזר לכם להחליט למי
+להתקשר קודם.
 
-Q: How does the Dashboard know which follow-ups are due?
-A: It compares each lead's "Next Follow-Up" date to today's date and
-counts anything due or overdue automatically.
+ש: איך לוח הבקרה יודע אילו פולואפים דרושים?
+ת: הוא משווה את תאריך "פולואפ הבא" של כל ליד לתאריך היום, וסופר
+אוטומטית כל דבר שהגיע או עבר.
 
-Q: Can I track where my leads come from?
-A: Yes — the Source column (referral, Facebook, Instagram, Google,
-WhatsApp, signage, repeat client, other) lets you filter or count by
-source to see what's working.
+ש: אפשר לעקוב מאיפה מגיעים הלידים שלי?
+ת: כן — עמודת מקור (המלצה, פייסבוק, אינסטגרם, גוגל, וואטסאפ, שילוט,
+לקוח חוזר, אחר) מאפשרת לכם לסנן/לספור לפי מקור ולראות מה עובד.
 
-Q: Does closing a lead update revenue automatically?
-A: Yes — mark it "Won" and its potential amount counts automatically
-toward "Won Revenue" on the Dashboard.
+ש: סגירת ליד מעדכנת הכנסה אוטומטית?
+ת: כן — סמנו "נסגר בהצלחה" והסכום הפוטנציאלי שלו נספר אוטומטית
+כ"הכנסה שנסגרה" בלוח הבקרה.

@@ -1,28 +1,27 @@
-ContractorOS — Inventory & Materials Manager
-================================================
+ContractorOS — ניהול מלאי וחומרים
+=======================================
 
-HEADLINE
-Never run out of material mid-job again.
+כותרת ראשית
+לעולם לא תיתקעו בלי חומר באמצע עבודה.
 
-SUBHEADLINE
-Track every item's stock level, value, and reorder point automatically
-— and get flagged the moment something drops below minimum.
+כותרת משנה
+עקבו אחרי רמת המלאי, השווי ונקודת החידוש של כל פריט — אוטומטית —
+ותקבלו התראה ברגע שמשהו יורד מתחת למינימום.
 
-WHY YOU NEED THIS
-Running out of a critical material on site costs you a day — or forces
-an expensive emergency purchase. This tool tells you before it happens.
+למה אתם צריכים את זה
+חוסר בחומר קריטי בשטח עולה לכם יום שלם — או מכריח רכישת חירום ביוקר.
+הכלי הזה מודיע לכם לפני שזה קורה.
 
-WHAT YOU GET
-✔ A professional Excel/Google Sheets inventory tracker
-✔ Automatic stock value and reorder-status calculation
-✔ A live Dashboard: total inventory value, low stock, out of stock
-✔ Color-coded status: OK / low stock / out of stock
-✔ Hebrew interface, right-to-left, built for Israeli tradespeople
-✔ Works on Excel, Excel Online, and Google Sheets
+מה מקבלים
+✔ מעקב מלאי מקצועי ב-Excel/Google Sheets
+✔ חישוב אוטומטי של שווי מלאי וסטטוס הזמנה
+✔ לוח בקרה חי: שווי מלאי כולל, מלאי נמוך, אזל מהמלאי
+✔ סטטוס צבעוני: תקין / מלאי נמוך / אזל מהמלאי
+✔ ממשק בעברית, מימין לשמאל, בנוי לבעלי מקצוע בישראל
+✔ עובד ב-Excel, Excel Online ו-Google Sheets
 
-WHO IT'S FOR
-Any contractor or tradesperson who keeps materials or tools in stock.
+למי זה מתאים
+כל קבלן או בעל מקצוע ששומר חומרים או כלים במלאי.
 
-CALL TO ACTION
-Get Inventory & Materials Manager and stop losing work days to a
-material shortage.
+קריאה לפעולה
+קבלו את ניהול המלאי והחומרים ותפסיקו לאבד ימי עבודה בגלל מחסור.

@@ -1,27 +1,29 @@
-ContractorOS — Employee & Labor Cost Tracker
-================================================
+ContractorOS — מעקב שעות ועלות עובדים
+===========================================
 
-HEADLINE
-Know exactly what your crew costs — every day, every project.
+כותרת ראשית
+דעו בדיוק כמה עולה לכם הצוות — כל יום, כל פרויקט.
 
-SUBHEADLINE
-Log start and end times and this tool calculates regular hours,
-overtime, and true daily labor cost automatically.
+כותרת משנה
+רשמו שעת התחלה וסיום, והכלי הזה מחשב שעות רגילות, שעות נוספות ועלות
+עבודה יומית אמיתית — אוטומטית.
 
-WHY YOU NEED THIS
-Overtime quietly eats margin. Without a system, you only feel it at the
-end of the month — this tool shows it to you the day it happens.
+למה אתם צריכים את זה
+שעות נוספות "אוכלות" רווח בשקט. בלי מערכת מסודרת, אתם מרגישים את
+זה רק בסוף החודש — הכלי הזה מראה לכם את זה באותו יום שזה קורה.
 
-WHAT YOU GET
-✔ A professional Excel/Google Sheets labor tracker
-✔ Automatic regular/overtime hours and daily cost calculation
-✔ A live Dashboard: total hours, total labor cost, overtime, avg cost
-✔ Color-coded overtime flags
-✔ Hebrew interface, right-to-left, built for Israeli tradespeople
-✔ Works on Excel, Excel Online, and Google Sheets
+מה מקבלים
+✔ מעקב שעות עבודה מקצועי ב-Excel/Google Sheets
+✔ חישוב אוטומטי של שעות רגילות/נוספות ועלות יומית
+✔ לוח בקרה חי: סה"כ שעות, עלות עבודה כוללת, שעות נוספות, עלות
+  ממוצעת
+✔ סימון צבעוני לשעות נוספות
+✔ ממשק בעברית, מימין לשמאל, בנוי לבעלי מקצוע בישראל
+✔ עובד ב-Excel, Excel Online ו-Google Sheets
 
-WHO IT'S FOR
-Any contractor or tradesperson managing a crew, even a small one.
+למי זה מתאים
+כל קבלן או בעל מקצוע שמנהל צוות, גם קטן.
 
-CALL TO ACTION
-Get Employee & Labor Cost Tracker and know your true labor cost, every day.
+קריאה לפעולה
+קבלו את מעקב השעות ועלות העובדים ודעו את עלות העבודה האמיתית שלכם,
+כל יום.

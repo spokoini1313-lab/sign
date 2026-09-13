@@ -1,33 +1,32 @@
-ContractorOS — Project Execution Dashboard
-==============================================
+ContractorOS — ניהול ביצוע פרויקט
+=======================================
 
-WHAT IT IS
-A task-level project execution tracker — break a project into tasks,
-assign owners and due dates, and see automatically what's overdue and
-how much of the project is done.
+מה זה?
+מעקב ביצוע פרויקט ברמת משימה — פרקו פרויקט למשימות, שייכו אחראים
+ותאריכי יעד, וראו אוטומטית מה באיחור וכמה מהפרויקט הושלם.
 
-WHO IT'S FOR
-Contractors managing projects with multiple stages, subcontractors, or
-crew members responsible for different parts of the job.
+למי זה מתאים?
+קבלנים שמנהלים פרויקטים עם כמה שלבי עבודה, קבלני משנה או חברי צוות
+שכל אחד אחראי על חלק אחר.
 
-THE PROBLEM IT SOLVES
-Tasks that quietly slip past their due date because no one is tracking
-the full task list against the calendar in one place.
+איזו בעיה זה פותר?
+משימות שמחליקות בשקט מעבר לתאריך היעד כי אף אחד לא עוקב אחרי כל
+רשימת המשימות מול הלוח שנה במקום אחד.
 
-WHAT'S INSIDE
-- Main Workspace: one row per task — ID, name, category, owner, start
-  date, due date, status, completion %, priority
-- Automatic "days remaining" calculation (negative = overdue)
-- Dashboard with live KPIs: total tasks, completed, in progress,
-  overdue, overall project completion %, nearest deadline
-- Color-coded status and urgency, Business Insights alerts
-- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+מה בפנים?
+- שולחן עבודה: שורה אחת לכל משימה — מספר, שם פרויקט, שם משימה,
+  קטגוריה, אחראי, תאריך התחלה, תאריך יעד, סטטוס, אחוז השלמה, עדיפות
+- חישוב אוטומטי של "ימים שנותרו" (שלילי = באיחור)
+- לוח בקרה עם מדדים חיים: סה"כ משימות, הושלמו, בביצוע, באיחור, אחוז
+  השלמת פרויקט כולל, תאריך היעד הקרוב ביותר
+- סטטוס ודחיפות צבעוניים, תובנות עסקיות אוטומטיות
+- ממשק עברית מלאה מימין לשמאל, לשונית התחלה מהירה ומדריך שימוש מלא
 
-HOW IT WORKS
-1. Break the project into tasks with an owner and a due date each.
-2. Update status and completion % as work progresses.
-3. Days remaining calculates automatically — and turns red once overdue.
-4. The Dashboard shows overall project health at a glance.
+איך זה עובד?
+1. פרקו את הפרויקט למשימות קטנות וברות-מדידה, עם אחראי ותאריך יעד.
+2. עדכנו סטטוס ואחוז השלמה ככל שהעבודה מתקדמת.
+3. הימים שנותרו מחושבים אוטומטית — שליליים מסומנים מיד באדום.
+4. לוח הבקרה מראה את מצב הפרויקט כולו במבט אחד.
 
-COMPATIBILITY
-Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.
+תאימות
+Excel 2016+‎, Excel Online, Google Sheets. ללא מאקרו.

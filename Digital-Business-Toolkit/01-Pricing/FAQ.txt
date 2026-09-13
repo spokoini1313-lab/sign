@@ -1,43 +1,41 @@
-FAQ — Smart Pricing & Profit Calculator (ContractorOS)
-=======================================================
+שאלות נפוצות — מחשבון תמחור ורווחיות (ContractorOS)
+======================================================
 
-Q: Do I need Excel, or will Google Sheets work?
-A: Both. Upload the .xlsx file to Google Drive and open with Google
-Sheets — all formulas and formatting carry over.
+ש: אני חייב Excel, או שגם Google Sheets עובד?
+ת: שניהם. העלו את קובץ ה-‎.xlsx‎ ל-Google Drive ופתחו עם Google
+Sheets — כל הנוסחאות והעיצוב עוברים כמו שהם.
 
-Q: I'm not good with Excel. Is this hard to use?
-A: No. You only ever type into the yellow cells. Everything else
-calculates itself. A Quick Start tab walks you through it in 5 steps.
+ש: אני לא טוב באקסל. קשה להשתמש בזה?
+ת: לא. אתם מקלידים רק בתאים הצהובים. כל השאר מחושב לבד. לשונית
+התחלה מהירה מסבירה הכל ב-5 צעדים.
 
-Q: Can I add more rows / more jobs?
-A: Yes — copy any existing row (including its formulas) and paste it
-below the table. The formulas adjust automatically.
+ש: אפשר להוסיף עוד שורות/פרויקטים?
+ת: כן — העתיקו כל שורה קיימת (כולל הנוסחאות) והדביקו מתחת לטבלה.
 
-Q: How is the "recommended price" calculated?
-A: Minimum Price = Total Cost ÷ (1 − Target Profit %). This guarantees
-your target profit as a percentage of the final price, not just a markup
-over cost — which is a much safer way to price. It's then rounded up to
-the nearest 10 for a clean quote number.
+ש: איך "המחיר המומלץ" מחושב?
+ת: מחיר מינימום = עלות כוללת ÷ ‏(1 − רווח יעד%). כך שהרווח היעד
+מובטח כאחוז מהמחיר הסופי, לא רק מעל העלות — דרך תמחור הרבה יותר
+בטוחה. המחיר מעוגל כלפי מעלה ל-10 הקרוב, לנוחות בהצעת מחיר.
 
-Q: What's the difference between Margin and Markup?
-A: Margin = profit ÷ selling price. Markup = profit ÷ cost. They are
-easy to confuse and give very different numbers on the same job — the
-sheet calculates both so you always know which one you're looking at.
+ש: מה ההבדל בין Margin ל-Markup?
+ת: Margin = רווח חלקי מחיר המכירה. Markup = רווח חלקי עלות. קל
+לבלבל ביניהם, והם נותנים מספרים שונים מאוד על אותה עבודה — הגיליון
+מחשב את שניהם כדי שתמיד תדעו באיזה מהם אתם מסתכלים.
 
-Q: Can I delete the example data?
-A: Yes. Select rows 4–8 in Main Workspace and delete their contents (or
-delete the rows). Full instructions are in Quick Start.
+ש: אפשר למחוק את נתוני הדוגמה?
+ת: כן. בחרו את השורות עם 5 הפרויקטים לדוגמה ומחקו את התוכן שלהן (או
+מחקו את השורות עצמן). הסבר מלא נמצא בלשונית התחלה מהירה.
 
-Q: Does this include invoicing or sending quotes to clients?
-A: This product is a pricing & profitability calculator. Quote building
-and sending is handled by our companion product, Smart Quote Builder
-(Product 3) — available separately or as part of the ContractorOS bundle.
+ש: המוצר הזה כולל גם שליחת הצעות מחיר ללקוח?
+ת: לא. המוצר הזה הוא מחשבון תמחור ורווחיות. בניית ושליחת הצעות מחיר
+נעשית במוצר הנלווה, בניית הצעת מחיר חכמה (מוצר 3) — זמין בנפרד או
+כחלק מחבילת ContractorOS המלאה.
 
-Q: Will this work on my phone?
-A: Excel and Google Sheets mobile apps can open the file, but for the
-best experience (dashboard visibility, entering data comfortably) a
-laptop, tablet, or desktop is recommended.
+ש: זה יעבוד לי בטלפון?
+ת: אפליקציות Excel ו-Google Sheets לנייד יכולות לפתוח את הקובץ, אבל
+לחוויה הטובה ביותר (ראות של הלוח, הזנת נתונים בנוחות) מומלץ לעבוד
+בלפטופ, טאבלט או מחשב נייח.
 
-Q: Is my data private?
-A: Yes. This is a local file — nothing is uploaded or shared unless you
-choose to save it to your own cloud storage.
+ש: הנתונים שלי פרטיים?
+ת: כן. זהו קובץ מקומי — שום דבר לא מועלה או משותף, אלא אם תבחרו
+לשמור אותו בענן שלכם.

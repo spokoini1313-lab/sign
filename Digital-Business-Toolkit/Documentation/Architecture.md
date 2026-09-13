@@ -48,7 +48,7 @@ Social_Media_Copy.txt
 12. Alerts block on Dashboard (COUNTIF-driven, e.g. "3 payments overdue")
 
 ## Cross-Product Linking (for Product 11)
-Every project-based module keys off a shared `Project ID` (format `PRJ-0001`), entered once per project and reused via dropdown in Budget, Quote, Collection, Labor, Inventory usage, Extras, and Project Execution. Product 11's Dashboard pulls via `SUMIF`/`INDEX-MATCH` against each module's Project ID column.
+Every project-based module keys off the **project's name** (e.g. `שיפוץ מטבח - וילה כהן`), typed identically in every module it appears in — Pricing, Budget, Quote, Collection, Labor, Extras, and Project Execution (Inventory and CRM are not project-keyed; Cash Flow is monthly, not project-based). There is no separate numeric Project ID — the name itself is the link. Product 11's Dashboard pulls via `SUMIF`/`SUMIFS`/`COUNTIF` against each module's "שם פרויקט" column. Every product's Quick Start and User Guide reminds the user to keep the project name spelled identically across products; this was verified cell-by-cell across all 10 shipped products (see each product's `QA_Notes.txt` / `01-Pricing/QA_Notes.txt` for the cross-product check).
 
 ## Build Phases (this session)
 1. ✅ Architecture (this doc)

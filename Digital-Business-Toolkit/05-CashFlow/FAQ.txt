@@ -1,22 +1,21 @@
-FAQ — Cash Flow Planner (ContractorOS)
-=========================================
+שאלות נפוצות — תכנון תזרים מזומנים (ContractorOS)
+=====================================================
 
-Q: Do I need to enter opening balance every month?
-A: No — only for the first month. Every following month pulls its
-opening balance automatically from the prior month's closing balance.
+ש: צריך להזין יתרת פתיחה כל חודש?
+ת: לא — רק לחודש הראשון. כל חודש הבא שואב את יתרת הפתיחה שלו
+אוטומטית מיתרת הסגירה של החודש הקודם.
 
-Q: What is "Cash Runway"?
-A: How many months your current closing balance would last if your
-average monthly net (income minus expenses) continued at its current
-pace. Shows "∞" when your average net is positive or breakeven.
+ש: מה זה "טווח החזקת מזומן"?
+ת: כמה חודשים יתרת הסגירה הנוכחית שלכם תחזיק אם הנטו החודשי הממוצע
+(הכנסות פחות הוצאות) יימשך באותו קצב. מוצג כ-"∞" כשהממוצע חיובי או
+מאוזן.
 
-Q: Can I plan more than one year?
-A: Yes — copy the 12-month block below the existing one; the new
-January's opening balance should reference the prior December's closing.
+ש: אפשר לתכנן יותר משנה אחת?
+ת: כן — העתיקו את בלוק 12 החודשים מתחת לטבלה הקיימת, כך שינואר
+החדש ישאב את יתרת הפתיחה שלו מדצמבר הקודם.
 
-Q: What if I don't have "actual" numbers yet for future months?
-A: Leave them at 0 for now — the sheet will simply show 0 net for that
-month until you update it.
+ש: מה אם אין לי עדיין נתוני "בפועל" לחודשים עתידיים?
+ת: השאירו 0 בינתיים — הגיליון פשוט יציג נטו 0 לאותו חודש עד שתעדכנו.
 
-Q: Does the chart update automatically?
-A: Yes — it's linked directly to the closing balance column.
+ש: הגרף מתעדכן אוטומטית?
+ת: כן — הוא מקושר ישירות לעמודת יתרת הסגירה.

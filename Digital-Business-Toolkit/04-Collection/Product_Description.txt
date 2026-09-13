@@ -1,34 +1,34 @@
-ContractorOS — Payment & Collection Manager
-==============================================
+ContractorOS — ניהול גבייה ותשלומים
+=========================================
 
-WHAT IT IS
-An Excel/Google Sheets workbook that tracks every invoice, what's been
-paid, what's still outstanding, and who is overdue — automatically.
+מה זה?
+קובץ Excel/Google Sheets שעוקב אחרי כל חשבונית, מה שולם, מה עדיין
+פתוח, ומי באיחור — אוטומטית.
 
-WHO IT'S FOR
-Any tradesperson or contractor who bills clients and needs to stay on
-top of collections without chasing a stack of paper invoices.
+למי זה מתאים?
+כל בעל מקצוע שמחייב לקוחות וצריך להישאר על הגבייה בלי לרדוף אחרי
+ערימת חשבוניות בנייר.
 
-THE PROBLEM IT SOLVES
-Cash flow problems caused by payments that quietly slip past their due
-date because nobody was tracking them closely enough.
+איזו בעיה זה פותר?
+בעיות תזרים מזומנים שנגרמות מתשלומים שחומקים בשקט מעבר לתאריך היעד
+שלהם כי אף אחד לא עקב מספיק מקרוב.
 
-WHAT'S INSIDE
-- Main Workspace: one row per invoice — client, project, invoice number,
-  issue date, amount, amount paid, due date
-- Automatic balance and status calculation (paid / open / partially paid
-  / overdue) based on today's date vs. the due date
-- Dashboard with live KPIs: total billing, total paid, outstanding
-  balance, overdue count, collection rate
-- Color-coded status, Business Insights alerts
-- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+מה בפנים?
+- שולחן עבודה: שורה אחת לכל חשבונית — לקוח, שם פרויקט, מספר חשבונית,
+  תאריך הפקה, סכום, תשלום שבוצע, תאריך יעד
+- חישוב אוטומטי של יתרה וסטטוס (שולם / פתוח / שולם חלקית / באיחור)
+  לפי תאריך היום מול תאריך היעד
+- לוח בקרה עם מדדים חיים: סה"כ חיוב, סה"כ שולם, יתרה לגבייה, מספר
+  חשבוניות באיחור, אחוז גבייה
+- סטטוס צבעוני, תובנות עסקיות אוטומטיות
+- ממשק עברית מלאה מימין לשמאל, לשונית התחלה מהירה ומדריך שימוש מלא
 
-HOW IT WORKS
-1. Add one row per invoice as you issue it.
-2. Update "Amount Paid" as payments come in.
-3. Balance and status update automatically — including flipping to
-   "Overdue" the moment today passes the due date, if unpaid.
-4. Dashboard shows your full collections picture at a glance.
+איך זה עובד?
+1. הוסיפו שורה לכל חשבונית שאתם מנפיקים.
+2. עדכנו "תשלום שבוצע" ככל שמתקבלים תשלומים.
+3. היתרה והסטטוס מתעדכנים אוטומטית — כולל מעבר ל"באיחור" ברגע שהתאריך
+   חולף ללא תשלום מלא.
+4. לוח הבקרה מציג את מלוא תמונת הגבייה במבט אחד.
 
-COMPATIBILITY
-Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.
+תאימות
+Excel 2016+‎, Excel Online, Google Sheets. ללא מאקרו.

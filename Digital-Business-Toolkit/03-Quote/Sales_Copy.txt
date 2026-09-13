@@ -1,29 +1,28 @@
-ContractorOS — Smart Quote Builder
-=====================================
+ContractorOS — בניית הצעת מחיר חכמה
+=========================================
 
-HEADLINE
-Send quotes that look like a real business — in minutes.
+כותרת ראשית
+שלחו הצעת מחיר שנראית כמו עסק אמיתי — תוך דקות.
 
-SUBHEADLINE
-Build clean, itemized price quotes with automatic totals, discounts and
-VAT — no more rebuilding a quote from scratch, no more math mistakes.
+כותרת משנה
+בנו הצעת מחיר מסודרת ומחולקת לסעיפים, עם חישוב אוטומטי של סה"כ,
+הנחות ומע"מ — בלי לבנות הצעה מאפס כל פעם ובלי טעויות חישוב.
 
-WHY YOU NEED THIS
-A messy, inconsistent quote loses jobs before you even start. This tool
-gives every client the same clean, professional layout — and does every
-calculation for you.
+למה אתם צריכים את זה
+הצעת מחיר מבולגנת ולא עקבית מפסידה עבודות עוד לפני שהתחלתם. הכלי הזה
+נותן לכל לקוח את אותו מבנה נקי ומקצועי — ועושה בשבילכם כל חישוב.
 
-WHAT YOU GET
-✔ A professional Excel/Google Sheets quote builder
-✔ Automatic line-item, subtotal, VAT, and total calculation
-✔ Quote status tracking: draft / sent / approved / rejected
-✔ A live Dashboard showing your quote pipeline and approval rate
-✔ Hebrew interface, right-to-left, built for Israeli tradespeople
-✔ Works on Excel, Excel Online, and Google Sheets
+מה מקבלים
+✔ בונה הצעות מחיר מקצועי ב-Excel/Google Sheets
+✔ חישוב אוטומטי של סעיפים, סיכומי ביניים, מע"מ וסה"כ
+✔ מעקב סטטוס הצעה: טיוטה / נשלחה / אושרה / נדחתה
+✔ לוח בקרה חי עם צינור ההצעות ואחוז האישור שלכם
+✔ ממשק בעברית, מימין לשמאל, בנוי לבעלי מקצוע בישראל
+✔ עובד ב-Excel, Excel Online ו-Google Sheets
 
-WHO IT'S FOR
-Every trade that quotes jobs: electricians, plumbers, HVAC, painters,
-carpenters, renovation contractors, subcontractors.
+למי זה מתאים
+כל תחום ששולח הצעות מחיר: חשמלאים, אינסטלטורים, מיזוג אוויר, צבעים,
+נגרים, קבלני שיפוצים, קבלני משנה.
 
-CALL TO ACTION
-Get Smart Quote Builder and start sending quotes that win jobs.
+קריאה לפעולה
+קבלו את בניית הצעת מחיר חכמה והתחילו לשלוח הצעות שסוגרות עבודות.

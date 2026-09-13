@@ -1,36 +1,35 @@
-ContractorOS — Project Budget Controller
-==========================================
+ContractorOS — בקרת תקציב פרויקט
+====================================
 
-WHAT IT IS
-An Excel/Google Sheets workbook that tracks planned budget vs. actual
-spend for every project, broken down by category, with automatic
-variance calculation and overrun alerts.
+מה זה?
+קובץ Excel/Google Sheets שעוקב אחרי תקציב מתוכנן מול ביצוע בפועל בכל
+פרויקט, לפי קטגוריות הוצאה, עם חישוב חריגה אוטומטי והתראות.
 
-WHO IT'S FOR
-Contractors and tradespeople running one or several projects at once who
-need to know — in real time, not after the job is finished — whether
-they're on budget.
+למי זה מתאים?
+קבלנים ובעלי מקצוע שמנהלים פרויקט אחד או כמה פרויקטים במקביל, ורוצים
+לדעת בזמן אמת — לא בסוף העבודה — אם הם בתקציב.
 
-THE PROBLEM IT SOLVES
-Budget overruns are usually discovered too late to fix. This tool
-surfaces them the moment actual spend starts drifting from plan, category
-by category (materials, labor, subcontractors, tools, rentals, travel,
-transport, inspections, permits, overhead, other).
+איזו בעיה זה פותר?
+חריגות תקציב שמתגלות רק בסוף הפרויקט, כשכבר אי אפשר לתקן. הכלי הזה
+מזהה חריגה מרגע שההוצאה בפועל מתחילה להתרחק מהתכנון — קטגוריה
+אחר קטגוריה (חומרים, עובדים, קבלני משנה, כלי עבודה, השכרות, נסיעות,
+הובלות, בדיקות, רישוי, תקורה, אחר).
 
-WHAT'S INSIDE
-- Dashboard with live KPIs: total budget, total actual, total overrun,
-  utilization %, and count of categories in overrun
-- Main Workspace: one row per project + category, dropdown category list
-- Automatic Difference and Variance % calculation per row
-- Color-coded status per row (green = on budget, yellow = watch, red = over)
-- Business Insights alerts on the Dashboard
-- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+מה בפנים?
+- שולחן עבודה: שורה אחת לכל פרויקט + קטגוריה, עם רשימה נפתחת
+  לקטגוריות
+- חישוב אוטומטי של הפרש ואחוז חריגה בכל שורה
+- סטטוס צבעוני לכל שורה (ירוק = בתקציב, צהוב = דורש תשומת לב, אדום = חריגה)
+- לוח בקרה עם מדדים חיים: סה"כ תקציב, סה"כ בפועל, חריגה כוללת, אחוז
+  ניצול, ומספר הקטגוריות שחרגו
+- תובנות עסקיות אוטומטיות
+- ממשק עברית מלאה מימין לשמאל, לשונית התחלה מהירה ומדריך שימוש מלא
 
-HOW IT WORKS
-1. For each project, add one row per budget category.
-2. Enter planned Budget and actual Actual spend.
-3. The sheet calculates Difference, Variance %, and Status automatically.
-4. The Dashboard rolls every project up into one budget control view.
+איך זה עובד?
+1. לכל פרויקט, הוסיפו שורה לכל קטגוריית הוצאה.
+2. הזינו תקציב מתוכנן ועדכנו עלות בפועל.
+3. ההפרש, אחוז החריגה והסטטוס מחושבים אוטומטית.
+4. לוח הבקרה מרכז את כל הפרויקטים למבט בקרת תקציב אחד.
 
-COMPATIBILITY
-Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.
+תאימות
+Excel 2016+‎, Excel Online, Google Sheets. ללא מאקרו.

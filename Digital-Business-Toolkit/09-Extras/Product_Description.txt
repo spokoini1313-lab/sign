@@ -1,33 +1,32 @@
-ContractorOS — Change Order & Extras Manager
-================================================
+ContractorOS — ניהול תוספות וחריגים
+=========================================
 
-WHAT IT IS
-A tracker for every "extra" or change request a client makes beyond the
-original quote — from approval through execution, billing, and payment.
+מה זה?
+מעקב אחרי כל "תוספת" או שינוי שהלקוח מבקש מעבר להצעת המחיר המקורית —
+מאישור, דרך ביצוע, חיוב ותשלום.
 
-WHO IT'S FOR
-Any contractor whose clients ask for "one more thing" mid-project — which
-is to say, almost every contractor.
+למי זה מתאים?
+כל קבלן שהלקוחות שלו מבקשים "עוד דבר אחד קטן" באמצע העבודה — כלומר,
+כמעט כל קבלן.
 
-THE PROBLEM IT SOLVES
-Verbal change requests that get done, forgotten, and never billed —
-quietly eating your margin on an otherwise profitable job.
+איזו בעיה זה פותר?
+בקשות שינוי בעל פה שמבוצעות, נשכחות, ולעולם לא מחויבות — שוחקות בשקט
+את הרווח של עבודה שאחרת הייתה רווחית.
 
-WHAT'S INSIDE
-- Main Workspace: one row per extra — date, project, client,
-  description, quantity, unit price, client approval, execution status,
-  billed?, paid?
-- Automatic line total calculation
-- Dashboard with live KPIs: total extras value, approved value, pending
-  approval, completed-but-unbilled value, billed-but-unpaid value
-- Color-coded approval status, Business Insights alerts
-- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+מה בפנים?
+- שולחן עבודה: שורה אחת לכל תוספת — תאריך, שם פרויקט, לקוח, תיאור,
+  כמות, מחיר ליחידה, אישור לקוח, סטטוס ביצוע, חויב?, שולם?
+- חישוב אוטומטי של סה"כ לכל שורה
+- לוח בקרה עם מדדים חיים: סה"כ תוספות, תוספות מאושרות, ממתינות
+  לאישור, הושלם ולא חויב, חויב ולא שולם
+- סטטוס אישור צבעוני, תובנות עסקיות אוטומטיות
+- ממשק עברית מלאה מימין לשמאל, לשונית התחלה מהירה ומדריך שימוש מלא
 
-HOW IT WORKS
-1. Log every change request the moment it's discussed.
-2. Track client approval before work begins.
-3. Update execution, billing, and payment status as the extra progresses.
-4. The Dashboard catches anything completed but not yet billed.
+איך זה עובד?
+1. תעדו כל בקשת שינוי ברגע שהיא עולה.
+2. עקבו אחרי אישור הלקוח לפני שמתחילים לבצע.
+3. עדכנו סטטוס ביצוע, חיוב ותשלום ככל שהתוספת מתקדמת.
+4. לוח הבקרה תופס כל דבר שהושלם אבל עדיין לא חויב.
 
-COMPATIBILITY
-Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.
+תאימות
+Excel 2016+‎, Excel Online, Google Sheets. ללא מאקרו.

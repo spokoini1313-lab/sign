@@ -1,25 +1,25 @@
-FAQ — Smart Quote Builder (ContractorOS)
-==========================================
+שאלות נפוצות — בניית הצעת מחיר חכמה (ContractorOS)
+======================================================
 
-Q: How do I print a single quote for a client?
-A: Filter Main Workspace to one Quote Number, filter Quote Summary to
-the matching row, then use File > Print or File > Export > PDF.
+ש: איך מדפיסים הצעה בודדת ללקוח?
+ת: סננו את שולחן העבודה למספר הצעה אחד, סננו את סיכום הצעות המחיר
+לאותה שורה, ואז הדפיסו או ייצאו PDF (ב-Excel: קובץ > ייצוא > יצירת
+PDF).
 
-Q: Can a quote have as many line items as I want?
-A: Yes — just add more rows to Main Workspace with the same Quote Number.
+ש: כמה סעיפים אפשר להוסיף להצעה?
+ת: כמה שתרצו — פשוט הוסיפו עוד שורות עם אותו מספר הצעה.
 
-Q: Where do I set the VAT rate?
-A: In Quote Summary, per quote — so you can quote different VAT
-treatments if needed (defaults to 17%).
+ש: איפה קובעים את אחוז המע"מ?
+ת: בסיכום הצעות המחיר, לכל הצעה בנפרד — ברירת המחדל 17%.
 
-Q: Does discount apply per line item or the whole quote?
-A: Per line item (Discount % column) — giving you full control over
-which items are discounted.
+ש: ההנחה חלה על כל ההצעה או על סעיף בודד?
+ת: על כל סעיף בנפרד (עמודת הנחה %) — כך יש לכם שליטה מלאה על אילו
+פריטים מקבלים הנחה.
 
-Q: Can I track whether a client approved the quote?
-A: Yes — update the Status column in Quote Summary (draft / sent /
-approved / rejected); the Dashboard tracks your approval rate live.
+ש: אפשר לעקוב אחרי אישור לקוח?
+ת: כן — עדכנו את עמודת הסטטוס בסיכום הצעות המחיר (טיוטה / נשלחה /
+אושרה / נדחתה); לוח הבקרה עוקב אחרי אחוז האישור בזמן אמת.
 
-Q: Does this send the quote to the client automatically?
-A: No — this is a builder and tracker. Export to PDF and send via email
-or WhatsApp as you normally would.
+ש: הכלי שולח את ההצעה ללקוח אוטומטית?
+ת: לא — זהו כלי לבנייה ומעקב. ייצאו ל-PDF ושלחו במייל או בוואטסאפ
+כרגיל.

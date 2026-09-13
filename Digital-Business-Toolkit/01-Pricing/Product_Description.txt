@@ -1,48 +1,48 @@
-ContractorOS — Smart Pricing & Profit Calculator
-==================================================
+ContractorOS — מחשבון תמחור ורווחיות חכם
+==============================================
 
-WHAT IT IS
-A ready-to-use Excel / Google Sheets workbook that calculates the true cost
-and correct price of every job you take on — before you send the quote.
+מה זה?
+קובץ Excel / Google Sheets מוכן לשימוש שמחשב אוטומטית את העלות
+האמיתית של כל עבודה, ואת המחיר הנכון שצריך לגבות כדי להרוויח בפועל —
+לפני שאתם שולחים הצעת מחיר.
 
-WHO IT'S FOR
-Electricians, plumbers, HVAC technicians, painters, carpenters, general
-contractors, renovation crews, aluminum/glazing installers, drywall
-installers, sealing/waterproofing crews, service technicians, and any
-project-based small business owner who prices jobs by hand or by feel.
+למי זה מתאים?
+חשמלאים, אינסטלטורים, טכנאי מיזוג אוויר, צבעים, נגרים, קבלנים,
+צוותי שיפוצים, מתקיני אלומיניום/זיגוג, אנשי גבס, צוותי איטום, טכנאי
+שירות, מתקינים, קבלני משנה, וכל בעל עסק פרויקטלי שמתמחר עבודות בעצמו
+או ב"תחושת בטן".
 
-THE PROBLEM IT SOLVES
-Most tradespeople price jobs using gut feeling or a rough materials
-estimate. Labor, travel, tool wear, overhead, and subcontractor costs get
-forgotten — and by the time the job is done, the "profitable" job barely
-broke even. This tool forces every real cost onto the table before you
-quote, and tells you plainly: profitable, marginal, or unprofitable.
+איזו בעיה זה פותר?
+רוב בעלי המקצוע מתמחרים עבודות לפי הערכה כללית של חומרים ותחושת בטן.
+עלויות עבודה, נסיעות, שחיקת כלים ותקורה נשכחות — ועד שהעבודה מסתיימת,
+עבודה שנראתה "רווחית" בקושי מגיעה לאיזון. הכלי הזה מכריח כל עלות
+אמיתית על השולחן לפני שמתמחרים, ואומר לכם בפשטות: רווחית, גבולית, או
+לא רווחית.
 
-WHAT'S INSIDE
-- Dashboard with live KPIs: total jobs, total profit, average margin,
-  and a breakdown of profitable / marginal / unprofitable jobs
-- Main Workspace: one row per job, only yellow cells need filling in
-- Automatic calculation of labor cost, direct cost, overhead, total cost,
-  minimum price, recommended price (with and without VAT), profit in
-  currency, profit margin %, and markup %
-- Color-coded status per job (green / yellow / red)
-- Business Insights alerts on the Dashboard
-- Full Hebrew RTL interface, Quick Start guide, and full User Guide with FAQ
+מה בפנים?
+- לוח בקרה עם מדדים חיים: סה"כ פרויקטים, סה"כ רווח, רווח ממוצע,
+  וחלוקה לעבודות רווחיות / גבוליות / לא רווחיות
+- שולחן עבודה: שורה אחת לכל עבודה, רק תאים צהובים דורשים מילוי
+- חישוב אוטומטי של עלות עבודה, עלות ישירה, תקורה, עלות כוללת, מחיר
+  מינימום, מחיר מומלץ (עם/בלי מע"מ), רווח בש"ח, רווח % (Margin)
+  ו-Markup %
+- סטטוס צבעוני לכל עבודה (ירוק/צהוב/אדום)
+- אזור תובנות עסקיות בלוח הבקרה
+- ממשק עברית מלאה מימין לשמאל (RTL), לשונית התחלה מהירה, ולשונית
+  מדריך שימוש מלאה עם שאלות נפוצות
 
-HOW IT WORKS
-1. Enter number of workers, hourly cost, hours, materials and all
-   associated expenses (travel, fuel, parking, subcontractors, equipment,
-   tool rental, other).
-2. Set your overhead %, target profit %, and VAT %.
-3. The sheet calculates your true total cost and the minimum and
-   recommended price — automatically, with live formulas.
-4. The Dashboard shows you, at a glance, whether your business as a whole
-   is pricing profitably.
+איך זה עובד?
+1. הזינו מספר עובדים, עלות שעה, שעות, עלות חומרים וכל ההוצאות הנלוות
+   (נסיעות, דלק, חניה, קבלני משנה, ציוד, השכרות, הוצאות נוספות).
+2. קבעו תקורה %, רווח יעד % ומע"מ %.
+3. הגיליון מחשב אוטומטית את העלות האמיתית שלכם ואת מחיר המינימום
+   והמחיר המומלץ — עם נוסחאות חיות.
+4. לוח הבקרה מראה לכם, במבט אחד, אם העסק שלכם כרגע מתמחר ברווח.
 
-COMPATIBILITY
-Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros, no
-add-ins, no installation required.
+תאימות
+Excel 2016+‎ (Windows/Mac), Excel Online, Google Sheets. ללא מאקרו,
+ללא תוספים, ללא צורך בהתקנה.
 
-FORMAT
-.xlsx workbook, 4 supporting sheets (Dashboard / Main Workspace /
-Quick Start / User Guide), fully formula-driven, zero hardcoded results.
+פורמט
+קובץ ‎.xlsx‎, 4 לשוניות (לוח בקרה / שולחן עבודה / התחלה מהירה / מדריך
+שימוש), מבוסס נוסחאות במלואו, ללא תוצאות קבועות.

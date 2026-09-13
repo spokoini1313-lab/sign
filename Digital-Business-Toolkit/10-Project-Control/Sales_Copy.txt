@@ -1,30 +1,28 @@
-ContractorOS — Project Execution Dashboard
-==============================================
+ContractorOS — ניהול ביצוע פרויקט
+=======================================
 
-HEADLINE
-Run every project on schedule, not on memory.
+כותרת ראשית
+הריצו כל פרויקט לפי לוח זמנים, לא לפי זיכרון.
 
-SUBHEADLINE
-Break any project into tasks, assign owners, and let this tool tell you
-automatically what's overdue and how close you are to done.
+כותרת משנה
+פרקו כל פרויקט למשימות, שייכו אחראים, ותנו לכלי הזה לומר לכם
+אוטומטית מה באיחור וכמה קרוב אתם לסיום.
 
-WHY YOU NEED THIS
-A project falls behind one small slipped task at a time — and by the
-time it's obvious, you're already explaining a delay to the client.
-This tool surfaces slippage the day it happens.
+למה אתם צריכים את זה
+פרויקט שמפגר לא קורה בבת אחת — הוא מתחיל במשימה קטנה אחת שהחליקה.
+הכלי הזה מעלה חריגה ביום שבו היא קורה.
 
-WHAT YOU GET
-✔ A professional Excel/Google Sheets task tracker
-✔ Automatic days-remaining and overdue detection
-✔ A live Dashboard: total/completed/in-progress/overdue tasks, completion %
-✔ Color-coded status and urgency
-✔ Hebrew interface, right-to-left, built for Israeli tradespeople
-✔ Works on Excel, Excel Online, and Google Sheets
+מה מקבלים
+✔ מעקב משימות מקצועי ב-Excel/Google Sheets
+✔ זיהוי אוטומטי של ימים שנותרו ואיחור
+✔ לוח בקרה חי: סה"כ/הושלמו/בביצוע/באיחור, אחוז השלמה
+✔ סטטוס ודחיפות צבעוניים
+✔ ממשק בעברית, מימין לשמאל, בנוי לבעלי מקצוע בישראל
+✔ עובד ב-Excel, Excel Online ו-Google Sheets
 
-WHO IT'S FOR
-Any contractor managing multi-stage projects with several people
-responsible for different parts.
+למי זה מתאים
+כל קבלן שמנהל פרויקטים מרובי-שלבים עם כמה אנשים אחראים על חלקים
+שונים.
 
-CALL TO ACTION
-Get Project Execution Dashboard and always know exactly where the
-project stands.
+קריאה לפעולה
+קבלו את ניהול ביצוע הפרויקט ודעו תמיד בדיוק היכן עומד הפרויקט.

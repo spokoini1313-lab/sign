@@ -1,22 +1,22 @@
-FAQ — Change Order & Extras Manager (ContractorOS)
-=====================================================
+שאלות נפוצות — ניהול תוספות וחריגים (ContractorOS)
+======================================================
 
-Q: Should I log a change request before or after client approval?
-A: Log it immediately, then track approval status separately — that way
-nothing gets forgotten while you're waiting on a "yes."
+ש: לתעד בקשת שינוי לפני או אחרי אישור הלקוח?
+ת: תעדו מיד, ואז עקבו אחרי סטטוס האישור בנפרד — כך שום דבר לא נשכח
+בזמן שאתם ממתינים ל"כן".
 
-Q: What's the difference between "Billed" and "Paid"?
-A: Billed = you issued an invoice/payment request for it. Paid = the
-money actually arrived. Both are tracked independently.
+ש: מה ההבדל בין "חויב" ל"שולם"?
+ת: חויב = הוצאתם חשבונית/דרישת תשלום עבורה. שולם = הכסף התקבל
+בפועל. שניהם נעקבים בנפרד.
 
-Q: How does this connect to the original project?
-A: Via the Project ID column — the same ID used across Budget, Quote,
-Collection, Labor, and other ContractorOS products.
+ש: איך זה מתחבר לפרויקט המקורי?
+ת: דרך עמודת "שם פרויקט" — אותו שם המשמש בשאר מוצרי ContractorOS —
+כך שאפשר לראות את כל התוספות של פרויקט מסוים.
 
-Q: What's the most important Dashboard number to check regularly?
-A: "Completed Not Billed" — that's real, finished work sitting unbilled,
-which is the number one way extras quietly cost you money.
+ש: מה המספר הכי חשוב לבדוק בלוח הבקרה?
+ת: "הושלם ולא חויב" — עבודה אמיתית וגמורה שיושבת בלי חיוב, הדרך
+המספר 1 שבה תוספות עולות לכם כסף בשקט.
 
-Q: Can I track rejected change requests too?
-A: Yes — mark Client Approval as "Rejected" to keep a record without it
-counting toward billable totals.
+ש: אפשר לעקוב גם אחרי בקשות שנדחו?
+ת: כן — סמנו אישור לקוח כ"נדחה" כדי לשמור תיעוד בלי שזה ייספר בסכומים
+לחיוב.

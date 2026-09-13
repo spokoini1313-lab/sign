@@ -1,35 +1,34 @@
-ContractorOS — Cash Flow Planner
-===================================
+ContractorOS — תכנון תזרים מזומנים
+=======================================
 
-WHAT IT IS
-A 12-month cash flow planner that tracks opening balance, expected and
-actual income/expenses, monthly net, and closing balance — with a live
-chart and automatic cash-runway calculation.
+מה זה?
+מתכנן תזרים מזומנים ל-12 חודשים, עם יתרת פתיחה, הכנסות והוצאות
+צפויות ובפועל, נטו חודשי, יתרת סגירה, גרף מגמה, וחישוב אוטומטי של
+טווח החזקת מזומן.
 
-WHO IT'S FOR
-Contractors and small business owners who need to see, months in
-advance, whether they're heading toward a cash crunch.
+למי זה מתאים?
+קבלנים ובעלי עסק קטן שצריכים לראות, חודשים מראש, האם הם מתקרבים
+למחסור במזומן.
 
-THE PROBLEM IT SOLVES
-Cash flow surprises — discovering there isn't enough cash to cover an
-expense only when the bill is due, instead of months earlier when there
-was still time to act.
+איזו בעיה זה פותר?
+הפתעות תזרימיות — לגלות שאין מספיק מזומן רק כשכבר צריך לשלם, במקום
+לראות את המגמה חודשים מראש כשעוד יש זמן לפעול.
 
-WHAT'S INSIDE
-- Main Workspace: pre-built 12-month table, opening balance carries
-  forward automatically month to month
-- Automatic net and closing-balance calculation
-- Monthly balance trend chart
-- Dashboard with live KPIs: current closing balance, average monthly
-  net, months in deficit, lowest balance point, Cash Runway (months)
-- Color-coded status, Business Insights alerts
-- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+מה בפנים?
+- שולחן עבודה: טבלת 12 חודשים מוכנה מראש, יתרת פתיחה ממשיכה אוטומטית
+  מחודש לחודש
+- חישוב אוטומטי של נטו ויתרת סגירה
+- גרף מגמת יתרה חודשית
+- לוח בקרה עם מדדים חיים: יתרת סגירה נוכחית, ממוצע נטו חודשי, מספר
+  חודשים בגירעון, היתרה הנמוכה ביותר, וטווח החזקת מזומן (בחודשים)
+- סטטוס צבעוני, תובנות עסקיות אוטומטיות
+- ממשק עברית מלאה מימין לשמאל, לשונית התחלה מהירה ומדריך שימוש מלא
 
-HOW IT WORKS
-1. Enter your opening balance once, for month 1.
-2. Fill in expected and actual income/expenses for each month.
-3. Net and closing balance calculate and carry forward automatically.
-4. The Dashboard tells you your runway and flags any month at risk.
+איך זה עובד?
+1. הזינו יתרת פתיחה לחודש הראשון בלבד.
+2. מלאו הכנסות והוצאות צפויות ובפועל לכל חודש.
+3. נטו ויתרת סגירה מחושבים אוטומטית, וממשיכים אוטומטית לחודש הבא.
+4. לוח הבקרה מראה לכם כמה זמן המזומן שלכם יחזיק בקצב הנוכחי.
 
-COMPATIBILITY
-Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.
+תאימות
+Excel 2016+‎, Excel Online, Google Sheets. ללא מאקרו.

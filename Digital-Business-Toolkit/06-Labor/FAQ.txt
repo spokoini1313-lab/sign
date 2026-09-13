@@ -1,23 +1,21 @@
-FAQ — Employee & Labor Cost Tracker (ContractorOS)
-=====================================================
+שאלות נפוצות — מעקב שעות ועלות עובדים (ContractorOS)
+========================================================
 
-Q: How is overtime calculated?
-A: Automatically — any hours beyond 8 in a single row (one work day for
-one employee) count as overtime, multiplied by your overtime multiplier
-(default 1.5x).
+ש: איך שעות נוספות מחושבות?
+ת: אוטומטית — כל שעה מעבר ל-8 שעות עבודה באותה שורה (יום עבודה אחד
+לעובד אחד) נספרת כשעה נוספת, ומוכפלת במקדם שהגדרתם (בד"כ 1.5).
 
-Q: What if an employee worked on two projects in one day?
-A: Add two separate rows for that day, splitting the actual hours
-between the two Project IDs.
+ש: מה אם עובד עבד בשני פרויקטים באותו יום?
+ת: הוסיפו שתי שורות נפרדות לאותו יום, וחלקו את השעות בפועל בין שני
+שמות הפרויקטים.
 
-Q: Can I see labor cost per project?
-A: Yes — filter or SUMIF the "Daily Cost" column by Project ID. Product
-11 (Business Control Center) rolls this up automatically across all
-modules.
+ש: אפשר לראות עלות עבודה לפי פרויקט?
+ת: כן — סננו או השתמשו ב-SUMIF על עמודת "עלות יומית" לפי שם פרויקט.
+מוצר 11 (מערכת ניהול מרכזית) מרכז את זה אוטומטית על פני כל המוצרים.
 
-Q: What if the standard 8-hour threshold doesn't match my business?
-A: Edit the "8" in the Regular/Overtime formulas to your own threshold.
+ש: מה אם סף 8 שעות לא מתאים לעסק שלי?
+ת: פשוט ערכו את ה-"8" בתוך נוסחאות השעות הרגילות/נוספות למספר שמתאים
+לכם.
 
-Q: Does this handle payroll or tax deductions?
-A: No — this is a cost-tracking tool for project profitability, not a
-payroll system.
+ש: הכלי הזה מטפל בשכר או ניכויי מס?
+ת: לא — זהו כלי למעקב עלות לצורך רווחיות פרויקט, לא מערכת שכר.

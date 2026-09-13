@@ -1,30 +1,29 @@
-ContractorOS — Payment & Collection Manager
-==============================================
+ContractorOS — ניהול גבייה ותשלומים
+=========================================
 
-HEADLINE
-Stop losing track of who owes you money.
+כותרת ראשית
+תפסיקו לאבד עקבות אחרי מי שחייב לכם כסף.
 
-SUBHEADLINE
-Every invoice, every payment, every overdue balance — tracked
-automatically, with a status that flips to "overdue" the moment a
-client misses their due date.
+כותרת משנה
+כל חשבונית, כל תשלום, כל יתרה באיחור — נעקבים אוטומטית, עם סטטוס
+שעובר ל"באיחור" ברגע שלקוח מפספס את תאריך היעד.
 
-WHY YOU NEED THIS
-Cash flow problems rarely come from one big loss — they come from a dozen
-small unpaid balances nobody was watching closely enough.
+למה אתם צריכים את זה
+בעיות תזרים כמעט אף פעם לא מגיעות מהפסד גדול אחד — הן מגיעות מתריסר
+יתרות קטנות שאף אחד לא עקב אחריהן מספיק מקרוב.
 
-WHAT YOU GET
-✔ A professional Excel/Google Sheets collections tracker
-✔ Automatic balance and overdue-status calculation
-✔ A live Dashboard: total billed, total paid, outstanding, collection rate
-✔ Color-coded status: paid / open / partial / overdue
-✔ Hebrew interface, right-to-left, built for Israeli tradespeople
-✔ Works on Excel, Excel Online, and Google Sheets
+מה מקבלים
+✔ מעקב גבייה מקצועי ב-Excel/Google Sheets
+✔ חישוב אוטומטי של יתרה וסטטוס איחור
+✔ לוח בקרה חי: סה"כ חויב, סה"כ שולם, יתרה פתוחה, אחוז גבייה
+✔ סטטוס צבעוני: שולם / פתוח / שולם חלקית / באיחור
+✔ ממשק בעברית, מימין לשמאל, בנוי לבעלי מקצוע בישראל
+✔ עובד ב-Excel, Excel Online ו-Google Sheets
 
-WHO IT'S FOR
-Every trade that bills clients: electricians, plumbers, HVAC, painters,
-carpenters, renovation contractors.
+למי זה מתאים
+כל תחום שמחייב לקוחות: חשמלאים, אינסטלטורים, מיזוג אוויר, צבעים,
+נגרים, קבלני שיפוצים.
 
-CALL TO ACTION
-Get Payment & Collection Manager and never lose track of an unpaid
-invoice again.
+קריאה לפעולה
+קבלו את ניהול הגבייה והתשלומים ולעולם אל תאבדו עקבות אחרי חשבונית
+שלא שולמה.

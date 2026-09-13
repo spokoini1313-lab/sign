@@ -1,4 +1,4 @@
-QA Notes — Smart Pricing & Profit Calculator (Product 1)
+QA Notes — מחשבון תמחור ורווחיות (Product 1)
 ==========================================================
 
 METHOD
@@ -9,31 +9,54 @@ workbook and even a plain .txt file — "Error: source file could not be
 loaded" on every attempt, with default and custom profiles alike). This is
 an environment limitation, not specific to this workbook.
 
-In its place, the workbook was verified manually:
+In its place, every workbook was verified manually:
 - Every formula re-read via openpyxl and checked cell-by-cell against the
   intended logic (labor cost → direct cost → overhead → total cost →
   minimum/recommended price → profit/margin/markup → status).
-- Column-letter-to-index mapping double-checked (S=19 … AD=30) against
-  every formula reference — no off-by-one column errors.
-- Header row (31 columns) confirmed to align 1:1 with the 31 data/formula
+- Column-letter-to-index mapping double-checked against every formula
+  reference after the project-name restructure (see below) — no
+  off-by-one column errors.
+- Header row (30 columns) confirmed to align 1:1 with the 30 data/formula
   columns.
-- Only pre-2007 Excel functions used (SUM, SUMIF-family avoided in favor
-  of plain arithmetic, COUNTA, COUNTIF, AVERAGE, IFERROR, CEILING, IF,
-  string concatenation with &) — no XLOOKUP/FILTER/UNIQUE/SEQUENCE and no
-  post-2007 functions requiring an `_xlfn.` prefix, per the compatibility
-  guidance for this build.
+- Only pre-2007 Excel functions used (SUM, COUNTA, COUNTIF, AVERAGE,
+  IFERROR, CEILING, IF, string concatenation with &) — no XLOOKUP/FILTER/
+  UNIQUE/SEQUENCE. Product 10 uses MINIFS with the required `_xlfn.`
+  prefix per the compatibility guidance for this build.
 - No hardcoded results — every calculated cell is a live formula.
-- Dropdowns: this sheet's inputs are all numeric/free-text by nature (no
-  fixed-value fields), so no dropdown lists were needed here; Products 2+
-  (status fields, categories, lead sources, etc.) will use data validation
-  dropdowns.
 - Conditional formatting verified: green/yellow/red rules target the
-  Status column (AD) and match the exact three status strings the
-  formula can produce.
-- RTL confirmed on all 4 sheets (`sheet_view.rightToLeft = True`).
+  Status column and match the exact status strings the formula can
+  produce.
+- RTL confirmed on every sheet in every product.
+
+REVISION — עברית מלאה + קישור לפי שם פרויקט
+בעקבות בקשת המשתמש, כל 10 המוצרים עודכנו:
+- כל שמות הלשוניות בעברית: "לוח בקרה", "שולחן עבודה", "התחלה מהירה",
+  "מדריך שימוש" (ובמוצר 3 גם "סיכום הצעות מחיר") — אין יותר שמות
+  לשוניות באנגלית באף אחד מ-10 המוצרים.
+- כל הכותרות, ה-Dashboard, ההסברים וה-FAQ תורגמו לעברית מלאה (שמות
+  מותגים/פונקציות אקסל כמו Excel, Google Sheets, SUMIF, Margin/Markup
+  נשארו כפי שהם — אלו מונחים מקצועיים/שמות מוצר סטנדרטיים שלא מתורגמים
+  גם במסמכים עסקיים בעברית).
+- מפתח הקישור בין הטבלאות שונה ממספר פרויקט (PRJ-0001 וכו') לשם
+  פרויקט בפועל (למשל "שיפוץ מטבח - וילה כהן"). זה חייב שינוי מבני
+  במוצרים הבאים:
+  - מוצר 1 (תמחור): עמודות ה-ID והשם מוזגו לעמודה אחת "שם פרויקט" —
+    כל הטבלה (30 עמודות) והנוסחאות בה נבנו מחדש עם המיפוי החדש
+    ואומתו שורה-שורה.
+  - מוצר 2 (תקציב): הוסרה עמודת "מס' פרויקט", כל הנוסחאות (כולל
+    Dashboard) הותאמו לעמודות המוזזות ואומתו.
+  - מוצר 6 (שעות עבודה) ומוצר 9 (תוספות): ערכי הדוגמה הוחלפו מ-
+    PRJ-XXXX לשמות הפרויקטים בפועל.
+  - מוצר 10 (ביצוע פרויקט): נוספה עמודת "שם פרויקט" חדשה (לא הייתה
+    קיימת קודם), עם הזזת כל שאר העמודות ועדכון הנוסחאות.
+  - מוצרים 3 ו-4 כבר השתמשו בשם פרויקט חופשי (לא במספר) — רק שם
+    העמודה עודכן ל"שם פרויקט" לעקביות.
+- אומת בבדיקה חוצת-מוצרים: שמות הפרויקטים בדוגמאות (5 פרויקטים) זהים
+  אות-באות בכל המוצרים (01, 02, 04, 06, 09, 10), כך שכאשר מוצר 11
+  ייבנה, ה-SUMIF/COUNTIF לפי שם פרויקט יעבדו נכון בין המוצרים.
 
 KNOWN LIMITATION / FOLLOW-UP
-Because automatic recalculation could not run, the file's cached formula
+Because automatic recalculation could not run, each file's cached formula
 values are blank until first opened in Excel or Google Sheets — this is
 expected openpyxl behavior and resolves itself the moment the file is
 opened (both apps recalculate on load automatically). If a working
@@ -42,4 +65,5 @@ follow-up pass should run `scripts/recalc.py` against every product's
 workbook as a final automated confirmation before the ZIP is packaged
 (tracked in Phase 11 — Full QA).
 
-RESULT: PASS (manual review), automated recalculation PENDING environment fix.
+RESULT: PASS (manual review, incl. cross-product name-key verification),
+automated recalculation PENDING environment fix.

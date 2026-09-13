@@ -11,17 +11,35 @@ Completed so far:
 - [x] Phase 2 — Brand (`Brand/Brand_Kit.md`) → working brand name **ContractorOS**
 - [x] Phase 3 — Product 1: Smart Pricing & Profit Calculator (`01-Pricing/`)
 - [x] Phase 4 — QA Product 1 (manual review; automated LibreOffice recalc unavailable in this sandbox — see `01-Pricing/QA_Notes.txt`)
-- [x] Phase 5 — Products 2–10, each with Dashboard/Main Workspace/Quick Start/User Guide + full sales/marketing package:
-  - `02-Budget` Project Budget Controller
-  - `03-Quote` Smart Quote Builder
-  - `04-Collection` Payment & Collection Manager
-  - `05-CashFlow` Cash Flow Planner
-  - `06-Labor` Employee & Labor Cost Tracker
-  - `07-CRM` Contractor CRM
-  - `08-Inventory` Inventory & Materials Manager
-  - `09-Extras` Change Order & Extras Manager
-  - `10-Project-Control` Project Execution Dashboard
-- [ ] Phase 6 — Product 11: Business Control Center
+- [x] Phase 5 — Products 2–10, each with לוח בקרה/שולחן עבודה/התחלה מהירה/מדריך שימוש + full sales/marketing package:
+  - `02-Budget` בקרת תקציב פרויקט
+  - `03-Quote` בניית הצעת מחיר חכמה
+  - `04-Collection` ניהול גבייה ותשלומים
+  - `05-CashFlow` תכנון תזרים מזומנים
+  - `06-Labor` מעקב שעות ועלות עובדים
+  - `07-CRM` ניהול לקוחות ולידים
+  - `08-Inventory` ניהול מלאי וחומרים
+  - `09-Extras` ניהול תוספות וחריגים
+  - `10-Project-Control` ניהול ביצוע פרויקט
+- [x] **Hebrew pass (post-Phase-5 revision)** — all 10 products fully
+  reworked per user request:
+  - Every sheet tab, title, KPI label, alert, guide and FAQ text is now
+    Hebrew (brand name **ContractorOS**, Excel/Google Sheets product
+    names, and standard finance terms like Margin/Markup kept as-is —
+    same convention used in Hebrew business documents generally).
+  - Cross-product linking key changed from a numeric Project ID
+    (`PRJ-0001`) to the **project's name** (e.g. `שיפוץ מטבח - וילה כהן`),
+    typed identically across every product it appears in. This required
+    a structural rebuild of Products 1, 2, 6, 9, and 10 (column layouts
+    shifted, formulas re-derived and re-verified) — see
+    `01-Pricing/QA_Notes.txt` for the full detail and the cross-product
+    verification that confirms every product's example project names
+    match byte-for-byte.
+  - All 4 supporting docs per product (Product_Description, Sales_Copy,
+    FAQ, Social_Media_Copy) rewritten in Hebrew; every README.html/
+    Quick_Start.html title and tagline translated.
+- [ ] Phase 6 — Product 11: Business Control Center (must key off שם
+  פרויקט like the rest of the line)
 - [ ] Phase 7 — Documentation pass
 - [ ] Phase 8 — Landing Page
 - [ ] Phase 9 — Marketing Assets
