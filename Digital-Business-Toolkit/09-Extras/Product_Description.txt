@@ -1,0 +1,33 @@
+ContractorOS — Change Order & Extras Manager
+================================================
+
+WHAT IT IS
+A tracker for every "extra" or change request a client makes beyond the
+original quote — from approval through execution, billing, and payment.
+
+WHO IT'S FOR
+Any contractor whose clients ask for "one more thing" mid-project — which
+is to say, almost every contractor.
+
+THE PROBLEM IT SOLVES
+Verbal change requests that get done, forgotten, and never billed —
+quietly eating your margin on an otherwise profitable job.
+
+WHAT'S INSIDE
+- Main Workspace: one row per extra — date, project, client,
+  description, quantity, unit price, client approval, execution status,
+  billed?, paid?
+- Automatic line total calculation
+- Dashboard with live KPIs: total extras value, approved value, pending
+  approval, completed-but-unbilled value, billed-but-unpaid value
+- Color-coded approval status, Business Insights alerts
+- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+
+HOW IT WORKS
+1. Log every change request the moment it's discussed.
+2. Track client approval before work begins.
+3. Update execution, billing, and payment status as the extra progresses.
+4. The Dashboard catches anything completed but not yet billed.
+
+COMPATIBILITY
+Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.

@@ -1,0 +1,22 @@
+FAQ — Change Order & Extras Manager (ContractorOS)
+=====================================================
+
+Q: Should I log a change request before or after client approval?
+A: Log it immediately, then track approval status separately — that way
+nothing gets forgotten while you're waiting on a "yes."
+
+Q: What's the difference between "Billed" and "Paid"?
+A: Billed = you issued an invoice/payment request for it. Paid = the
+money actually arrived. Both are tracked independently.
+
+Q: How does this connect to the original project?
+A: Via the Project ID column — the same ID used across Budget, Quote,
+Collection, Labor, and other ContractorOS products.
+
+Q: What's the most important Dashboard number to check regularly?
+A: "Completed Not Billed" — that's real, finished work sitting unbilled,
+which is the number one way extras quietly cost you money.
+
+Q: Can I track rejected change requests too?
+A: Yes — mark Client Approval as "Rejected" to keep a record without it
+counting toward billable totals.

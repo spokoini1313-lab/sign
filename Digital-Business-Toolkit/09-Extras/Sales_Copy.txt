@@ -1,0 +1,28 @@
+ContractorOS — Change Order & Extras Manager
+================================================
+
+HEADLINE
+Get paid for every "can you also do this?"
+
+SUBHEADLINE
+Track every client extra from request to payment — so completed work
+never quietly goes unbilled.
+
+WHY YOU NEED THIS
+Verbal add-ons are where margin disappears. A "sure, no problem" during
+a site visit is easy to forget by invoice time — this tool makes sure
+it doesn't.
+
+WHAT YOU GET
+✔ A professional Excel/Google Sheets extras tracker
+✔ Automatic totals per change order
+✔ A live Dashboard: approved value, pending approval, unbilled completed work
+✔ Color-coded approval status
+✔ Hebrew interface, right-to-left, built for Israeli tradespeople
+✔ Works on Excel, Excel Online, and Google Sheets
+
+WHO IT'S FOR
+Any contractor who handles client-requested changes mid-project.
+
+CALL TO ACTION
+Get Change Order & Extras Manager and stop leaving completed work unbilled.
