@@ -655,37 +655,53 @@
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
-    const data = new FormData(form);
-    const name = data.get('name') || '';
-    const phone = data.get('phone') || '';
-    const email = data.get('email') || '';
-    const field = data.get('field') || '';
-    const headcount = data.get('headcount') || '';
+    e.stopPropagation();
 
-    const detailsText =
-      'ליד חדש מדף הנחיתה של JobMargin\n' +
-      'שם: ' + name + '\n' +
-      'טלפון: ' + phone + '\n' +
-      'אימייל: ' + email + '\n' +
-      'תחום העסק: ' + field + '\n' +
-      'מספר עובדים: ' + headcount;
+    try{
+      const data = new FormData(form);
+      const name = data.get('name') || '';
+      const phone = data.get('phone') || '';
+      const email = data.get('email') || '';
+      const field = data.get('field') || '';
+      const headcount = data.get('headcount') || '';
 
-    const subject = 'בקשת פרטים על חבילת JobMargin';
+      const detailsText =
+        'ליד חדש מדף הנחיתה של JobMargin\n' +
+        'שם: ' + name + '\n' +
+        'טלפון: ' + phone + '\n' +
+        'אימייל: ' + email + '\n' +
+        'תחום העסק: ' + field + '\n' +
+        'מספר עובדים: ' + headcount;
 
-    // primary channel: mailto, opens pre-filled and addressed to the owner
-    const mailto = 'mailto:' + encodeURIComponent(SALES_EMAIL) +
-      '?subject=' + encodeURIComponent(subject) +
-      '&body=' + encodeURIComponent(detailsText);
-    window.location.href = mailto;
+      const subject = 'בקשת פרטים על חבילת JobMargin';
 
-    // backup channels, shown immediately so the lead is never lost if the
-    // visitor's device has no mail app configured
-    lcWhatsapp.href = 'https://wa.me/' + SALES_WHATSAPP + '?text=' + encodeURIComponent(detailsText);
-    lcDetails.textContent = detailsText;
-    confirmBox.hidden = false;
-    confirmBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // Always show the backup panel first — this is guaranteed to work
+      // regardless of whether the visitor has a mail app configured, so a
+      // lead is never lost even if the mailto attempt below does nothing.
+      lcWhatsapp.href = 'https://wa.me/' + SALES_WHATSAPP + '?text=' + encodeURIComponent(detailsText);
+      lcDetails.textContent = detailsText;
+      confirmBox.hidden = false;
+      status.textContent = 'הפנייה נקלטה. בחרו למטה איך לשלוח אותה.';
+      confirmBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-    status.textContent = 'נפתחת תוכנת המייל שלכם עם הפנייה מוכנה לשליחה.';
+      // Best-effort: try to open the visitor's mail app too, via a
+      // throwaway link click rather than window.location.href — setting
+      // location.href directly is a real page navigation, and on a device
+      // with no mail app configured that failed navigation can reload this
+      // very page and wipe the form. A clicked <a> avoids that entirely.
+      const mailto = 'mailto:' + encodeURIComponent(SALES_EMAIL) +
+        '?subject=' + encodeURIComponent(subject) +
+        '&body=' + encodeURIComponent(detailsText);
+      const mailLink = document.createElement('a');
+      mailLink.href = mailto;
+      mailLink.style.display = 'none';
+      document.body.appendChild(mailLink);
+      mailLink.click();
+      document.body.removeChild(mailLink);
+    } catch (err){
+      // Even if something above failed, the confirm panel/WhatsApp/copy
+      // path is independent and should still be visible — nothing to do.
+    }
   });
 
   lcCopy.addEventListener('click', async function(){
