@@ -1,0 +1,35 @@
+ContractorOS — Cash Flow Planner
+===================================
+
+WHAT IT IS
+A 12-month cash flow planner that tracks opening balance, expected and
+actual income/expenses, monthly net, and closing balance — with a live
+chart and automatic cash-runway calculation.
+
+WHO IT'S FOR
+Contractors and small business owners who need to see, months in
+advance, whether they're heading toward a cash crunch.
+
+THE PROBLEM IT SOLVES
+Cash flow surprises — discovering there isn't enough cash to cover an
+expense only when the bill is due, instead of months earlier when there
+was still time to act.
+
+WHAT'S INSIDE
+- Main Workspace: pre-built 12-month table, opening balance carries
+  forward automatically month to month
+- Automatic net and closing-balance calculation
+- Monthly balance trend chart
+- Dashboard with live KPIs: current closing balance, average monthly
+  net, months in deficit, lowest balance point, Cash Runway (months)
+- Color-coded status, Business Insights alerts
+- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+
+HOW IT WORKS
+1. Enter your opening balance once, for month 1.
+2. Fill in expected and actual income/expenses for each month.
+3. Net and closing balance calculate and carry forward automatically.
+4. The Dashboard tells you your runway and flags any month at risk.
+
+COMPATIBILITY
+Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.

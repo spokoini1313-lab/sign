@@ -1,0 +1,29 @@
+ContractorOS — Cash Flow Planner
+===================================
+
+HEADLINE
+See a cash crunch coming — months before it happens.
+
+SUBHEADLINE
+A 12-month cash flow planner that carries your balance forward
+automatically and tells you exactly how many months your cash will last.
+
+WHY YOU NEED THIS
+Most cash flow problems aren't a mystery in hindsight — they were
+visible months ahead, if anyone had been tracking the trend. This tool
+makes that trend impossible to miss.
+
+WHAT YOU GET
+✔ A pre-built 12-month cash flow table — just fill in the numbers
+✔ Automatic balance carry-forward, net, and closing balance
+✔ A live monthly balance trend chart
+✔ Cash Runway calculation — how many months you can sustain your burn rate
+✔ Hebrew interface, right-to-left, built for Israeli tradespeople
+✔ Works on Excel, Excel Online, and Google Sheets
+
+WHO IT'S FOR
+Any project-based small business owner who wants to plan cash, not just
+react to it.
+
+CALL TO ACTION
+Get Cash Flow Planner and always know where your cash stands.

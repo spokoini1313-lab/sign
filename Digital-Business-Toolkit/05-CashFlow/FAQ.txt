@@ -1,0 +1,22 @@
+FAQ — Cash Flow Planner (ContractorOS)
+=========================================
+
+Q: Do I need to enter opening balance every month?
+A: No — only for the first month. Every following month pulls its
+opening balance automatically from the prior month's closing balance.
+
+Q: What is "Cash Runway"?
+A: How many months your current closing balance would last if your
+average monthly net (income minus expenses) continued at its current
+pace. Shows "∞" when your average net is positive or breakeven.
+
+Q: Can I plan more than one year?
+A: Yes — copy the 12-month block below the existing one; the new
+January's opening balance should reference the prior December's closing.
+
+Q: What if I don't have "actual" numbers yet for future months?
+A: Leave them at 0 for now — the sheet will simply show 0 net for that
+month until you update it.
+
+Q: Does the chart update automatically?
+A: Yes — it's linked directly to the closing balance column.
