@@ -1,0 +1,45 @@
+QA Notes — Smart Pricing & Profit Calculator (Product 1)
+==========================================================
+
+METHOD
+Automated LibreOffice recalculation (the standard verification step for
+this build) could not run in this session's sandbox: `soffice --convert-to`
+fails to load ANY source file here (confirmed with a trivial 3-cell test
+workbook and even a plain .txt file — "Error: source file could not be
+loaded" on every attempt, with default and custom profiles alike). This is
+an environment limitation, not specific to this workbook.
+
+In its place, the workbook was verified manually:
+- Every formula re-read via openpyxl and checked cell-by-cell against the
+  intended logic (labor cost → direct cost → overhead → total cost →
+  minimum/recommended price → profit/margin/markup → status).
+- Column-letter-to-index mapping double-checked (S=19 … AD=30) against
+  every formula reference — no off-by-one column errors.
+- Header row (31 columns) confirmed to align 1:1 with the 31 data/formula
+  columns.
+- Only pre-2007 Excel functions used (SUM, SUMIF-family avoided in favor
+  of plain arithmetic, COUNTA, COUNTIF, AVERAGE, IFERROR, CEILING, IF,
+  string concatenation with &) — no XLOOKUP/FILTER/UNIQUE/SEQUENCE and no
+  post-2007 functions requiring an `_xlfn.` prefix, per the compatibility
+  guidance for this build.
+- No hardcoded results — every calculated cell is a live formula.
+- Dropdowns: this sheet's inputs are all numeric/free-text by nature (no
+  fixed-value fields), so no dropdown lists were needed here; Products 2+
+  (status fields, categories, lead sources, etc.) will use data validation
+  dropdowns.
+- Conditional formatting verified: green/yellow/red rules target the
+  Status column (AD) and match the exact three status strings the
+  formula can produce.
+- RTL confirmed on all 4 sheets (`sheet_view.rightToLeft = True`).
+
+KNOWN LIMITATION / FOLLOW-UP
+Because automatic recalculation could not run, the file's cached formula
+values are blank until first opened in Excel or Google Sheets — this is
+expected openpyxl behavior and resolves itself the moment the file is
+opened (both apps recalculate on load automatically). If a working
+LibreOffice/soffice environment becomes available later in this build, a
+follow-up pass should run `scripts/recalc.py` against every product's
+workbook as a final automated confirmation before the ZIP is packaged
+(tracked in Phase 11 — Full QA).
+
+RESULT: PASS (manual review), automated recalculation PENDING environment fix.

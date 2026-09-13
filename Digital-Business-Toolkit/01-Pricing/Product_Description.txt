@@ -1,0 +1,48 @@
+ContractorOS — Smart Pricing & Profit Calculator
+==================================================
+
+WHAT IT IS
+A ready-to-use Excel / Google Sheets workbook that calculates the true cost
+and correct price of every job you take on — before you send the quote.
+
+WHO IT'S FOR
+Electricians, plumbers, HVAC technicians, painters, carpenters, general
+contractors, renovation crews, aluminum/glazing installers, drywall
+installers, sealing/waterproofing crews, service technicians, and any
+project-based small business owner who prices jobs by hand or by feel.
+
+THE PROBLEM IT SOLVES
+Most tradespeople price jobs using gut feeling or a rough materials
+estimate. Labor, travel, tool wear, overhead, and subcontractor costs get
+forgotten — and by the time the job is done, the "profitable" job barely
+broke even. This tool forces every real cost onto the table before you
+quote, and tells you plainly: profitable, marginal, or unprofitable.
+
+WHAT'S INSIDE
+- Dashboard with live KPIs: total jobs, total profit, average margin,
+  and a breakdown of profitable / marginal / unprofitable jobs
+- Main Workspace: one row per job, only yellow cells need filling in
+- Automatic calculation of labor cost, direct cost, overhead, total cost,
+  minimum price, recommended price (with and without VAT), profit in
+  currency, profit margin %, and markup %
+- Color-coded status per job (green / yellow / red)
+- Business Insights alerts on the Dashboard
+- Full Hebrew RTL interface, Quick Start guide, and full User Guide with FAQ
+
+HOW IT WORKS
+1. Enter number of workers, hourly cost, hours, materials and all
+   associated expenses (travel, fuel, parking, subcontractors, equipment,
+   tool rental, other).
+2. Set your overhead %, target profit %, and VAT %.
+3. The sheet calculates your true total cost and the minimum and
+   recommended price — automatically, with live formulas.
+4. The Dashboard shows you, at a glance, whether your business as a whole
+   is pricing profitably.
+
+COMPATIBILITY
+Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros, no
+add-ins, no installation required.
+
+FORMAT
+.xlsx workbook, 4 supporting sheets (Dashboard / Main Workspace /
+Quick Start / User Guide), fully formula-driven, zero hardcoded results.
