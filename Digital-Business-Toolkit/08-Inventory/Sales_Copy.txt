@@ -1,0 +1,28 @@
+ContractorOS — Inventory & Materials Manager
+================================================
+
+HEADLINE
+Never run out of material mid-job again.
+
+SUBHEADLINE
+Track every item's stock level, value, and reorder point automatically
+— and get flagged the moment something drops below minimum.
+
+WHY YOU NEED THIS
+Running out of a critical material on site costs you a day — or forces
+an expensive emergency purchase. This tool tells you before it happens.
+
+WHAT YOU GET
+✔ A professional Excel/Google Sheets inventory tracker
+✔ Automatic stock value and reorder-status calculation
+✔ A live Dashboard: total inventory value, low stock, out of stock
+✔ Color-coded status: OK / low stock / out of stock
+✔ Hebrew interface, right-to-left, built for Israeli tradespeople
+✔ Works on Excel, Excel Online, and Google Sheets
+
+WHO IT'S FOR
+Any contractor or tradesperson who keeps materials or tools in stock.
+
+CALL TO ACTION
+Get Inventory & Materials Manager and stop losing work days to a
+material shortage.

@@ -1,0 +1,34 @@
+ContractorOS — Inventory & Materials Manager
+================================================
+
+WHAT IT IS
+An Excel/Google Sheets inventory tracker for materials and tools, with
+automatic stock value and low-stock/out-of-stock alerts.
+
+WHO IT'S FOR
+Contractors and tradespeople who keep a materials or tool stock — in a
+warehouse, a van, or a storage room — and don't want to discover a
+shortage mid-job.
+
+THE PROBLEM IT SOLVES
+Arriving on site and finding a critical material has run out — a full
+lost work day, or an emergency supplier run at a markup.
+
+WHAT'S INSIDE
+- Main Workspace: one row per item — SKU, name, category, unit,
+  quantity, minimum stock, unit cost, supplier
+- Automatic stock value calculation (quantity × unit cost)
+- Automatic status: OK / Low Stock - Reorder / Out of Stock
+- Dashboard with live KPIs: total inventory value, item count, low-stock
+  count, out-of-stock count, highest-value item
+- Color-coded status, Business Insights alerts
+- Full Hebrew RTL interface, Quick Start guide, full User Guide with FAQ
+
+HOW IT WORKS
+1. Log every stock item with current quantity and your minimum
+   threshold.
+2. Stock value and status calculate automatically.
+3. The Dashboard flags anything at or below minimum, or fully out.
+
+COMPATIBILITY
+Excel 2016+ (Windows/Mac), Excel Online, Google Sheets. No macros required.

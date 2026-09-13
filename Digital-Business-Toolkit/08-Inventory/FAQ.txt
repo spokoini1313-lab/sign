@@ -1,0 +1,23 @@
+FAQ — Inventory & Materials Manager (ContractorOS)
+=====================================================
+
+Q: How is "Low Stock" determined?
+A: Automatically — when quantity is at or below the minimum stock level
+you set for that item.
+
+Q: What if quantity hits zero?
+A: The status automatically switches to "Out of Stock."
+
+Q: Can I organize items by category?
+A: Yes — pick from a built-in category dropdown (electrical, plumbing,
+HVAC, drywall, paint, aluminum, carpentry, sealing, tools, other), or
+sort/filter by category.
+
+Q: How do I update quantity after using or receiving stock?
+A: Simply edit the Quantity cell — stock value and status recalculate
+automatically.
+
+Q: Does this track which project used which materials?
+A: Not directly — this product tracks overall stock levels. For
+per-project material cost, log the purchase in Project Budget Controller
+(Product 2) under the "Materials" category.
