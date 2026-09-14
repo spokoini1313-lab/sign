@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 160" width="560" height="160">
+  <defs>
+    <style>
+      .wordmark{ font-family:'Heebo','Segoe UI',Arial,sans-serif; font-weight:900; }
+    </style>
+  </defs>
+  <!-- Square "J" mark, gold on navy — for use on the brand's own dark backgrounds -->
+  <rect x="0" y="10" width="140" height="140" rx="28" fill="#0D1420"/>
+  <text x="70" y="112" text-anchor="middle" class="wordmark" font-size="88" fill="#E7BD6A">J</text>
+  <rect x="24" y="120" width="92" height="8" rx="4" fill="#E7BD6A"/>
+
+  <!-- Wordmark, white on transparent -->
+  <text x="172" y="100" class="wordmark" font-size="72" fill="#FFFFFF" letter-spacing="-1">Job<tspan fill="#E7BD6A">Margin</tspan></text>
+</svg>

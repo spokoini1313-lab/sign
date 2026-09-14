@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 160" width="560" height="160">
+  <defs>
+    <style>
+      .wordmark{ font-family:'Heebo','Segoe UI',Arial,sans-serif; font-weight:900; }
+    </style>
+  </defs>
+  <!-- Square "J" mark -->
+  <rect x="0" y="10" width="140" height="140" rx="28" fill="#17365D"/>
+  <text x="70" y="112" text-anchor="middle" class="wordmark" font-size="88" fill="#FFFFFF">J</text>
+  <!-- small gold accent tick, echoes the profit/margin motif -->
+  <rect x="24" y="120" width="92" height="8" rx="4" fill="#B9822A"/>
+
+  <!-- Wordmark -->
+  <text x="172" y="100" class="wordmark" font-size="72" fill="#17365D" letter-spacing="-1">Job<tspan fill="#1F4E78">Margin</tspan></text>
+</svg>
