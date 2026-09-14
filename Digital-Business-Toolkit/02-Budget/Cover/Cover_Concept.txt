@@ -1,0 +1,22 @@
+Product Cover Concept — Project Budget Controller
+====================================================
+
+STYLE: Premium, clean, construction-business, modern SaaS, professional.
+
+LAYOUT (1200x1500px, portrait)
+- Background: Dark Navy top two-thirds, Light Background bottom third
+- Top-left: "[JobMargin]" wordmark, white, 22px
+- Center: Product name, white, Calibri/Heebo Bold, 50px:
+    "Project Budget
+     Controller"
+- Tagline below, Light Blue italic, 22px: "Stay ahead of every overrun."
+- Middle-right: mock budget bar-chart card — 3 horizontal bars (green/
+  yellow/red) representing category status, white card on navy background
+- Bottom third: chips "📊 Category Tracking" "🟡 Overrun Alerts" "🇮🇱 Hebrew RTL"
+- Bottom-right: "Excel + Google Sheets" badge
+
+COLOR USE: Dark Navy #17365D · Professional Blue #1F4E78 · Light Blue
+#D9EAF7 · Success Green #E2F0D9 / Alert Red #F4CCCC (status bars only)
+
+DELIVERABLES: Square 1000x1000, Portrait 1200x1500, Wide 1600x900.
+Design brief only — raster asset to be produced by designer/Canva/Figma.

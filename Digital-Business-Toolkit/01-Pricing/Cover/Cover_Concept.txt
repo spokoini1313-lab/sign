@@ -1,0 +1,33 @@
+Product Cover Concept — Smart Pricing & Profit Calculator
+===========================================================
+
+STYLE: Premium, clean, construction-business, modern SaaS, professional.
+No decorative/ornate elements. Flat color, strong grid, confident type.
+
+LAYOUT (1200x1500px recommended, portrait, Gumroad/Etsy-ready)
+- Background: Dark Navy (#17365D) top two-thirds, Light Background (#F8FAFC) bottom third
+- Top-left: small bracket wordmark "[JobMargin]" in white, Calibri Bold, 22px
+- Center: Product name in white, Calibri/Heebo Bold, 54px:
+    "Smart Pricing &
+     Profit Calculator"
+- Below name: thin Light-Blue (#D9EAF7) rule, then tagline in Light Blue, 22px italic:
+    "Know your true profit before you quote."
+- Middle-right: a simplified mock dashboard card (rounded rectangle, white fill,
+  navy header bar, 3 small KPI tiles with placeholder numbers "₪12,400 / 28% / 5")
+  suggesting the real product screen — flat, no photoreal mockup needed
+- Bottom third (light background): 3 small icon+label chips in a row —
+  "📊 Auto-Calculated"  "🟢 Profit Status"  "🇮🇱 Hebrew RTL"
+- Bottom-right corner: small "Excel + Google Sheets" badge, Professional Blue pill
+
+COLOR USE
+Dark Navy #17365D · Professional Blue #1F4E78 · Light Blue #D9EAF7 ·
+Success Green #E2F0D9 (KPI accents only) · Light Background #F8FAFC
+
+DELIVERABLE FORMATS
+- Square (1000x1000) for marketplace thumbnail
+- Portrait (1200x1500) for product page hero
+- Wide (1600x900) for social share
+
+NOTE: This is a design brief for the graphic designer / Canva/Figma build.
+No raster image is generated in this pass — see Screenshots/ for actual
+in-product screenshots once captured.

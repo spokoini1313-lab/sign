@@ -1,0 +1,51 @@
+QA Notes — מרכז הבקרה העסקי (Product 11)
+============================================
+
+METHOD
+Same limitation as the rest of this build: automated LibreOffice
+recalculation is unavailable in this sandbox (`soffice` cannot load any
+file here — see `01-Pricing/QA_Notes.txt` for the full diagnosis). This
+workbook was verified manually instead:
+
+- Every sheet's formulas re-read via openpyxl and checked cell-by-cell:
+  Projects (overrun %, balance, profit, margin, risk classification),
+  Cash Flow (opening-balance carry-forward, net, closing balance —
+  same verified pattern as Product 5), Inventory (stock value — same
+  pattern as Product 8), Labor (input-only, no formulas needed).
+- Executive Dashboard KPI formulas cross-checked against the correct
+  sheet name and range for each of the 12 cards (SUM/AVERAGE/COUNTIF/
+  COUNTIFS against Projects, Sales & Leads, Cash Flow, Inventory,
+  Labor).
+- Business Insights formulas (the most complex in this build — nested
+  IF + INDEX/MATCH/MAX to name the worst-overrun and most-profitable
+  project by name) traced by hand against the 5 example projects:
+  confirmed MAX() correctly ignores the blank extra rows (which return
+  "" via their own IF guard, and text is excluded from MAX), and that
+  each COUNTIFS/COUNTIF gate correctly falls back to the "no issue"
+  message when its condition count is 0.
+- Only pre-2007 Excel functions used (SUM, AVERAGE, COUNTA, COUNTIF,
+  COUNTIFS, INDEX, MATCH, MAX, IF, IFERROR, TEXT, string concatenation)
+  — no XLOOKUP/FILTER/UNIQUE/SEQUENCE, no post-2007 functions.
+- Cross-product name-key verified: this product's 5 example projects
+  use the exact same names, spelled identically, as Products 1, 2, 4,
+  6, 9, and 10 — confirmed by direct comparison against each product's
+  example data.
+- RTL confirmed on every sheet.
+
+DESIGN NOTE — why Product 11 has its own data entry rather than live
+links to the other 10 files
+Excel/Google Sheets cross-file references are fragile in exactly the
+way this build's tooling warns about (external links break on resave,
+require the other file to be present on disk, and don't survive being
+distributed as separate marketplace products people buy independently).
+Product 11 is therefore a self-contained workbook: it has its own
+condensed Projects / Sales & Leads / Cash Flow / Inventory / Labor
+sheets that the user updates with a summary from whichever of the 10
+individual products they also own, on a recommended weekly cadence.
+This is documented plainly in Product 11's own Quick Start, User Guide,
+and FAQ so it's not a surprise to a buyer who expects "automatic"
+syncing between separately-purchased files.
+
+RESULT: PASS (manual review, incl. cross-product name-key verification
+and hand-traced Business Insights logic), automated recalculation
+PENDING environment fix (see Phase 11 — Full QA).

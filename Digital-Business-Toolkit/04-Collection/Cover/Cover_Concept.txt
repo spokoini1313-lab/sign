@@ -1,0 +1,10 @@
+Product Cover Concept — Payment & Collection Manager
+=======================================================
+STYLE: Premium, clean, construction-business, modern SaaS.
+LAYOUT (1200x1500 portrait): Dark Navy top two-thirds / Light Background
+bottom third. "[JobMargin]" wordmark top-left. Product name center,
+white bold 46px: "Payment & Collection Manager". Tagline: "Get paid on
+time, every time." Middle-right: mock invoice list card with 3 rows,
+status pills (green "Paid", red "Overdue"). Bottom chips: "💰 Auto Status"
+"📅 Due-Date Tracking" "🇮🇱 Hebrew RTL". Badge: "Excel + Google Sheets".
+DELIVERABLES: Square 1000x1000, Portrait 1200x1500, Wide 1600x900.
