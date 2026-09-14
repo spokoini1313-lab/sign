@@ -642,6 +642,24 @@
           <option>עצמאי (רק אני)</option><option>2–5</option><option>6–15</option><option>16+</option>
         </select>
       </div>
+      <div class="field">
+        <label for="lf-product">איזו מערכת מעניינת אותך?</label>
+        <select id="lf-product" name="product">
+          <option>עדיין לא בטוח/ה — רוצה המלצה</option>
+          <option>01 · מחשבון תמחור ורווחיות (בחינם לניסיון)</option>
+          <option>02 · בקרת תקציב פרויקט</option>
+          <option>03 · בניית הצעת מחיר חכמה</option>
+          <option>04 · ניהול גבייה ותשלומים</option>
+          <option>05 · תכנון תזרים מזומנים</option>
+          <option>06 · מעקב שעות ועלות עובדים</option>
+          <option>07 · ניהול לקוחות ולידים (CRM)</option>
+          <option>08 · ניהול מלאי וחומרים</option>
+          <option>09 · ניהול תוספות וחריגים</option>
+          <option>10 · ניהול ביצוע פרויקט</option>
+          <option>11 · מרכז הבקרה העסקי (299 ₪)</option>
+          <option>החבילה המלאה — כל 11 המוצרים (399 ₪)</option>
+        </select>
+      </div>
       <button class="btn btn-brass" type="submit" style="margin-top:6px;">שלחו לי פרטים על החבילה</button>
       <p id="leadStatus" role="status" aria-live="polite"></p>
     </form>
@@ -695,6 +713,7 @@
       const email = data.get('email') || '';
       const field = data.get('field') || '';
       const headcount = data.get('headcount') || '';
+      const product = data.get('product') || '';
 
       // Full structured lead — this is what the SELLER receives (by email/
       // WhatsApp), never shown to the visitor as their main confirmation.
@@ -704,16 +723,18 @@
         'טלפון: ' + phone + '\n' +
         'אימייל: ' + email + '\n' +
         'תחום העסק: ' + field + '\n' +
-        'מספר עובדים: ' + headcount;
+        'מספר עובדים: ' + headcount + '\n' +
+        'מערכת מעניינת: ' + product;
 
-      const subject = 'בקשת פרטים על חבילת JobMargin';
+      const subject = 'בקשת פרטים על ' + (product || 'חבילת JobMargin');
       const firstName = name ? name.split(/\s+/)[0] : '';
 
       // What the VISITOR (the lead) sees: a short, warm, personal thank-you
       // — not the raw internal lead dump. The raw details still exist
       // (below, collapsed) only as a manual-send backup.
       lcHeadline.textContent = firstName ? ('תודה, ' + firstName + '! קיבלנו את הפנייה שלך') : 'תודה! קיבלנו את הפנייה שלך';
-      lcBody.textContent = 'ניצור איתך קשר בהקדם האפשרי' + (field ? (' בנוגע לתחום ' + field) : '') + '.';
+      const productNote = (product && !product.startsWith('עדיין')) ? (' לגבי ' + product) : '';
+      lcBody.textContent = 'ניצור איתך קשר בהקדם האפשרי' + productNote + (field ? (' (תחום: ' + field + ')') : '') + '.';
 
       lcWhatsapp.href = 'https://wa.me/' + SALES_WHATSAPP + '?text=' + encodeURIComponent(detailsText);
       lcDetails.textContent = detailsText;
