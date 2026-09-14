@@ -219,6 +219,9 @@
   .pcard .foot{ display:flex; align-items:center; justify-content:space-between; padding-top:10px; border-top:1px solid var(--line); }
   .pcard .price{ font-family:'Heebo'; font-weight:800; font-size:1.15rem; }
   .pcard .price .cur{ font-size:.75rem; font-weight:700; color:var(--ink-faint); margin-inline-start:2px; }
+  .pcard.free{ border-color:var(--gold); box-shadow:0 0 0 1px var(--gold) inset, var(--shadow); }
+  .pcard.free .idx{ color:var(--gold-strong); font-weight:800; }
+  .pcard .free-price{ color:var(--gold-strong); font-size:1.05rem; }
 
   /* ============ PRODUCT 11 SPOTLIGHT ============ */
   .p11{
@@ -270,6 +273,11 @@
   .pt-row .cell-price{ font-family:'Heebo'; font-weight:800; }
   .pt-row .yes{ color:var(--good); font-weight:700; }
   .pt-row .no{ color:var(--ink-faint); }
+  .pt-row.featured{ background:var(--gold-soft); }
+  .pt-row.featured > div{ font-weight:700; }
+  .pt-row .free-price{ color:var(--gold-strong); }
+  .pt-row .featured-price{ color:var(--gold-strong); font-size:1.05rem; }
+  .bundle-note{ text-align:center; color:var(--ink-soft); font-size:.92rem; margin-top:14px; }
 
   /* ============ PAYMENT (BIT) ============ */
   .pay-card{
@@ -378,8 +386,8 @@
       <h1>10 כלים חכמים לניהול העסק שלך — <em>ומערכת אחת שמאחדת ביניהם</em>.</h1>
       <p class="lede">חבילת Excel / Google Sheets מקצועית לחשמלאים, אינסטלטורים, קבלנים ובעלי מקצוע: תמחור, פרויקטים, גבייה, תזרים, לידים, מלאי ועוד — כל כלי פותר בעיה אחת ברורה, בלי ללמוד תוכנה חדשה.</p>
       <div class="ctas">
-        <a class="btn btn-gold" href="#products">ראו את 10 הכלים — ‎39₪‎ לכלי</a>
-        <a class="btn btn-outline" href="#p11">החבילה המלאה — ‎299₪‎</a>
+        <a class="btn btn-gold" href="#products">התחילו בחינם — כלי אחד ללא עלות</a>
+        <a class="btn btn-outline" href="#pricing">החבילה המלאה — ‎399₪‎</a>
       </div>
       <p class="fine">קבצי Excel אמיתיים · עובד גם ב-Google Sheets · בעברית מלאה, RTL · ללא מנוי</p>
     </div>
@@ -437,65 +445,65 @@
   <div class="section-head">
     <div class="kicker">10 הכלים</div>
     <h2>כל כלי פותר בעיה אחת. תבחרו מה שרלוונטי לכם.</h2>
-    <p>כל מוצר הוא קובץ Excel עצמאי ומלא: לוח בקרה, שולחן עבודה, נתוני דוגמה, מדריך שימוש — מוכן לעבודה תוך דקות. ‎39₪‎ לכלי, ללא התחייבות.</p>
+    <p>כל מוצר הוא קובץ Excel עצמאי ומלא: לוח בקרה, שולחן עבודה, נתוני דוגמה, מדריך שימוש — מוכן לעבודה תוך דקות. ‎39–69₪‎ לכלי לפי היקפו, ואחד מהם — לגמרי בחינם, לניסיון.</p>
   </div>
 
   <div class="grid10">
 
-    <article class="pcard">
-      <span class="idx">01</span>
+    <article class="pcard free">
+      <span class="idx">01 · בחינם לניסיון</span>
       <h3>מחשבון תמחור ורווחיות חכם</h3>
       <p class="pitch">דעו את הרווח האמיתי שלכם על כל עבודה — לפני שאתם שולחים הצעת מחיר.</p>
-      <div class="foot"><span class="chip good">עבודה רווחית</span><span class="price num">39<span class="cur">₪</span></span></div>
+      <div class="foot"><span class="chip good">עבודה רווחית</span><span class="price num free-price">בחינם</span></div>
     </article>
 
     <article class="pcard">
       <span class="idx">02</span>
       <h3>בקרת תקציב פרויקט</h3>
       <p class="pitch">הישארו צעד לפני כל חריגת תקציב, קטגוריה אחר קטגוריה.</p>
-      <div class="foot"><span class="chip warn">דורש תשומת לב</span><span class="price num">39<span class="cur">₪</span></span></div>
+      <div class="foot"><span class="chip warn">דורש תשומת לב</span><span class="price num">49<span class="cur">₪</span></span></div>
     </article>
 
     <article class="pcard">
       <span class="idx">03</span>
       <h3>בניית הצעת מחיר חכמה</h3>
       <p class="pitch">שלחו הצעות מחיר מקצועיות ומחושבות אוטומטית — וסגרו יותר עבודות.</p>
-      <div class="foot"><span class="chip good">אושרה</span><span class="price num">39<span class="cur">₪</span></span></div>
+      <div class="foot"><span class="chip good">אושרה</span><span class="price num">59<span class="cur">₪</span></span></div>
     </article>
 
     <article class="pcard">
       <span class="idx">04</span>
       <h3>ניהול גבייה ותשלומים</h3>
       <p class="pitch">כל חשבונית, כל תשלום וכל איחור — נעקבים אוטומטית.</p>
-      <div class="foot"><span class="chip bad">באיחור</span><span class="price num">39<span class="cur">₪</span></span></div>
+      <div class="foot"><span class="chip bad">באיחור</span><span class="price num">69<span class="cur">₪</span></span></div>
     </article>
 
     <article class="pcard">
       <span class="idx">05</span>
       <h3>תכנון תזרים מזומנים</h3>
       <p class="pitch">דעו כמה זמן המזומן שלכם יחזיק — חודשים לפני שזו בעיה.</p>
-      <div class="foot"><span class="chip good">תקין</span><span class="price num">39<span class="cur">₪</span></span></div>
+      <div class="foot"><span class="chip good">תקין</span><span class="price num">69<span class="cur">₪</span></span></div>
     </article>
 
     <article class="pcard">
       <span class="idx">06</span>
       <h3>מעקב שעות ועלות עובדים</h3>
       <p class="pitch">שעת התחלה וסיום, והכלי מחשב לכם עלות עבודה אמיתית לכל פרויקט.</p>
-      <div class="foot"><span class="chip warn">שעות נוספות</span><span class="price num">39<span class="cur">₪</span></span></div>
+      <div class="foot"><span class="chip warn">שעות נוספות</span><span class="price num">49<span class="cur">₪</span></span></div>
     </article>
 
     <article class="pcard">
       <span class="idx">07</span>
       <h3>ניהול לקוחות ולידים</h3>
       <p class="pitch">מעקב לידים בצינור מכירות של 7 שלבים — אף ליד לא ייעלם יותר.</p>
-      <div class="foot"><span class="chip bad">חם</span><span class="price num">39<span class="cur">₪</span></span></div>
+      <div class="foot"><span class="chip bad">חם</span><span class="price num">59<span class="cur">₪</span></span></div>
     </article>
 
     <article class="pcard">
       <span class="idx">08</span>
       <h3>ניהול מלאי וחומרים</h3>
       <p class="pitch">שווי מלאי וסטטוס הזמנה מחושבים אוטומטית — לעולם לא תיתקעו בלי חומר.</p>
-      <div class="foot"><span class="chip warn">מלאי נמוך - להזמין</span><span class="price num">39<span class="cur">₪</span></span></div>
+      <div class="foot"><span class="chip warn">מלאי נמוך - להזמין</span><span class="price num">49<span class="cur">₪</span></span></div>
     </article>
 
     <article class="pcard">
@@ -509,7 +517,7 @@
       <span class="idx">10</span>
       <h3>ניהול ביצוע פרויקט</h3>
       <p class="pitch">פרקו כל פרויקט למשימות ותדעו מיד מה באיחור ומה בלוח זמנים.</p>
-      <div class="foot"><span class="chip good">הושלם</span><span class="price num">39<span class="cur">₪</span></span></div>
+      <div class="foot"><span class="chip good">הושלם</span><span class="price num">49<span class="cur">₪</span></span></div>
     </article>
 
   </div>
@@ -519,21 +527,20 @@
   <div class="p11">
     <div class="p11-grid">
       <div>
-        <span class="eyebrow">מוצר 11 · החבילה המלאה</span>
+        <span class="eyebrow">מוצר 11 · מערכת עצמאית</span>
         <h2>מרכז הבקרה העסקי — כל העסק שלכם, במבט אחד.</h2>
-        <p class="lede">מאחד את כל 10 הכלים לתמונת מצב עסקית אחת: הכנסות, פרויקטים, גבייה, תזרים, לידים ומלאי — עם תובנות עסקיות אוטומטיות שמזהות בעצמן איזה פרויקט חרג מתקציב ואיזה הכי רווחי.</p>
+        <p class="lede">קובץ אחד עצמאי שמרכז את כל התמונה העסקית שלכם: הכנסות, פרויקטים, גבייה, תזרים, לידים ומלאי — עם תובנות עסקיות אוטומטיות שמזהות בעצמן איזה פרויקט חרג מתקציב ואיזה הכי רווחי. עומד בפני עצמו, גם בלי שאר הכלים.</p>
         <ul class="p11-list">
           <li><span class="tick">✓</span> לוח בקרה למנהלים עם 12 מדדי-על</li>
           <li><span class="tick">✓</span> תובנות עסקיות חכמות שמתעדכנות לבד</li>
-          <li><span class="tick">✓</span> כולל את כל 10 המוצרים הבודדים</li>
+          <li><span class="tick">✓</span> קובץ עצמאי — לא תלוי ברכישת כלים נוספים</li>
         </ul>
         <a class="btn btn-ghost-inv" href="#lead">קבלו את מרכז הבקרה העסקי</a>
       </div>
       <div>
         <div class="p11-price-box">
-          <div class="was num">10 מוצרים בנפרד: 390 ₪</div>
           <div class="now"><span class="num">299</span><span class="cur">₪</span></div>
-          <div class="save">חיסכון של ‎91₪‎ + מרכז הבקרה בחינם</div>
+          <div class="save">רכישה חד-פעמית — ללא מנוי</div>
           <div class="p11-mock">
             <div class="row">
               <div class="tile"><div class="l">הכנסה</div><div class="v num">78,400 ₪</div></div>
@@ -555,21 +562,32 @@
   <div class="pricing-table">
     <div class="pt-row head"><div>אפשרות</div><div>מה כלול</div><div>מחיר</div></div>
     <div class="pt-row">
+      <div>ניסיון חינם</div>
+      <div>מחשבון תמחור ורווחיות (מוצר 01) — קובץ מלא, ללא הגבלת זמן</div>
+      <div class="cell-price num free-price">בחינם</div>
+    </div>
+    <div class="pt-row">
       <div>כלי בודד</div>
-      <div>קובץ Excel אחד מתוך ה-10, מלא ומוכן לעבודה</div>
-      <div class="cell-price num">39 ₪</div>
+      <div>קובץ Excel אחד מתוך ה-10, מלא ומוכן לעבודה — 39 עד 69 ₪ לפי היקף הכלי</div>
+      <div class="cell-price num">39–69 ₪</div>
     </div>
     <div class="pt-row">
       <div>כמה כלים לבחירה</div>
-      <div>כל שילוב שמתאים לעסק שלכם</div>
-      <div class="cell-price num">39 ₪ × כלי</div>
+      <div>כל שילוב שמתאים לעסק שלכם, לפי מחיר כל כלי</div>
+      <div class="cell-price num">לפי בחירה</div>
     </div>
     <div class="pt-row">
       <div><strong>מרכז הבקרה העסקי (מוצר 11)</strong></div>
-      <div>כל 10 הכלים + לוח הבקרה המאוחד ותובנות עסקיות אוטומטיות</div>
+      <div>קובץ עצמאי: לוח הבקרה המאוחד + תובנות עסקיות אוטומטיות</div>
       <div class="cell-price num">299 ₪</div>
     </div>
+    <div class="pt-row featured">
+      <div><strong>החבילה המלאה — כל 11 המוצרים</strong></div>
+      <div>כל 10 הכלים הבודדים + מרכז הבקרה העסקי (מוצר 11) — הכל</div>
+      <div class="cell-price num featured-price">399 ₪</div>
+    </div>
   </div>
+  <p class="bundle-note">שווי אמיתי בקנייה נפרדת: כ-849 ₪. בחבילה המלאה — <strong class="num">399 ₪</strong>, חיסכון של יותר מ-450 ₪.</p>
 
   <div class="pay-card">
     <div class="pay-icon">💙</div>
