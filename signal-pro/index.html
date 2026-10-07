@@ -735,7 +735,13 @@ function vOverview() {
   const s = sumUp(), need = 100 / (1 + S.cfg.rr), eq = eqSeries();
   const open = S.trades.filter(t => t.status === 'open');
   const recent = S.trades.slice(0, 6);
-  return `
+  const banner = s.total === 0 && !S.importHintClosed ? `<div class="card" style="border-color:rgba(232,184,90,.35)">
+    <div class="card-h" style="margin:0"><h2>יש לך נתונים מהגרסה הקודמת?</h2><span class="sp"></span>
+      <button class="btn pri sm" onclick="$('importFile').click()">ייבוא גיבוי</button>
+      <button class="btn ghost sm" onclick="S.importHintClosed=true;save();render()">סגור</button></div>
+    <div class="faint" style="font-size:12.5px;margin-top:8px">באתר הישן: הגדרות ← גיבוי. הקובץ יורד למכשיר. כאן: ייבוא גיבוי ← בחר את הקובץ.
+      העסקאות מתמזגות עם הקיימות, שום דבר לא נמחק.</div></div>` : '';
+  return `${banner}
   <div class="kpis">
     ${kpi('◆', 'שווי תיק', usd(s.equity), cls(s.net), `התחלה ${usd(S.cfg.startBalance)}`, spark(eq, s.net >= 0 ? '#22c55e' : '#ef4444'))}
     ${kpi('±', 'רווח / הפסד', usd(s.net), cls(s.net), `<span class="${cls(s.net)}">${pct(s.netPct)}</span> · עמלות ${usd(s.totalFees)}`)}
@@ -1088,7 +1094,7 @@ function renderSettingsBody() {
       <button class="btn ghost" onclick="D=JSON.parse(JSON.stringify(S.cfg));renderSettingsBody()">בטל שינויים</button>
       <span class="sp"></span>
       <button class="btn ghost sm" onclick="exportJson()">${I.dl} גיבוי</button>
-      <button class="btn ghost sm" onclick="$('importFile').click()">שחזור מגיבוי</button>
+      <button class="btn ghost sm" onclick="$('importFile').click()">ייבוא גיבוי</button>
       <button class="btn dz sm" onclick="resetAll()">איפוס מלא</button>
     </div>`;
   renderPreview();
@@ -1153,6 +1159,7 @@ function vSystem() {
   const d = S.diag; const q = LG.q.trim().toLowerCase();
   const K = { signal: ['איתות', 'b-gold'], win: ['רווח', 'b-w'], loss: ['הפסד', 'b-l'], shield: ['הגנה', 'b-s'],
               err: ['שגיאה', 'b-l'], warn: ['אזהרה', 'b-be'], skip: ['דילוג', 'b-g'], sys: ['מערכת', 'b-o'], info: ['מידע', 'b-g'] };
+  S.log.forEach(l => { if (!l.k) l.k = 'info'; });
   const logs = S.log.filter(l => !q || l.m.toLowerCase().includes(q) || (K[l.k]?.[0] || '').includes(q));
   return `<div class="grid g2" style="align-items:start">
     <div class="card"><div class="card-h"><h2>אבחון חיבורים</h2><span class="c">${d ? stamp(d.at) : ''}</span>
@@ -1201,15 +1208,60 @@ function exportJournal() {
     { type: 'text/csv;charset=utf-8' }), 'signal-pro-journal.csv');
 }
 function exportJson() { dl(new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' }), `signal-pro-backup-${new Date().toISOString().slice(0, 10)}.json`); }
+// מנרמל עסקה מכל גרסה קודמת (v1/v2/v3) למבנה הנוכחי
+function normTrade(t) {
+  const x = { ...t };
+  x.entry = +x.entry; x.stop = +x.stop; x.target = +x.target; x.qty = +x.qty;
+  if (!fin(x.stopDist)) x.stopDist = x.entry - x.stop;
+  if (!fin(x.riskUsd) && fin(x.qty) && fin(x.stopDist)) x.riskUsd = x.qty * x.stopDist;
+  if (!('beTrigger' in x)) x.beTrigger = null;
+  if (!('beArmedAt' in x)) x.beArmedAt = null;
+  if (!fin(x.score)) x.score = 0;
+  if (x.status !== 'open' && !fin(x.rMult) && fin(x.exit) && x.stopDist > 0) x.rMult = (x.exit - x.entry) / x.stopDist;
+  if (x.status !== 'open' && !x.exitReason) x.exitReason = x.status === 'win' ? 'target' : 'stop';
+  for (const k of ['decision', 'tags', 'note', 'lesson']) if (typeof x[k] !== 'string') x[k] = '';
+  if (!fin(x.rating)) x.rating = 0;
+  if (!x.edits || typeof x.edits !== 'object') x.edits = {};
+  x.id = x.id || ('imp' + x.signalAt + '_' + x.symbol);
+  return x;
+}
+function validTrade(t) {
+  return t && typeof t.symbol === 'string' && fin(t.signalAt) && [t.entry, t.stop, t.target, t.qty].every(v => fin(v) && v > 0)
+    && ['open', 'win', 'loss'].includes(t.status) && (t.status === 'open' || fin(t.pnl));
+}
 function importJson(inp) {
   const f = inp.files?.[0]; if (!f) return;
   const r = new FileReader();
-  r.onload = () => { try { const d = JSON.parse(r.result);
-      if (!Array.isArray(d.trades) || !d.cfg) throw new Error('קובץ לא תקין');
-      if (!confirm(`לשחזר ${d.trades.length} עסקאות? המצב הנוכחי יוחלף.`)) return;
-      S = { ...blank(), ...d, cfg: { ...CORE.DEFAULT_CFG, ...EXTRA, ...d.cfg } }; D = JSON.parse(JSON.stringify(S.cfg));
-      save(); render(); toast('שוחזר בהצלחה'); }
-    catch (e) { toast('השחזור נכשל: ' + e.message, true); } finally { inp.value = ''; } };
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if (!d || !Array.isArray(d.trades)) throw new Error('זה לא קובץ גיבוי של המערכת');
+      const incoming = d.trades.map(normTrade).filter(validTrade);
+      const skipped = d.trades.length - incoming.length;
+      // מיזוג: לא מוחקים כלום. עסקה שקיימת כבר (לפי מזהה, או מטבע+זמן) — לא נכפלת
+      const key = t => t.symbol + '|' + t.signalAt;
+      const have = new Set(S.trades.map(t => t.id)), haveK = new Set(S.trades.map(key));
+      const added = incoming.filter(t => !have.has(t.id) && !haveK.has(key(t)));
+      // לא לפתוח שתי פוזיציות על אותו מטבע
+      const openSyms = new Set(S.trades.filter(t => t.status === 'open').map(t => t.symbol));
+      const merged = added.filter(t => !(t.status === 'open' && openSyms.has(t.symbol)));
+      S.trades = [...S.trades, ...merged].sort((a, b) => b.signalAt - a.signalAt);
+      if (Array.isArray(d.notes)) { const hn = new Set((S.notes || []).map(n => n.id));
+        S.notes = [...(S.notes || []), ...d.notes.filter(n => n && n.id && !hn.has(n.id))]; }
+      // הון התחלתי: אם המערכת החדשה עוד ריקה, לוקחים את זה של הגיבוי כדי שהחישובים יתאימו
+      if (S.trades.length === merged.length && fin(d.cfg?.startBalance)) S.cfg.startBalance = +d.cfg.startBalance;
+      if (Array.isArray(d.log)) S.log = [...S.log, ...d.log.filter(l => l && fin(l.t) && l.m).map(l => ({ t: l.t, k: l.k || 'info', m: String(l.m) }))]
+        .sort((a, b) => b.t - a.t).slice(0, 600);
+      const closed = merged.filter(t => t.status !== 'open');
+      const pnl = closed.reduce((a, t) => a + t.pnl, 0);
+      logit(`שוחזרו ${merged.length} עסקאות מגיבוי (${closed.length} סגורות · ${usd(pnl)})`, 'sys');
+      save(); D = JSON.parse(JSON.stringify(S.cfg)); render();
+      toast(merged.length ? `שוחזרו ${merged.length} עסקאות · ${usd(pnl)}` : 'כל העסקאות מהגיבוי כבר קיימות');
+      if (skipped) logit(`${skipped} רשומות פגומות בגיבוי דולגו`, 'warn');
+      if (merged.some(t => t.status === 'open')) scanNow();
+    } catch (e) { toast('השחזור נכשל: ' + e.message, true); }
+    finally { inp.value = ''; }
+  };
   r.readAsText(f);
 }
 function dl(b, n) { const u = URL.createObjectURL(b), a = document.createElement('a');
