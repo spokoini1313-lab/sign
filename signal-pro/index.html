@@ -544,7 +544,7 @@ const EXTRA = { notify: false, sound: true, preset: 'balanced', paused: [] };
 const IV_NAME = { '15': '15 דק׳', '30': '30 דק׳', '60': 'שעה', '240': '4 שעות', 'D': 'יומי' };
 const IV_MS = { '15': 9e5, '30': 18e5, '60': 36e5, '240': 144e5, 'D': 864e5 };
 const ATR_GUESS = { '15': .35, '30': .5, '60': .8, '240': 1.6, 'D': 3.8 };   // ATR% טיפוסי לתצוגה מקדימה
-const REASON = { target: 'יעד', stop: 'סטופ', breakeven: 'נקודת איחוד', time: 'מגבלת זמן' };
+const REASON = { target: 'יעד', stop: 'סטופ', breakeven: 'נקודת איחוד', time: 'מגבלת זמן', manual: 'סגירה ידנית' };
 const DECISION = ['', 'הייתי נכנס', 'הייתי מדלג', 'לא בדקתי'];
 
 let S = load(), D = null, view = 'overview', busy = false, tickT = null, loopT = null;
@@ -828,6 +828,7 @@ function eqSeries() { let r = S.cfg.startBalance; const out = [r];
 function badge(t) {
   if (t.status === 'open') return t.beArmedAt != null ? '<span class="badge b-s">🛡 מוגנת</span>' : '<span class="badge b-o">● פתוחה</span>';
   if (t.exitReason === 'breakeven') return '<span class="badge b-be">איחוד</span>';
+  if (t.exitReason === 'manual') return `<span class="badge ${t.status === 'win' ? 'b-w' : 'b-l'}">ידני</span>`;
   if (t.exitReason === 'time') return `<span class="badge ${t.status === 'win' ? 'b-w' : 'b-l'}">זמן</span>`;
   return t.status === 'win' ? '<span class="badge b-w">רווח</span>' : '<span class="badge b-l">הפסד</span>';
 }
@@ -889,7 +890,8 @@ function vOverview() {
         <div class="pos-h"><b>${esc(base(t.symbol))}</b>${badge(t)}<span class="badge b-g">${t.score}/5</span>
           <span class="sp"></span><span class="num ${cls(t.livePnl)}" style="font-weight:700">${fin(t.livePnl) ? usd(t.livePnl) : '—'}</span></div>
         ${track(t)}
-        <div class="faint" style="font-size:11px;margin-top:6px">נפתחה ${stamp(t.signalAt)} · ${ago(t.signalAt)}</div></div>`).join('')
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px"><span class="faint" style="font-size:11px">נפתחה ${stamp(t.signalAt)} · ${ago(t.signalAt)}</span>
+          <span class="sp"></span>${closeBtn(t)}</div></div>`).join('')
         : `<div class="empty"><div class="ic">◎</div>אין פוזיציות פתוחות.<br>המערכת סורקת ${activeSyms().length} מטבעות כל ${S.cfg.scanMinutes} דקות.</div>`}
     </div>
     <div class="card"><div class="card-h"><h2>פעילות אחרונה</h2></div>
@@ -936,7 +938,7 @@ function vTrades() {
         <td class="num ${cls(pl)}"><b>${usd(pl)}</b></td>
         <td class="num ${cls(pl)}">${fin(pl) ? pct(pl / S.cfg.startBalance * 100) : '—'}</td>
         <td class="num ${cls(t.rMult)}">${fin(t.rMult) ? t.rMult.toFixed(2) : '—'}</td>
-        <td><button class="btn ghost sm ic" title="פתח בגרף" onclick="tvSymbol='${esc(t.symbol)}';go('perf')">📈</button></td></tr>`; }).join('')}
+        <td style="display:flex;gap:6px">${o ? closeBtn(t) : ''}<button class="btn ghost sm ic" title="פתח בגרף" onclick="tvSymbol='${esc(t.symbol)}';go('perf')">📈</button></td></tr>`; }).join('')}
     </tbody></table></div>`
     : `<div class="empty"><div class="ic">🔍</div>${S.trades.length ? 'אין תוצאות לסינון הזה' : `אין עדיין איתותים. המערכת סורקת כל ${S.cfg.scanMinutes} דקות.`}</div>`}
     <div class="note">ירוק = היעד הושג · אדום = הסטופ נפגע · צהוב = יציאה בנקודת איחוד · כחול = ממתינה.
@@ -944,6 +946,32 @@ function vTrades() {
 }
 
 /* ================= יומן מסחר — אוטומטי וניתן לעריכה ================= */
+
+/* ================= סגירה ידנית של עסקת דמו ================= */
+const CL = {};   // מצב כפתור הסגירה: לחיצה ראשונה = אישור, שנייה = סגירה
+function closeBtn(t) {
+  const st = CL[t.id];
+  return `<button class="btn ${st === 'confirm' ? 'dz' : 'ghost'} sm" ${st === 'busy' ? 'disabled' : ''} onclick="closeDemo('${esc(t.id)}')">${
+    st === 'confirm' ? 'לחץ שוב לסגירה' : st === 'busy' ? 'סוגר…' : 'סגור'}</button>`;
+}
+async function closeDemo(id) {
+  const t = S.trades.find(x => x.id === id); if (!t || t.status !== 'open') return;
+  if (CL[id] !== 'confirm') { CL[id] = 'confirm'; render(); setTimeout(() => { if (CL[id] === 'confirm') { delete CL[id]; render(); } }, 6000); return; }
+  CL[id] = 'busy'; render();
+  try {
+    const bars = await klines(t.symbol, '15', 3);
+    const px = bars.at(-1)?.c;
+    if (!fin(px) || px <= 0) throw new Error('אין מחיר עדכני');
+    if (t.status !== 'open') throw new Error('העסקה כבר נסגרה');
+    CORE.settle(t, px * (1 - (S.cfg.slippagePct || 0) / 100), Date.now(), 'manual', S.cfg);
+    logit(`${base(t.symbol)} נסגרה ידנית ב-${nx(t.exit)} · ${usd(t.pnl)} (${t.rMult.toFixed(2)}R)`, t.pnl >= 0 ? 'win' : 'loss');
+    toast(`${base(t.symbol)} נסגרה · ${usd(t.pnl)}`);
+    const lo = (S.live?.orders || []).find(o => o.tradeId === id && (o.status === 'open' || o.status === 'pending'));
+    if (lo) toast('שים לב: הפוזיציה האמיתית ב-Bybit עדיין פתוחה. סגור אותה בלשונית "מסחר אמיתי"', true);
+    save();
+  } catch (e) { toast('הסגירה נכשלה: ' + e.message, true); }
+  finally { delete CL[id]; render(); }
+}
 
 /* ================= נימוקי כניסה ויציאה ================= */
 const pctOf = (a, b) => (a - b) / b * 100;
@@ -1014,8 +1042,12 @@ function whyExit(t) {
     lines.push(`העסקה נסגרה במגבלת הזמן (${lim} יום) במחיר השוק ${nx(t.exit)} — ${t.pnl >= 0 ? 'ברווח' : 'בהפסד'} ${usd(t.pnl)} (${fmtR}).`);
     lines.push('המטרה: לא להחזיק כסף תקוע בעסקה שלא זזה.');
     if (days(t.exitAt - t.signalAt) > lim + 1) lines.push(`⚠ הסגירה בוצעה ${(days(t.exitAt - t.signalAt) - lim).toFixed(1)} ימים אחרי המגבלה, כי בגרסה הקודמת הבדיקה רצה רק כשהדף נפתח. המחיר הוא של יום הסגירה בפועל.`);
+  } else if (R === 'manual') {
+    lines.push(`סגרת את העסקה ידנית ב-${when}, ${held} אחרי הכניסה, במחיר השוק ${nx(t.exit)}.`);
+    lines.push(`באותו רגע היא לא הגיעה ליעד (${nx(t.target)}) ולא לסטופ (${nx(t.beArmedAt != null ? t.entry : t.stop)}). התוצאה ${usd(t.pnl)} (${fmtR}) אחרי עמלות.`);
+    lines.push('העסקה נספרת בסטטיסטיקה. בלשונית הביצועים אפשר לראות אם סגירות ידניות עוזרות או מזיקות.');
   } else lines.push(`נסגרה ב-${nx(t.exit)} ב-${when} · ${usd(t.pnl)}`);
-  const short = { target: `הגיעה ליעד אחרי ${held}`, stop: `נפגע סטופ אחרי ${held}`, breakeven: 'חזרה לכניסה אחרי הגנה', time: `מגבלת זמן · ${held}` }[R] || '—';
+  const short = { target: `הגיעה ליעד אחרי ${held}`, stop: `נפגע סטופ אחרי ${held}`, breakeven: 'חזרה לכניסה אחרי הגנה', time: `מגבלת זמן · ${held}`, manual: `נסגרה ידנית אחרי ${held}` }[R] || '—';
   return { lines, short };
 }
 function whyPanel(t) {
@@ -1152,6 +1184,7 @@ function vPerf() {
     <div class="card"><div class="card-h"><h2>התפלגות R</h2></div>
       ${done.length ? '<div class="chartbox sm"><canvas id="cvR"></canvas></div>' : '<div class="empty">—</div>'}</div>
     <div class="card"><div class="card-h"><h2>לפי סיבת יציאה</h2></div>
+      ${byReason.manual ? `<div class="faint" style="font-size:11.5px;margin-bottom:8px">סגירות ידניות: ${byReason.manual.n} · ${usd(byReason.manual.pnl)}. השווה לתוצאות של יעד וסטופ.</div>` : ''}
       ${Object.keys(byReason).length ? `<div class="tw" style="max-height:none"><table class="t"><thead><tr><th>סיבה</th><th>עסקאות</th><th>סכום</th></tr></thead><tbody>
       ${Object.entries(byReason).map(([k, b]) => `<tr><td>${REASON[k] || k}</td><td class="num">${b.n}</td><td class="num ${cls(b.pnl)}">${usd(b.pnl)}</td></tr>`).join('')}
       </tbody></table></div>` : '<div class="empty">—</div>'}</div>
@@ -1744,6 +1777,23 @@ async function liveClose(linkId) {
   finally { delete LV.closing[linkId]; renderLiveSafe(); }
 }
 
+async function liveCloseAll() {
+  const list = L().orders.filter(o => o.status === 'open');
+  if (!list.length) return;
+  if (LV.closeAll !== 'confirm') { LV.closeAll = 'confirm'; renderLiveSafe();
+    setTimeout(() => { if (LV.closeAll === 'confirm') { LV.closeAll = null; renderLiveSafe(); } }, 6000); return; }
+  LV.closeAll = 'busy'; renderLiveSafe();
+  const failed = [];
+  for (const o of list) {
+    try { await bbPrivate('POST', '/v5/order/create', { category: 'linear', symbol: o.symbol, side: 'Sell', orderType: 'Market',
+        qty: '0', reduceOnly: true, closeOnTrigger: true, positionIdx: 0 }); o.manualClose = true; }
+    catch (e) { failed.push(base(o.symbol) + ': ' + e.message); }
+  }
+  logit(`סגירת כל הפוזיציות האמיתיות נשלחה (${list.length - failed.length}/${list.length})`, failed.length ? 'err' : 'sys');
+  toast(failed.length ? 'חלק מהסגירות נכשלו: ' + failed.join(' · ') : 'כל הפוזיציות נסגרו', !!failed.length);
+  LV.closeAll = null; await liveSync();
+}
+
 /* ---------- סנכרון: מילוי, הגנה, סגירה ---------- */
 let liveTimer = null;
 async function liveSync() {
@@ -1912,7 +1962,8 @@ function vLive() {
             <div class="faint" style="font-size:12px">כניסה ${nx(t.entry)} · סטופ ${nx(t.stop)} · יעד ${nx(t.target)}</div></div>`).join('')
         : `<div class="empty">אין כרגע איתות פתוח שגילו פחות מ-${lv.maxAgeH} שעות.<br>כשיגיע איתות חדש, תקבל התראה וכפתור ביצוע.</div>`}
       </div>
-      <div class="card"><div class="card-h"><h2>פוזיציות אמיתיות</h2></div>
+      <div class="card"><div class="card-h"><h2>פוזיציות אמיתיות</h2>${opn.filter(o => o.status === 'open').length > 1 ? `<span class="sp"></span>
+        <button class="btn dz sm" onclick="liveCloseAll()" ${LV.closeAll === 'busy' ? 'disabled' : ''}>${LV.closeAll === 'confirm' ? 'לחץ שוב לסגירת הכל' : LV.closeAll === 'busy' ? 'סוגר…' : 'סגור הכל'}</button>` : ''}</div>
         ${opn.length ? opn.map(o => `<div class="pos"><div class="pos-h"><b>${esc(base(o.symbol))}</b>
             ${o.beDone ? '<span class="badge b-s">🛡 מוגנת</span>' : `<span class="badge b-o">${o.status === 'pending' ? 'ממתינה' : 'פתוחה'}</span>`}
             <span class="badge ${o.env === 'mainnet' ? 'b-l' : 'b-g'}">${o.env === 'mainnet' ? 'אמיתי' : 'testnet'}</span><span class="sp"></span>
