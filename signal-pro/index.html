@@ -358,7 +358,11 @@ function resolve(t, bars, cfg) {
   const beOn = (cfg.beAfterR ?? 0) > 0 && Number.isFinite(t.beTrigger);
   // נקודת האיחוד חלה רק על נרות שאחרי רגע ההפעלה — לא בדיעבד
   let armedAt = Number.isFinite(t.beArmedAt) ? t.beArmedAt : null;
+  // מגבלת זמן: יציאה בפתיחת הנר שבו מלאו N ימים — לא ברגע שמישהו פותח את הדף
+  const days = cfg.timeStopDays ?? 0;
+  const tsAt = days > 0 ? t.signalAt + days * 864e5 : Infinity;
   for (const b of after) {
+    if (b.t >= tsAt) return { px: b.o, at: b.t, reason: 'time', beArmedAt: armedAt };
     const stopNow = armedAt !== null && b.t > armedAt ? t.entry : t.stop;
     const isBE = stopNow === t.entry && armedAt !== null && b.t > armedAt;
     if (b.l <= stopNow)
@@ -401,7 +405,7 @@ function summarize(trades, startBalance) {
 }
 
 const DEFAULT_CFG = {
-  startBalance: 500, riskPct: 2, rr: 2, atrStop: 2.5, beAfterR: 1,
+  startBalance: 500, riskPct: 2, rr: 2, atrStop: 2.5, beAfterR: 1, timeStopDays: 30,
   minScore: 4, maxOpen: 5, scanMinutes: 10, interval: 'D',
   feePct: 0.055, slippagePct: 0.02, maxAtrPct: 15,
   symbols: ['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','XRPUSDT',
@@ -429,7 +433,7 @@ const PRESETS = {
   active: { name: 'פעיל', desc: '4 שעות · סטופ 2 ATR · 1:2.5 · סיכון 1.5% · ניקוד 4/5',
     v: { interval: '240', atrStop: 2, rr: 2.5, riskPct: 1.5, minScore: 4, beAfterR: 1 } },
 };
-const EXTRA = { timeStopDays: 30, notify: false, sound: true, preset: 'balanced', paused: [] };
+const EXTRA = { notify: false, sound: true, preset: 'balanced', paused: [] };
 const IV_NAME = { '15': '15 דק׳', '30': '30 דק׳', '60': 'שעה', '240': '4 שעות', 'D': 'יומי' };
 const IV_MS = { '15': 9e5, '30': 18e5, '60': 36e5, '240': 144e5, 'D': 864e5 };
 const ATR_GUESS = { '15': .35, '30': .5, '60': .8, '240': 1.6, 'D': 3.8 };   // ATR% טיפוסי לתצוגה מקדימה
@@ -621,7 +625,7 @@ async function monitor() {
   for (const t of S.trades.filter(t => t.status === 'open')) {
     try {
       const age = (Date.now() - t.signalAt) / 864e5;
-      const iv = age > 35 ? '240' : age > 9 ? '60' : '15';
+      const iv = age > 160 ? 'D' : age > 38 ? '240' : age > 9 ? '60' : '15';
       const r = CORE.resolve(t, await klines(t.symbol, iv, 1000), S.cfg);
       if (!r) continue;
       if (!r.open) {
@@ -640,10 +644,6 @@ async function monitor() {
       }
       t.livePrice = r.last;
       t.livePnl = (r.last - t.entry) * t.qty - CORE.feesFor(t, r.last, S.cfg);
-      if (age > (S.cfg.timeStopDays || 30)) {
-        CORE.settle(t, r.last, Date.now(), 'time', S.cfg);
-        logit(`${base(t.symbol)} נסגרה במגבלת ${S.cfg.timeStopDays} יום · ${usd(t.pnl)}`, t.pnl >= 0 ? 'win' : 'loss');
-      }
     } catch (e) { logit(`ניטור ${t.symbol}: ${e.message}`, 'err'); }
   }
 }
@@ -1229,40 +1229,73 @@ function validTrade(t) {
   return t && typeof t.symbol === 'string' && fin(t.signalAt) && [t.entry, t.stop, t.target, t.qty].every(v => fin(v) && v > 0)
     && ['open', 'win', 'loss'].includes(t.status) && (t.status === 'open' || fin(t.pnl));
 }
+// ממזג גיבוי לתוך המצב הנוכחי. לא מוחק עסקאות סגורות לעולם.
+// preferIncoming: כשאותו מטבע פתוח גם כאן וגם בגיבוי — הפוזיציה מהגיבוי (הוותיקה) נשארת,
+// והכפילות שנפתחה כאן אחריה מוסרת. בלי הדגל — הקיימת כאן נשארת.
+function mergeBackup(d, opts = {}) {
+  if (!d || !Array.isArray(d.trades)) throw new Error('זה לא קובץ גיבוי של המערכת');
+  const incoming = d.trades.map(normTrade).filter(validTrade);
+  const skipped = d.trades.length - incoming.length;
+  const key = t => t.symbol + '|' + t.signalAt;
+  const have = new Set(S.trades.map(t => t.id)), haveK = new Set(S.trades.map(key));
+  let added = incoming.filter(t => !have.has(t.id) && !haveK.has(key(t)));
+  let dropped = [];
+  const inOpen = new Set(added.filter(t => t.status === 'open').map(t => t.symbol));
+  if (opts.preferIncoming) {
+    dropped = S.trades.filter(t => t.status === 'open' && inOpen.has(t.symbol));
+    S.trades = S.trades.filter(t => !dropped.includes(t));
+  } else {
+    const openHere = new Set(S.trades.filter(t => t.status === 'open').map(t => t.symbol));
+    added = added.filter(t => !(t.status === 'open' && openHere.has(t.symbol)));
+  }
+  const wasEmpty = !S.trades.some(t => t.status !== 'open');
+  S.trades = [...S.trades, ...added].sort((a, b) => b.signalAt - a.signalAt);
+  if (Array.isArray(d.notes)) { const hn = new Set((S.notes || []).map(n => n.id));
+    S.notes = [...(S.notes || []), ...d.notes.filter(n => n && n.id && !hn.has(n.id))]; }
+  if (wasEmpty && fin(d.cfg?.startBalance)) S.cfg.startBalance = +d.cfg.startBalance;
+  if (Array.isArray(d.log)) {
+    const seen = new Set(S.log.map(l => l.t + l.m));
+    S.log = [...S.log, ...d.log.filter(l => l && fin(l.t) && l.m && !seen.has(l.t + l.m)).map(l => ({ t: l.t, k: l.k || 'info', m: String(l.m) }))]
+      .sort((a, b) => b.t - a.t).slice(0, 600);
+  }
+  const closed = added.filter(t => t.status !== 'open');
+  return { added, dropped, skipped, closed, pnl: closed.reduce((a, t) => a + t.pnl, 0) };
+}
+
 function importJson(inp) {
   const f = inp.files?.[0]; if (!f) return;
   const r = new FileReader();
   r.onload = () => {
     try {
-      const d = JSON.parse(r.result);
-      if (!d || !Array.isArray(d.trades)) throw new Error('זה לא קובץ גיבוי של המערכת');
-      const incoming = d.trades.map(normTrade).filter(validTrade);
-      const skipped = d.trades.length - incoming.length;
-      // מיזוג: לא מוחקים כלום. עסקה שקיימת כבר (לפי מזהה, או מטבע+זמן) — לא נכפלת
-      const key = t => t.symbol + '|' + t.signalAt;
-      const have = new Set(S.trades.map(t => t.id)), haveK = new Set(S.trades.map(key));
-      const added = incoming.filter(t => !have.has(t.id) && !haveK.has(key(t)));
-      // לא לפתוח שתי פוזיציות על אותו מטבע
-      const openSyms = new Set(S.trades.filter(t => t.status === 'open').map(t => t.symbol));
-      const merged = added.filter(t => !(t.status === 'open' && openSyms.has(t.symbol)));
-      S.trades = [...S.trades, ...merged].sort((a, b) => b.signalAt - a.signalAt);
-      if (Array.isArray(d.notes)) { const hn = new Set((S.notes || []).map(n => n.id));
-        S.notes = [...(S.notes || []), ...d.notes.filter(n => n && n.id && !hn.has(n.id))]; }
-      // הון התחלתי: אם המערכת החדשה עוד ריקה, לוקחים את זה של הגיבוי כדי שהחישובים יתאימו
-      if (S.trades.length === merged.length && fin(d.cfg?.startBalance)) S.cfg.startBalance = +d.cfg.startBalance;
-      if (Array.isArray(d.log)) S.log = [...S.log, ...d.log.filter(l => l && fin(l.t) && l.m).map(l => ({ t: l.t, k: l.k || 'info', m: String(l.m) }))]
-        .sort((a, b) => b.t - a.t).slice(0, 600);
-      const closed = merged.filter(t => t.status !== 'open');
-      const pnl = closed.reduce((a, t) => a + t.pnl, 0);
-      logit(`שוחזרו ${merged.length} עסקאות מגיבוי (${closed.length} סגורות · ${usd(pnl)})`, 'sys');
+      const res = mergeBackup(JSON.parse(r.result));
+      logit(`שוחזרו ${res.added.length} עסקאות מגיבוי (${res.closed.length} סגורות · ${usd(res.pnl)})`, 'sys');
+      if (res.skipped) logit(`${res.skipped} רשומות פגומות בגיבוי דולגו`, 'warn');
       save(); D = JSON.parse(JSON.stringify(S.cfg)); render();
-      toast(merged.length ? `שוחזרו ${merged.length} עסקאות · ${usd(pnl)}` : 'כל העסקאות מהגיבוי כבר קיימות');
-      if (skipped) logit(`${skipped} רשומות פגומות בגיבוי דולגו`, 'warn');
-      if (merged.some(t => t.status === 'open')) scanNow();
+      toast(res.added.length ? `שוחזרו ${res.added.length} עסקאות · ${usd(res.pnl)}` : 'כל העסקאות מהגיבוי כבר קיימות');
+      if (res.added.some(t => t.status === 'open')) scanNow();
     } catch (e) { toast('השחזור נכשל: ' + e.message, true); }
     finally { inp.value = ''; }
   };
   r.readAsText(f);
+}
+
+// גיבוי שמצורף לאתר (seed.json) — נטען פעם אחת בלבד לכל מכשיר
+async function applySeed() {
+  if (location.protocol === 'file:') return;
+  try {
+    const r = await fetch('seed.json', { cache: 'no-store' });
+    if (!r.ok) return;
+    const d = await r.json();
+    const id = d.seedId || String(d.lastScan || '');
+    if (!id || (S.seeds || []).includes(id)) return;
+    const res = mergeBackup(d, { preferIncoming: true });
+    S.seeds = [...(S.seeds || []), id];
+    S.importHintClosed = true;
+    logit(`הנתונים מהגרסה הקודמת נטענו: ${res.added.length} עסקאות · ${res.closed.length} סגורות · ${usd(res.pnl)}`, 'sys');
+    if (res.dropped.length) logit(`הוסרו ${res.dropped.length} פוזיציות כפולות שנפתחו כאן אחרי הגרסה הקודמת (${res.dropped.map(t => base(t.symbol)).join(', ')})`, 'sys');
+    save();
+    setTimeout(() => toast(`הנתונים הקודמים נטענו · ${res.closed.length} עסקאות סגורות · ${usd(res.pnl)}`), 400);
+  } catch (e) { /* בלי seed — ממשיכים כרגיל */ }
 }
 function dl(b, n) { const u = URL.createObjectURL(b), a = document.createElement('a');
   a.href = u; a.download = n; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000); toast('הקובץ ירד'); }
@@ -1274,6 +1307,7 @@ function countdown() { const ms = S.nextScan - Date.now(); const el = $('next');
 function scanNow() { S.nextScan = Date.now(); scan(); }
 
 async function boot() {
+  await applySeed();
   render(); logit('המערכת הופעלה', 'sys'); setStatus('בודק חיבור…', '');
   const d = await diagnose();
   if (!d.anySource) { setStatus('אין חיבור לנתונים', 'err'); view = 'system'; logit('אף מקור נתונים לא נגיש', 'err'); save(); render(); }
