@@ -175,6 +175,16 @@ input[type=range]:focus{box-shadow:none}
 .sym button{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;color:var(--faint);font-size:12px}
 .sym button:hover{background:var(--card3);color:var(--txt)}
 
+.t td.why{white-space:normal;min-width:190px;max-width:260px}
+.whyb{text-align:right;font-size:12px;color:var(--dim);line-height:1.5;padding:4px 6px;border-radius:7px;width:100%}
+.whyb:hover{background:var(--card3);color:var(--txt)}
+.t tr.whyrow td{background:var(--bg2)!important;box-shadow:none!important;white-space:normal;padding:0}
+.whyp{display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:16px 18px;border-top:1px dashed var(--line2)}
+.whyp h4{font-size:13px;color:var(--gold2);margin-bottom:8px}.whyp h5{font-size:11.5px;color:var(--dim);margin:12px 0 6px;font-weight:500}
+.whyp ul{list-style:none;display:grid;gap:6px;font-size:12.5px;line-height:1.6}
+.whyp li{padding-inline-start:16px;position:relative}.whyp li::before{content:"•";position:absolute;inset-inline-start:2px;color:var(--faint)}
+.whyp .chk li.y::before{content:"✓";color:var(--up)}.whyp .chk li.n::before{content:"✗";color:var(--down)}
+@media(max-width:760px){.whyp{grid-template-columns:1fr;gap:12px}}
 .chartbox{position:relative;height:260px}.chartbox.sm{height:220px}
 .empty{text-align:center;color:var(--faint);padding:38px 14px;font-size:13.5px;line-height:1.8}
 .empty .ic{font-size:30px;margin-bottom:6px;opacity:.6}
@@ -441,7 +451,7 @@ const REASON = { target: 'יעד', stop: 'סטופ', breakeven: 'נקודת אי
 const DECISION = ['', 'הייתי נכנס', 'הייתי מדלג', 'לא בדקתי'];
 
 let S = load(), D = null, view = 'overview', busy = false, tickT = null, loopT = null;
-let charts = {}, tvSymbol = 'BTCUSDT', F = { status: 'all', q: '' }, J = { q: '', only: 'all' }, LG = { q: '' };
+let charts = {}, tvSymbol = 'BTCUSDT', F = { status: 'all', q: '' }, J = { q: '', only: 'all', exp: {} }, LG = { q: '' };
 
 /* ---------------- אחסון ---------------- */
 function blank() {
@@ -604,7 +614,9 @@ async function scan() {
         if (ev.score < C.minScore) continue;
         const tr = CORE.buildTrade(sym, ev, C, CORE.equityOf(S.trades, C.startBalance), Date.now());
         if (!tr) { logit(`${sym}: רמות לא תקינות`, 'skip'); continue; }
-        Object.assign(tr, { decision: '', rating: 0, tags: '', note: '', lesson: '', edits: {}, interval: C.interval });
+        Object.assign(tr, { decision: '', rating: 0, tags: '', note: '', lesson: '', edits: {}, interval: C.interval,
+          ind: { e20: ev.e20, e50: ev.e50, e200: ev.e200, ext: ev.ext, price: ev.price },
+          rules: { atrStop: C.atrStop, rr: C.rr, riskPct: C.riskPct, beAfterR: C.beAfterR, timeStopDays: C.timeStopDays } });
         S.trades.unshift(tr); found++;
         logit(`איתות ${base(sym)} ${ev.score}/5 · כניסה ${nx(tr.entry)} · סטופ ${nx(tr.stop)} · יעד ${nx(tr.target)}`, 'signal');
         notify(`🔔 איתות ${base(sym)} — ${ev.score}/5`, `כניסה ${nx(tr.entry)} · סטופ ${nx(tr.stop)} · יעד ${nx(tr.target)}`);
@@ -826,6 +838,93 @@ function vTrades() {
 }
 
 /* ================= יומן מסחר — אוטומטי וניתן לעריכה ================= */
+
+/* ================= נימוקי כניסה ויציאה ================= */
+const pctOf = (a, b) => (a - b) / b * 100;
+const days = ms => ms / 864e5;
+const durTxt = ms => { const d = days(ms); return d >= 1 ? `${d.toFixed(1)} ימים` : `${Math.max(1, Math.round(ms / 36e5))} שעות`; };
+function whyEntry(t) {
+  const c = t.conds || {}, i = t.ind || {};
+  const lines = [];
+  const has = k => Object.keys(c).find(x => x.includes(k));
+  const L = (k, okTxt, badTxt) => { const key = has(k); if (!key) return; lines.push({ ok: !!c[key], txt: c[key] ? okTxt : badTxt }); };
+  L('EMA200', fin(i.e200) ? `מגמה ראשית עולה: המחיר ${nx(i.price ?? t.refPrice)} מעל ממוצע 200 (${nx(i.e200)}), ${pctOf(i.price ?? t.refPrice, i.e200).toFixed(1)}% מעליו`
+                          : 'מגמה ראשית עולה: המחיר מעל ממוצע 200',
+                          fin(i.e200) ? `המחיר מתחת לממוצע 200 (${nx(i.e200)}) — אין מגמה ראשית עולה` : 'המחיר מתחת לממוצע 200');
+  L('EMA20 מעל', fin(i.e20) ? `מבנה מגמה תקין: ממוצע 20 (${nx(i.e20)}) מעל ממוצע 50 (${nx(i.e50)})` : 'מבנה מגמה תקין: ממוצע 20 מעל ממוצע 50',
+                 'ממוצע 20 מתחת לממוצע 50 — המגמה הקצרה נחלשת');
+  L('RSI', `מומנטום בריא: RSI ${fin(t.rsi) ? t.rsi.toFixed(1) : '—'}, בטווח 50–68 — חזק, אבל לא קנוי-יתר`,
+           `RSI ${fin(t.rsi) ? t.rsi.toFixed(1) : '—'} מחוץ לטווח 50–68`);
+  L('נמתח', fin(i.ext) ? `לא רודפים: המחיר רק ${i.ext.toFixed(2)} ATR מעל ממוצע 20 (מותר עד 1.5)` : 'לא רודפים: המחיר קרוב לממוצע 20',
+            fin(i.ext) ? `המחיר נמתח ${i.ext.toFixed(2)} ATR מעל ממוצע 20 — כניסה מאוחרת` : 'המחיר נמתח מדי מעל ממוצע 20');
+  L('נפח', `נפח המסחר ${fin(t.volRatio) ? t.volRatio.toFixed(2) + '×' : ''} מהממוצע — יש השתתפות אמיתית`,
+           `נפח המסחר רק ${fin(t.volRatio) ? t.volRatio.toFixed(2) + '×' : ''} מהממוצע — השתתפות חלשה`);
+  const stopPct = pctOf(t.stop, t.entry), tgtPct = pctOf(t.target, t.entry);
+  const rr = (t.target - t.entry) / (t.entry - t.stop);
+  const atrMult = fin(t.atr) && t.atr > 0 ? (t.entry - t.stop) / t.atr : null;
+  const plan = [
+    `כניסה ב-${nx(t.entry)} (מחיר השוק ${nx(t.refPrice)} + סליפג׳)`,
+    `סטופ ב-${nx(t.stop)} (${stopPct.toFixed(1)}%)${atrMult ? ` — ${atrMult.toFixed(2)}×ATR מתחת לכניסה, כדי לא להיפגע מתנודה רגילה` : ''}`,
+    `יעד ב-${nx(t.target)} (+${tgtPct.toFixed(1)}%) — יחס 1:${+rr.toFixed(2)}`,
+    `גודל פוזיציה ${nx(t.qty, 5)} יח׳ (${usd(t.entry * t.qty)}) — מחושב כך שפגיעה בסטופ תעלה ${usd(t.riskUsd)} בלבד`,
+  ];
+  if (fin(t.beTrigger)) plan.push(`הגנה: אם המחיר יגיע ל-${nx(t.beTrigger)} (+${pctOf(t.beTrigger, t.entry).toFixed(1)}%), הסטופ יזוז לכניסה`);
+  const passed = lines.filter(l => l.ok).length;
+  const short = `${t.score ?? passed}/5 תנאים · ${lines.filter(l => l.ok).map(l => l.txt.split(':')[0].split(' —')[0]).slice(0, 2).join(' · ')}${lines.some(l => !l.ok) ? ' · חסר: ' + lines.filter(l => !l.ok).map(l => l.txt.split(' —')[0].split(':')[0]).join(', ') : ''}`;
+  return { lines, plan, short };
+}
+function whyExit(t) {
+  const fmtR = fin(t.rMult) ? `${t.rMult >= 0 ? '+' : ''}${t.rMult.toFixed(2)}R` : '';
+  if (t.status === 'open') {
+    const cur = t.livePrice;
+    const prog = fin(cur) ? Math.max(-100, Math.min(100, (cur - t.entry) / (t.target - t.entry) * 100)) : null;
+    const lines = [
+      `העסקה עדיין פתוחה ${durTxt(Date.now() - t.signalAt)}. לא נגעה ביעד (${nx(t.target)}) ולא בסטופ (${nx(t.beArmedAt != null ? t.entry : t.stop)}).`,
+      fin(cur) ? `מחיר אחרון ${nx(cur)} (${pctOf(cur, t.entry) >= 0 ? '+' : ''}${pctOf(cur, t.entry).toFixed(2)}% מהכניסה) — ${prog >= 0 ? `${prog.toFixed(0)}% מהדרך ליעד` : `${Math.abs(pctOf(cur, t.entry) / pctOf(t.stop, t.entry) * 100).toFixed(0)}% מהדרך לסטופ`}.` : 'עדיין אין מחיר עדכני.',
+    ];
+    if (t.beArmedAt != null) lines.push(`ב-${stamp(t.beArmedAt)} המחיר עבר 1R והסטופ הוזז לכניסה. מכאן העסקה לא יכולה להפסיד מעבר לעמלות.`);
+    const lim = t.rules?.timeStopDays ?? S.cfg.timeStopDays;
+    if (lim) lines.push(`אם לא תיסגר עד ${stamp(t.signalAt + lim * 864e5)} (${lim} יום), תיסגר במחיר השוק.`);
+    return { lines, short: fin(cur) ? `פתוחה · ${prog >= 0 ? prog.toFixed(0) + '% ליעד' : 'מתחת לכניסה'}${t.beArmedAt != null ? ' · מוגנת' : ''}` : 'פתוחה' };
+  }
+  const held = durTxt(t.exitAt - t.signalAt), when = stamp(t.exitAt), feeTxt = fin(t.fees) ? ` (אחרי עמלות ${usd(t.fees)})` : '';
+  const R = t.exitReason, lines = [];
+  if (R === 'target') {
+    lines.push(`המחיר עלה והגיע ליעד ${nx(t.target)} ב-${when}, ${held} אחרי הכניסה.`);
+    lines.push(`העסקה נסגרה כמתוכנן ברווח ${usd(t.pnl)}${feeTxt} — ${fmtR}, בדיוק היחס שתוכנן בכניסה.`);
+    if (t.beArmedAt != null) lines.push(`בדרך, ב-${stamp(t.beArmedAt)}, הסטופ הוזז לכניסה, כך שמאותו רגע לא היה סיכון.`);
+  } else if (R === 'stop') {
+    lines.push(`המחיר ירד אל הסטופ ${nx(t.stop)} ב-${when}, ${held} אחרי הכניסה, לפני שהגיע ליעד.`);
+    lines.push(`ההפסד נעצר ב-${usd(t.pnl)}${feeTxt} — ${fmtR}. זה הסיכון שהוגדר מראש; הסטופ עשה את תפקידו.`);
+    lines.push(fin(t.beTrigger) ? `הסטופ לא הוזז לכניסה כי המחיר לא הגיע ל-${nx(t.beTrigger)} (1R) לפני הירידה.`
+                                : 'בגרסה שבה נפתחה העסקה עוד לא הייתה הגנת נקודת איחוד, ולכן הסטופ נשאר במקומו.');
+  } else if (R === 'breakeven') {
+    lines.push(`ב-${stamp(t.beArmedAt)} המחיר עלה ל-${nx(t.beTrigger)} (1R) והמערכת הזיזה את הסטופ למחיר הכניסה.`);
+    lines.push(`אחר כך המחיר חזר לכניסה ${nx(t.entry)} ב-${when} והעסקה נסגרה.`);
+    lines.push(`תוצאה ${usd(t.pnl)} — רק העמלות. בלי ההגנה זו הייתה יכולה להיות עסקה מפסידה.`);
+  } else if (R === 'time') {
+    const lim = t.rules?.timeStopDays ?? 30;
+    lines.push(`עברו ${held} בלי שהמחיר הגיע ליעד (${nx(t.target)}) או לסטופ (${nx(t.stop)}).`);
+    lines.push(`העסקה נסגרה במגבלת הזמן (${lim} יום) במחיר השוק ${nx(t.exit)} — ${t.pnl >= 0 ? 'ברווח' : 'בהפסד'} ${usd(t.pnl)} (${fmtR}).`);
+    lines.push('המטרה: לא להחזיק כסף תקוע בעסקה שלא זזה.');
+    if (days(t.exitAt - t.signalAt) > lim + 1) lines.push(`⚠ הסגירה בוצעה ${(days(t.exitAt - t.signalAt) - lim).toFixed(1)} ימים אחרי המגבלה, כי בגרסה הקודמת הבדיקה רצה רק כשהדף נפתח. המחיר הוא של יום הסגירה בפועל.`);
+  } else lines.push(`נסגרה ב-${nx(t.exit)} ב-${when} · ${usd(t.pnl)}`);
+  const short = { target: `הגיעה ליעד אחרי ${held}`, stop: `נפגע סטופ אחרי ${held}`, breakeven: 'חזרה לכניסה אחרי הגנה', time: `מגבלת זמן · ${held}` }[R] || '—';
+  return { lines, short };
+}
+function whyPanel(t) {
+  const e = whyEntry(t), x = whyExit(t);
+  return `<div class="whyp">
+    <div><h4>למה נכנסה</h4>
+      <ul class="chk">${e.lines.map(l => `<li class="${l.ok ? 'y' : 'n'}">${esc(l.txt)}</li>`).join('')}</ul>
+      <h5>התוכנית שנקבעה ב-${stamp(t.signalAt)}</h5>
+      <ul>${e.plan.map(l => `<li>${esc(l)}</li>`).join('')}</ul></div>
+    <div><h4>${t.status === 'open' ? 'מצב נוכחי' : 'למה יצאה'}</h4>
+      <ul>${x.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul></div></div>`;
+}
+function whyText(t) { const e = whyEntry(t), x = whyExit(t);
+  return { entry: [...e.lines.map(l => (l.ok ? '✓ ' : '✗ ') + l.txt), ...e.plan].join(' | '), exit: x.lines.join(' | ') }; }
+
 function jRows() {
   const auto = S.trades.map(t => ({ kind: 'trade', id: t.id, t: t.signalAt, ref: t }));
   const man = (S.notes || []).map(n => ({ kind: 'note', id: n.id, t: n.t, ref: n }));
@@ -838,7 +937,7 @@ function cellIn(id, kind, field, val, extra = '') {
 function vJournal() {
   const q = J.q.trim().toLowerCase();
   let rows = jRows().filter(r => {
-    const x = r.ref; const txt = [x.symbol, x.note, x.tags, x.lesson, x.decision].join(' ').toLowerCase();
+    const x = r.ref; const txt = [x.symbol, x.note, x.tags, x.lesson, x.decision, r.kind === 'trade' ? whyEntry(x).short + ' ' + whyExit(x).short : ''].join(' ').toLowerCase();
     if (q && !txt.includes(q)) return false;
     if (J.only === 'pending') return r.kind === 'trade' && x.status !== 'open' && !x.decision;
     if (J.only === 'notes') return r.kind === 'note';
@@ -854,17 +953,18 @@ function vJournal() {
       <div class="search">${I.search}<input placeholder="חיפוש ביומן…" value="${esc(J.q)}" oninput="J.q=this.value;clearTimeout(window._jq);window._jq=setTimeout(()=>{render();const e=document.querySelector('.search input');e.focus();e.setSelectionRange(99,99)},250)"></div>
       <span class="sp"></span>
       <button class="btn pri sm" onclick="addNote()">${I.plus} רשומה חדשה</button>
+      <button class="btn ghost sm" onclick="const all=S.trades.every(t=>J.exp[t.id]);S.trades.forEach(t=>J.exp[t.id]=!all);render()">פתח / סגור נימוקים</button>
       <button class="btn ghost sm" onclick="exportJournal()">${I.dl} ייצוא</button>
     </div>
     ${rows.length ? `<div class="tw"><table class="t"><thead><tr>
       <th>תאריך ושעה</th><th>מטבע</th><th>תוצאה</th><th>R</th><th>רווח / הפסד</th>
-      <th>ההחלטה שלי</th><th>דירוג סטאפ</th><th>תגיות</th><th>הערה</th><th>לקח</th><th></th>
+      <th>למה נכנסה</th><th>למה יצאה</th><th>ההחלטה שלי</th><th>דירוג סטאפ</th><th>תגיות</th><th>הערה</th><th>לקח</th><th></th>
     </tr></thead><tbody>
     ${rows.map(r => { const x = r.ref;
       if (r.kind === 'note') return `<tr>
         <td><input type="datetime-local" value="${new Date(x.t - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 16)}" onchange="jSet('note','${x.id}','t',this.value)"></td>
         ${cellIn(x.id, 'note', 'symbol', x.symbol || '', 'placeholder="—" style="width:90px"')}
-        <td><span class="badge b-gold">הערה</span></td><td class="faint">—</td><td class="faint">—</td>
+        <td><span class="badge b-gold">הערה</span></td><td class="faint">—</td><td class="faint">—</td><td class="faint">—</td><td class="faint">—</td>
         <td><select onchange="jSet('note','${x.id}','decision',this.value)">${DECISION.map(d => `<option ${x.decision === d ? 'selected' : ''} value="${d}">${d || '—'}</option>`).join('')}</select></td>
         <td>${stars(x.rating).replace(/KIND/g, "'note'").replace(/ID/g, `'${x.id}'`)}</td>
         ${cellIn(x.id, 'note', 'tags', x.tags || '', 'placeholder="#תגית"')}
@@ -872,19 +972,24 @@ function vJournal() {
         ${cellIn(x.id, 'note', 'lesson', x.lesson || '', 'class="note-in" placeholder="לקח"')}
         <td><button class="btn ghost sm ic" title="מחק" onclick="delNote('${x.id}')">✕</button></td></tr>`;
       const pl = x.status === 'open' ? x.livePnl : x.pnl;
+      const ex = !!J.exp[x.id], we = whyEntry(x), wx = whyExit(x);
       return `<tr class="${rowCls(x)}">
         <td class="dim">${stamp(x.signalAt)}</td><td><b>${esc(base(x.symbol))}</b></td><td>${badge(x)}</td>
         <td class="num ${cls(x.rMult)}">${fin(x.rMult) ? x.rMult.toFixed(2) : '—'}</td>
         <td class="num ${cls(pl)}">${usd(pl)}</td>
+        <td class="why"><button class="whyb" onclick="J.exp['${x.id}']=!J.exp['${x.id}'];render()">${ex ? '▾' : '▸'} ${esc(we.short)}</button></td>
+        <td class="why"><button class="whyb" onclick="J.exp['${x.id}']=!J.exp['${x.id}'];render()">${ex ? '▾' : '▸'} ${esc(wx.short)}</button></td>
         <td class="${x.edits?.decision ? 'edited' : ''}"><select onchange="jSet('trade','${x.id}','decision',this.value)">${DECISION.map(d => `<option ${x.decision === d ? 'selected' : ''} value="${d}">${d || '—'}</option>`).join('')}</select></td>
         <td class="${x.edits?.rating ? 'edited' : ''}">${stars(x.rating).replace(/KIND/g, "'trade'").replace(/ID/g, `'${x.id}'`)}</td>
         ${cellIn(x.id, 'trade', 'tags', x.tags || '', 'placeholder="#תגית"')}
         ${cellIn(x.id, 'trade', 'note', x.note || '', 'class="note-in" placeholder="מה ראיתי בגרף…"')}
         ${cellIn(x.id, 'trade', 'lesson', x.lesson || '', 'class="note-in" placeholder="לקח"')}
-        <td><button class="btn ghost sm ic" title="פתח בגרף" onclick="tvSymbol='${esc(x.symbol)}';go('perf')">📈</button></td></tr>`;
+        <td><button class="btn ghost sm ic" title="פתח בגרף" onclick="tvSymbol='${esc(x.symbol)}';go('perf')">📈</button></td></tr>
+        ${ex ? `<tr class="whyrow"><td colspan="13">${whyPanel(x)}</td></tr>` : ''}`;
     }).join('')}
     </tbody></table></div>` : `<div class="empty"><div class="ic">📓</div>${S.trades.length || (S.notes || []).length ? 'אין רשומות לסינון הזה' : 'היומן יתמלא אוטומטית עם האיתות הראשון.<br>אפשר גם להוסיף רשומה ידנית.'}</div>`}
-    <div class="note">כל איתות נכנס ליומן אוטומטית עם התוצאה שלו. העמודות "ההחלטה שלי", דירוג, תגיות, הערה ולקח — שלך לעריכה.
+    <div class="note">לחיצה על "למה נכנסה" או "למה יצאה" פותחת הסבר מלא: אילו תנאים התקיימו, מה הייתה התוכנית, ומה המחיר עשה בפועל. ההסבר נבנה מהנתונים שנשמרו ברגע האיתות ולא ניתן לעריכה.
+      <br>כל איתות נכנס ליומן אוטומטית עם התוצאה שלו. העמודות "ההחלטה שלי", דירוג, תגיות, הערה ולקח — שלך לעריכה.
       שינוי נשמר ברגע שיוצאים מהתא, ותא שערכת מסומן ב-✎.
       <br><b>"ההחלטה שלי"</b> היא הנתון הכי חשוב כאן: אחרי 50 עסקאות תראה בלשונית הביצועים אם האינטואיציה שלך משפרת את המערכת או פוגעת בה.</div></div>`;
 }
@@ -1200,11 +1305,12 @@ function exportCsv() {
     { type: 'text/csv;charset=utf-8' }), 'signal-pro-trades.csv');
 }
 function exportJournal() {
-  const H = ['תאריך', 'סוג', 'מטבע', 'תוצאה', 'R', 'רווח/הפסד $', 'ההחלטה שלי', 'דירוג', 'תגיות', 'הערה', 'לקח'];
+  const H = ['תאריך', 'סוג', 'מטבע', 'תוצאה', 'R', 'רווח/הפסד $', 'למה נכנסה', 'למה יצאה', 'ההחלטה שלי', 'דירוג', 'תגיות', 'הערה', 'לקח'];
   dl(new Blob([csv([H, ...jRows().map(r => { const x = r.ref;
-    return r.kind === 'note' ? [stamp(x.t), 'הערה', x.symbol, '', '', '', x.decision, x.rating || '', x.tags, x.note, x.lesson]
-      : [stamp(x.signalAt), 'עסקה', x.symbol, x.status === 'open' ? 'פתוחה' : REASON[x.exitReason], x.rMult?.toFixed(2) ?? '',
-         x.pnl?.toFixed(2) ?? '', x.decision, x.rating || '', x.tags, x.note, x.lesson]; })])],
+    if (r.kind === 'note') return [stamp(x.t), 'הערה', x.symbol, '', '', '', '', '', x.decision, x.rating || '', x.tags, x.note, x.lesson];
+    const w = whyText(x);
+    return [stamp(x.signalAt), 'עסקה', x.symbol, x.status === 'open' ? 'פתוחה' : REASON[x.exitReason], x.rMult?.toFixed(2) ?? '',
+         x.pnl?.toFixed(2) ?? '', w.entry, w.exit, x.decision, x.rating || '', x.tags, x.note, x.lesson]; })])],
     { type: 'text/csv;charset=utf-8' }), 'signal-pro-journal.csv');
 }
 function exportJson() { dl(new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' }), `signal-pro-backup-${new Date().toISOString().slice(0, 10)}.json`); }
