@@ -197,6 +197,8 @@ input[type=range]:focus{box-shadow:none}
 .opbar span.n{right:50%;background:linear-gradient(270deg,rgba(239,68,68,.45),var(--down))}
 .oplive{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--bg2);border:1px solid var(--line);font-size:12.5px;cursor:pointer}
 @media(max-width:760px){.opcard .big{font-size:28px}.opr{gap:8px}}
+.upd{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:300;display:flex;align-items:center;gap:12px;
+  padding:10px 12px 10px 16px;border-radius:12px;background:var(--card2);border:1px solid rgba(232,184,90,.5);box-shadow:var(--shadow);font-size:13px;white-space:nowrap}
 .chartbox{position:relative;height:260px}.chartbox.sm{height:220px}
 .empty{text-align:center;color:var(--faint);padding:38px 14px;font-size:13.5px;line-height:1.8}
 .empty .ic{font-size:30px;margin-bottom:6px;opacity:.6}
@@ -544,6 +546,7 @@ var LIVECORE = (function () {
    המנוע (CORE) נבדק בנפרד ב-Node. כאן: נתונים, ממשק, יומן, הגדרות.
    =================================================================== */
 const KEY = 'sigpro_v3';
+const APP_VERSION = '3.8';
 const PRESETS = {
   conservative: { name: 'שמרני', desc: 'יומי · סטופ 3 ATR · 1:2 · סיכון 1% · ניקוד 5/5',
     v: { interval: 'D', atrStop: 3, rr: 2, riskPct: 1, minScore: 5, beAfterR: 1 } },
@@ -805,6 +808,7 @@ function renderNav() {
       <div class="row"><span>מקור נתונים</span><span>${esc(S.source || '—')}</span></div>
       <div class="row"><span>סריקה אחרונה</span><span>${ago(S.lastScan)}</span></div>
       <div class="row"><span>מסגרת</span><span>${IV_NAME[S.cfg.interval]} · 1:${S.cfg.rr}</span></div>
+      <div class="row"><span>גרסה</span><span>${APP_VERSION}</span></div>
     </div>`;
   $('mnav').innerHTML = NAV.filter(n => n[0] !== 'system' && n[0] !== 'perf').map(([k, l]) =>
     `<button class="${view === k ? 'on' : ''}" onclick="go('${k}')">${I[k]}<span>${l.split(' ')[0]}</span></button>`).join('');
@@ -873,7 +877,7 @@ function vOverview() {
     <h2>⚡ ${lvE.length} איתות${lvE.length > 1 ? 'ים' : ''} זמין${lvE.length > 1 ? 'ים' : ''} לביצוע אמיתי</h2><span class="sp"></span>
     <button class="btn pri sm" onclick="go('live')">לביצוע</button></div></div>` : '';
   const op = openPnl();
-  return `${banner}${liveCta}
+  return `${banner}${liveCta}${openCard(op)}
   <div class="kpis">
     ${kpi('◆', 'שווי תיק', usd(s.equity), cls(s.net), `התחלה ${usd(S.cfg.startBalance)}${op.n ? ` · כולל פתוחות <b class="${cls(s.equity + op.sum - S.cfg.startBalance)}">${usd(s.equity + op.sum)}</b>` : ''}`, spark(eq, s.net >= 0 ? '#22c55e' : '#ef4444'))}
     ${kpi('±', 'רווח / הפסד', usd(s.net), cls(s.net), `<span class="${cls(s.net)}">${pct(s.netPct)}</span> · עמלות ${usd(s.totalFees)}`)}
@@ -888,7 +892,6 @@ function vOverview() {
     ${kpi('●', 'פוזיציות פתוחות', `${open.length}<span class="faint" style="font-size:15px"> / ${S.cfg.maxOpen}</span>`,
         open.length ? 'amber' : '', `בסיכון ${usd(open.reduce((a, t) => a + (t.beArmedAt != null ? 0 : t.riskUsd), 0))}`)}
   </div>
-  ${openCard(op)}
   <div class="grid g2">
     <div class="card"><div class="card-h"><h2>עקומת הון</h2><span class="c">${s.total} עסקאות סגורות</span></div>
       ${s.total ? '<div class="chartbox"><canvas id="cvEq"></canvas></div>'
@@ -1481,6 +1484,7 @@ function vSystem() {
       <div class="pv-row"><span>מטבעות פעילים</span><b>${activeSyms().length} / ${S.cfg.symbols.length}</b></div>
       <div class="pv-row"><span>מסגרת / יחס</span><b>${IV_NAME[S.cfg.interval]} · 1:${S.cfg.rr}</b></div>
       <div class="pv-row"><span>רשומות ביומן מערכת</span><b>${S.log.length}</b></div>
+      <div class="pv-row"><span>גרסת המערכת</span><b>${APP_VERSION}</b></div>
       <div class="pv-row"><span>נפח אחסון</span><b>${(JSON.stringify(S).length / 1024).toFixed(0)} KB</b></div>
       <div class="note">המערכת רצה רק כשהדף פתוח. בכל פתיחה היא משחזרת אוטומטית מה קרה לעסקאות הפתוחות בזמן שהיה סגור — אבל איתותים חדשים נוצרים רק כשהיא פתוחה.</div></div>
   </div>
@@ -1607,6 +1611,23 @@ async function applySeed() {
 function dl(b, n) { const u = URL.createObjectURL(b), a = document.createElement('a');
   a.href = u; a.download = n; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000); toast('הקובץ ירד'); }
 
+/* ================= בדיקת גרסה חדשה ================= */
+async function checkVersion() {
+  if (location.protocol === 'file:') return;
+  try {
+    const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (d && d.v && String(d.v) !== APP_VERSION) showUpdate(String(d.v));
+  } catch (e) {}
+}
+function showUpdate(v) {
+  if (document.getElementById('upd')) return;
+  const el = document.createElement('div'); el.id = 'upd'; el.className = 'upd';
+  el.innerHTML = `<span>יש גרסה חדשה של המערכת (${esc(v)})</span><button class="btn pri sm" onclick="location.replace(location.pathname + '?v=' + encodeURIComponent('${esc(v)}'))">רענן עכשיו</button>`;
+  document.body.appendChild(el);
+}
+
 /* ================= לולאה ================= */
 function countdown() { const ms = S.nextScan - Date.now(); const el = $('next'); if (!el) return;
   if (busy) { el.textContent = 'סורק…'; return; }
@@ -1622,6 +1643,7 @@ async function boot() {
   clearInterval(tickT); clearInterval(loopT);
   tickT = setInterval(countdown, 1000);
   clearInterval(window._roT); window._roT = setInterval(() => refreshOpen(false), 60000);
+  checkVersion(); clearInterval(window._vT); window._vT = setInterval(checkVersion, 10 * 6e4);
   loopT = setInterval(() => { if (Date.now() >= S.nextScan) scan(); }, 15000);
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() >= S.nextScan) scan(); });
