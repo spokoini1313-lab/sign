@@ -185,6 +185,18 @@ input[type=range]:focus{box-shadow:none}
 .whyp li{padding-inline-start:16px;position:relative}.whyp li::before{content:"•";position:absolute;inset-inline-start:2px;color:var(--faint)}
 .whyp .chk li.y::before{content:"✓";color:var(--up)}.whyp .chk li.n::before{content:"✗";color:var(--down)}
 @media(max-width:760px){.whyp{grid-template-columns:1fr;gap:12px}}
+.opcard .opsum{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:4px 0 14px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.opcard .big{font-size:34px;font-weight:800;letter-spacing:-.6px;line-height:1}
+.opcard .opsum .faint{font-size:12px;line-height:1.7}
+.opr{display:flex;align-items:center;gap:12px;padding:9px 6px;border-radius:9px;cursor:pointer;font-size:13px}
+.opr:hover{background:var(--card2)}.opr>b:first-child{min-width:54px}
+.opbar{flex:1;height:8px;border-radius:8px;background:var(--card3);position:relative;overflow:hidden;direction:ltr}
+.opbar::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line2)}
+.opbar span{position:absolute;top:0;bottom:0;border-radius:8px}
+.opbar span.p{left:50%;background:linear-gradient(90deg,rgba(34,197,94,.45),var(--up))}
+.opbar span.n{right:50%;background:linear-gradient(270deg,rgba(239,68,68,.45),var(--down))}
+.oplive{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--bg2);border:1px solid var(--line);font-size:12.5px;cursor:pointer}
+@media(max-width:760px){.opcard .big{font-size:28px}.opr{gap:8px}}
 .chartbox{position:relative;height:260px}.chartbox.sm{height:220px}
 .empty{text-align:center;color:var(--faint);padding:38px 14px;font-size:13.5px;line-height:1.8}
 .empty .ic{font-size:30px;margin-bottom:6px;opacity:.6}
@@ -753,7 +765,7 @@ async function monitor() {
         logit(`${base(t.symbol)} עברה 1R — הסטופ הוזז לכניסה ${nx(t.entry)}. מכאן היא מוגנת`, 'shield');
         notify(`🛡 ${base(t.symbol)} מוגנת`, 'הסטופ הוזז לנקודת הכניסה');
       }
-      t.livePrice = r.last;
+      t.livePrice = r.last; t.liveAt = Date.now();
       t.livePnl = (r.last - t.entry) * t.qty - CORE.feesFor(t, r.last, S.cfg);
     } catch (e) { logit(`ניטור ${t.symbol}: ${e.message}`, 'err'); }
   }
@@ -860,9 +872,10 @@ function vOverview() {
   const liveCta = lvE.length ? `<div class="card" style="border-color:rgba(232,184,90,.45)"><div class="card-h" style="margin:0">
     <h2>⚡ ${lvE.length} איתות${lvE.length > 1 ? 'ים' : ''} זמין${lvE.length > 1 ? 'ים' : ''} לביצוע אמיתי</h2><span class="sp"></span>
     <button class="btn pri sm" onclick="go('live')">לביצוע</button></div></div>` : '';
+  const op = openPnl();
   return `${banner}${liveCta}
   <div class="kpis">
-    ${kpi('◆', 'שווי תיק', usd(s.equity), cls(s.net), `התחלה ${usd(S.cfg.startBalance)}`, spark(eq, s.net >= 0 ? '#22c55e' : '#ef4444'))}
+    ${kpi('◆', 'שווי תיק', usd(s.equity), cls(s.net), `התחלה ${usd(S.cfg.startBalance)}${op.n ? ` · כולל פתוחות <b class="${cls(s.equity + op.sum - S.cfg.startBalance)}">${usd(s.equity + op.sum)}</b>` : ''}`, spark(eq, s.net >= 0 ? '#22c55e' : '#ef4444'))}
     ${kpi('±', 'רווח / הפסד', usd(s.net), cls(s.net), `<span class="${cls(s.net)}">${pct(s.netPct)}</span> · עמלות ${usd(s.totalFees)}`)}
     ${kpi('%', 'אחוז הצלחה', s.winRate != null ? s.winRate.toFixed(0) + '%' : '—',
         s.winRate == null ? '' : s.winRate >= need ? 'up' : 'down', `נדרש ${need.toFixed(0)}% לאיזון`,
@@ -875,6 +888,7 @@ function vOverview() {
     ${kpi('●', 'פוזיציות פתוחות', `${open.length}<span class="faint" style="font-size:15px"> / ${S.cfg.maxOpen}</span>`,
         open.length ? 'amber' : '', `בסיכון ${usd(open.reduce((a, t) => a + (t.beArmedAt != null ? 0 : t.riskUsd), 0))}`)}
   </div>
+  ${openCard(op)}
   <div class="grid g2">
     <div class="card"><div class="card-h"><h2>עקומת הון</h2><span class="c">${s.total} עסקאות סגורות</span></div>
       ${s.total ? '<div class="chartbox"><canvas id="cvEq"></canvas></div>'
@@ -902,6 +916,52 @@ function vOverview() {
         </tbody></table></div>` : '<div class="empty"><div class="ic">⏳</div>ממתין לאיתות הראשון</div>'}
     </div>
   </div>`;
+}
+
+/* ---------------- רווח/הפסד פתוח עכשיו ---------------- */
+function openPnl() {
+  const list = S.trades.filter(t => t.status === 'open');
+  const priced = list.filter(t => fin(t.livePnl));
+  const sum = priced.reduce((a, t) => a + t.livePnl, 0);
+  const lastAt = Math.max(0, ...list.map(t => t.liveAt || 0));
+  const lv = (S.live?.orders || []).filter(o => o.status === 'open');
+  return { list, n: list.length, priced: priced.length, sum, up: priced.filter(t => t.livePnl > 0).length,
+           down: priced.filter(t => t.livePnl < 0).length, lastAt, liveN: lv.length, liveSum: lv.reduce((a, o) => a + (fin(o.upnl) ? o.upnl : 0), 0) };
+}
+function openCard(op) {
+  if (!op.n && !op.liveN) return '';
+  const max = Math.max(1e-9, ...op.list.map(t => Math.abs(t.livePnl || 0)));
+  const rows = [...op.list].sort((a, b) => (b.livePnl ?? -1e9) - (a.livePnl ?? -1e9)).map(t => {
+    const v = t.livePnl, mv = fin(t.livePrice) ? (t.livePrice - t.entry) / t.entry * 100 : null, w = fin(v) ? Math.abs(v) / max * 50 : 0;
+    return `<div class="opr" onclick="go('trades')">
+      <b>${esc(base(t.symbol))}</b>${t.beArmedAt != null ? ' <span title="מוגנת">🛡</span>' : ''}
+      <div class="opbar"><span class="${v >= 0 ? 'p' : 'n'}" style="width:${w}%"></span></div>
+      <span class="num faint" style="min-width:58px;text-align:left">${fin(mv) ? pct(mv) : '—'}</span>
+      <b class="num ${cls(v)}" style="min-width:74px;text-align:left">${fin(v) ? usd(v) : '—'}</b></div>`; }).join('');
+  return `<div class="card opcard"><div class="card-h"><h2>רווח / הפסד פתוח עכשיו</h2>
+      <span class="c">${op.n} פוזיציות${op.lastAt ? ' · מחירים ' + ago(op.lastAt) : ''}</span><span class="sp"></span>
+      <button class="btn ghost sm" onclick="refreshOpen(true)" ${RO.busy ? 'disabled' : ''}>${RO.busy ? 'מעדכן…' : 'רענן מחירים'}</button></div>
+    <div class="opsum"><div class="big num ${cls(op.sum)}">${op.priced ? (op.sum > 0 ? '+' : '') + usd(op.sum) : '—'}</div>
+      <div class="faint">${op.priced ? `${pct(op.sum / S.cfg.startBalance * 100)} מההון · <span class="up">${op.up} ברווח</span> · <span class="down">${op.down} בהפסד</span>` : 'ממתין למחיר ראשון'}
+        <br>לא ממומש — משתנה עם המחיר. נכלל בשווי התיק רק כשהעסקה נסגרת.</div></div>
+    ${rows}
+    ${op.liveN ? `<div class="oplive" onclick="go('live')">⚡ במסחר אמיתי (Bybit): ${op.liveN} פתוחות · <b class="num ${cls(op.liveSum)}">${usd(op.liveSum)}</b></div>` : ''}
+  </div>`;
+}
+// רענון מחירים לפוזיציות פתוחות — כל דקה, בלי לחכות לסריקה
+const RO = { busy: false };
+async function refreshOpen(manual) {
+  if (RO.busy || busy || document.hidden && !manual) return;
+  const list = S.trades.filter(t => t.status === 'open'); if (!list.length) return;
+  RO.busy = true; if (manual && view === 'overview') render();
+  try {
+    await Promise.all(list.map(async t => {
+      try { const b = await klines(t.symbol, '15', 2); const px = b.at(-1)?.c;
+        if (fin(px) && px > 0 && t.status === 'open') { t.livePrice = px; t.livePnl = (px - t.entry) * t.qty - CORE.feesFor(t, px, S.cfg); t.liveAt = Date.now(); } }
+      catch (e) {}
+    }));
+    save();
+  } finally { RO.busy = false; if (view === 'overview' || manual) render(); else renderNav(); }
 }
 
 /* ================= טבלת עסקאות ================= */
@@ -1561,6 +1621,7 @@ async function boot() {
   else { logit(`אבחון: ${d.sources.filter(x => x.ok).length}/3 מקורות · מנוע ${d.engineOk ? 'תקין' : 'תקול'}`, 'sys'); await scan(); }
   clearInterval(tickT); clearInterval(loopT);
   tickT = setInterval(countdown, 1000);
+  clearInterval(window._roT); window._roT = setInterval(() => refreshOpen(false), 60000);
   loopT = setInterval(() => { if (Date.now() >= S.nextScan) scan(); }, 15000);
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() >= S.nextScan) scan(); });
