@@ -9,6 +9,7 @@ const runTests = async function(factory){
 const out=[];const check=(name,condition)=>{if(!condition)throw Error("FAIL: "+name);out.push(name);};
 const setup=async(cfg={})=>{const a=factory(cfg);a.LK.key="testkey";a.LK.secret="secret";await a.liveConnect();a.liveSet("enabled",true);return a;};
 const entries=a=>a.calls.filter(x=>x.path==="/v5/order/create"&&x.params.side==="Buy");
+const first=factory({});first.L();first.storage.set("test",JSON.stringify(first.S));first.LK.key="key";first.LK.secret="secret";await first.liveConnect();check("first connection binds an unbound stored account",first.BB.conn.state==="ok");
 const a=await setup();await a.livePrepare("t1");await a.liveExecute();
 check("entry uses IOC price limit and 1x leverage",entries(a).length===1&&entries(a)[0].params.timeInForce==="IOC"&&a.calls.some(x=>x.path==="/v5/position/set-leverage"&&x.params.buyLeverage==="1"));
 check("entry risk includes fees and stays in budget",a.L().orders[0].riskUsd<=2);

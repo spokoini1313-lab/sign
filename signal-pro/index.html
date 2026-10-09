@@ -1870,7 +1870,7 @@ async function withLiveLock(fn) {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const stored = JSON.parse(raw).live;
-      if (stored && (stored.env !== L().env || stored.accountUid !== L().accountUid)) throw new Error('החיבור השתנה בלשונית אחרת — רענן');
+      if (stored && (stored.env !== L().env || (stored.accountUid && stored.accountUid !== L().accountUid))) throw new Error('החיבור השתנה בלשונית אחרת — רענן');
       if (stored) {
         for (const o of stored.orders || []) {
           const at = L().orders.findIndex(x => x.linkId === o.linkId && x.env === o.env);
