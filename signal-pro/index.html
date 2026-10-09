@@ -525,10 +525,10 @@ var LIVECORE = (function () {
     const perms = info.permissions || {};
     const wallet = (perms.Wallet || []).map(String);
     if (wallet.some(x => /withdraw/i.test(x))) problems.push('למפתח יש הרשאת משיכה (Withdraw). צור מפתח חדש בלי ההרשאה הזו.');
-    if (+info.readOnly === 1) problems.push('המפתח לקריאה בלבד — הוא לא יכול לשלוח פקודות.');
+    if (info.readOnly !== 0 && info.readOnly !== '0') problems.push('המפתח לקריאה בלבד — הוא לא יכול לשלוח פקודות.');
     const ct = (perms.ContractTrade || []).map(String);
     if (!ct.includes('Order') || !ct.includes('Position')) problems.push('חסרות הרשאות Contract: Orders ו-Positions.');
-    if (wallet.some(x => /transfer/i.test(x))) warnings.push('למפתח יש הרשאת העברה בין חשבונות. מומלץ להסיר.');
+    if (wallet.some(x => /transfer/i.test(x))) problems.push('למפתח יש הרשאת העברה בין חשבונות. צור מפתח בלי Transfer.');
     if (info.isMaster) warnings.push('המפתח שייך לחשבון הראשי. מומלץ תת-חשבון עם $100 בלבד, כדי שהסכום יהיה מוגבל גם בבורסה עצמה.');
     if (Array.isArray(info.ips) && info.ips.length) warnings.push('המפתח מוגבל לכתובות IP — ייתכן שהדפדפן שלך לא ברשימה.');
     return { ok: problems.length === 0, problems, warnings };
@@ -546,7 +546,7 @@ var LIVECORE = (function () {
    המנוע (CORE) נבדק בנפרד ב-Node. כאן: נתונים, ממשק, יומן, הגדרות.
    =================================================================== */
 const KEY = 'sigpro_v3';
-const APP_VERSION = '3.8';
+const APP_VERSION = '3.9';
 const PRESETS = {
   conservative: { name: 'שמרני', desc: 'יומי · סטופ 3 ATR · 1:2 · סיכון 1% · ניקוד 5/5',
     v: { interval: 'D', atrStop: 3, rr: 2, riskPct: 1, minScore: 5, beAfterR: 1 } },
@@ -1456,8 +1456,9 @@ function saveSettings() {
   logit('ההגדרות עודכנו', 'sys'); save(); toast('ההגדרות נשמרו'); render();
 }
 function resetAll() {
-  if (!confirm('למחוק את כל העסקאות, היומן וההיסטוריה ולהתחיל מחדש?')) return;
-  const cfg = S.cfg; S = { ...blank(), cfg }; D = JSON.parse(JSON.stringify(cfg));
+  if (typeof BB !== 'undefined' && (BB.busy || BB.syncPromise || liveOpen().length)) return toast('אי אפשר לאפס בזמן פקודה או פוזיציה אמיתית במעקב', true);
+  if (!confirm('למחוק את עסקאות הדמו והיומן ולהתחיל מחדש? היסטוריית Bybit והמפתחות נשמרים.')) return;
+  const cfg = S.cfg, live = S.live; if (typeof liveLock === 'function') liveLock(); S = { ...blank(), cfg, live }; D = JSON.parse(JSON.stringify(cfg));
   logit('המערכת אופסה', 'sys'); save(); toast('אופס'); render(); scanNow();
 }
 
@@ -1657,16 +1658,24 @@ window.addEventListener('load', boot);
 
 /* ---------- הגדרות ומצב ---------- */
 const LIVE_DEF = { enabled: false, env: 'testnet', alloc: 100, riskPct: 2, maxPositions: 2, maxLossPct: 20,
-  maxSlipPct: 1, maxAgeH: 6, maxExposure: 1, leverage: 2, keyEnc: null, orders: [], locked: null, mainnetAck: false };
+  maxSlipPct: 1, maxAgeH: 6, maxExposure: 1, leverage: 1, keyEnc: null, orders: [], locked: null, mainnetAck: false };
 // מחזיר תמיד את אותו אובייקט (לא עותק) — אחרת שינוי נכתב לעותק ונאבד
-const LIVE_VER = 1;
+const LIVE_VER = 2;
 function L() {
-  if (!S.live || S.live._v !== LIVE_VER) S.live = { ...LIVE_DEF, orders: [], ...(S.live || {}), _v: LIVE_VER };
+  if (!S.live || S.live._v !== LIVE_VER) {
+    S.live = { ...LIVE_DEF, orders: [], ...(S.live || {}), _v: LIVE_VER, enabled: false, leverage: 1 };
+    for (const o of S.live.orders || []) {
+      // An old failed request may have reached the exchange. Never discard it on upgrade.
+      if (o.status === 'failed' && o.linkId) { o.status = 'pending'; o.uncertain = true; }
+    }
+    S.live.upgradeNote = 'החיבור עודכן ל-3.9. המסחר כובה לבדיקה מחדש; המפתחות וההיסטוריה נשמרו.';
+  }
   if (!Array.isArray(S.live.orders)) S.live.orders = [];
+  S.live.leverage = 1;
   return S.live;
 }
 const LK = { key: null, secret: null };            // בזיכרון בלבד. אף פעם לא נשמר.
-const BB = { offset: 0, inst: {}, conn: null, wallet: null, busy: false };
+const BB = { offset: 0, inst: {}, conn: null, wallet: null, busy: false, snapshot: null, generation: 0, syncPromise: null };
 const bbBase = () => L().env === 'mainnet' ? 'https://api.bybit.com' : 'https://api-testnet.bybit.com';
 
 /* ---------- הצפנת מפתחות ב-PIN ---------- */
@@ -1709,23 +1718,29 @@ async function bbSyncTime() {
     if (fin(srv)) BB.offset = srv - Date.now(); } catch (e) {}
 }
 async function bbPrivate(method, path, params = {}) {
-  if (!LK.key) throw new BybitError(-1, 'המפתחות נעולים');
-  const ts = String(Date.now() + BB.offset), recv = '10000';
+  if (!LK.key || !LK.secret) throw new BybitError(-1, 'המפתחות נעולים');
+  const key = LK.key, secret = LK.secret, env = L().env, generation = BB.generation;
+  const ts = String(Math.round(Date.now() + BB.offset)), recv = '10000';
   const qs = method === 'GET' ? new URLSearchParams(params).toString() : '';
   const body = method === 'GET' ? '' : JSON.stringify(params);
-  const sign = await hmacHex(LK.secret, ts + LK.key + recv + (qs || body));
-  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 15000);
+  const sign = await hmacHex(secret, ts + key + recv + (qs || body));
+  if (generation !== BB.generation || key !== LK.key || env !== L().env) throw new BybitError(-1, 'החיבור השתנה');
+  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 15000);
   let r;
   try {
     r = await fetch(bbBase() + path + (qs ? '?' + qs : ''), { method, signal: ctl.signal,
-      headers: { 'X-BAPI-API-KEY': LK.key, 'X-BAPI-TIMESTAMP': ts, 'X-BAPI-RECV-WINDOW': recv, 'X-BAPI-SIGN': sign,
-                 ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body || undefined });
-  } catch (e) { throw new BybitError(-2, e.name === 'AbortError' ? 'Bybit לא ענה בזמן' : 'אין חיבור ל-Bybit: ' + e.message); }
+      headers: { 'X-BAPI-API-KEY': key, 'X-BAPI-TIMESTAMP': ts, 'X-BAPI-RECV-WINDOW': recv, 'X-BAPI-SIGN': sign,
+        ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body || undefined });
+  } catch (e) { throw new BybitError(-2, e.name === 'AbortError' ? 'Bybit לא ענה בזמן — מצב הפקודה ייבדק בבורסה' : 'אין חיבור ל-Bybit: ' + e.message); }
   finally { clearTimeout(to); }
   let j; try { j = await r.json(); } catch (e) { throw new BybitError(-3, 'HTTP ' + r.status); }
-  if (j.retCode === 10002 && !bbPrivate._retried) { bbPrivate._retried = true; await bbSyncTime();
-    try { return await bbPrivate(method, path, params); } finally { bbPrivate._retried = false; } }
-  if (j.retCode !== 0) throw new BybitError(j.retCode, BB_MSG[j.retCode] ? `${BB_MSG[j.retCode]} (${j.retCode})` : `${j.retMsg} (${j.retCode})`);
+  // Never automatically repeat a POST after an ambiguous response.
+  if (j.retCode === 10002 && method === 'GET' && !bbPrivate._retried) {
+    bbPrivate._retried = true; await bbSyncTime();
+    try { return await bbPrivate(method, path, params); } finally { bbPrivate._retried = false; }
+  }
+  if (j.retCode !== 0) throw new BybitError(j.retCode, BB_MSG[j.retCode] ? BB_MSG[j.retCode] + ' (' + j.retCode + ')' : j.retMsg + ' (' + j.retCode + ')');
+  if (generation !== BB.generation || key !== LK.key || env !== L().env) throw new BybitError(-1, 'החיבור השתנה — יש לסנכרן שוב');
   return j.result;
 }
 async function instrument(sym) {
@@ -1733,50 +1748,164 @@ async function instrument(sym) {
   if (BB.inst[k] && Date.now() - BB.inst[k].at < 36e5) return BB.inst[k].v;
   const j = await bbPublic('/v5/market/instruments-info', { category: 'linear', symbol: sym });
   const it = j.result?.list?.[0]; if (!it) throw new BybitError(-4, sym + ' לא נסחר ב-Bybit ' + (L().env === 'mainnet' ? '' : 'testnet'));
-  const v = LIVECORE.parseInstrument(it); if (v.status && v.status !== 'Trading') throw new BybitError(-4, sym + ' לא במסחר כרגע');
+  if (it.symbol !== sym || it.settleCoin !== 'USDT' || it.contractType !== 'LinearPerpetual' || it.status !== 'Trading')
+    throw new BybitError(-4, 'נדרש חוזה USDT Perpetual פעיל');
+  const lot = it.lotSizeFilter || {}, pf = it.priceFilter || {};
+  if (![lot.qtyStep, lot.minOrderQty, lot.maxOrderQty, pf.tickSize].every(x => numericField(x) !== null && +x > 0) ||
+      numericField(lot.minNotionalValue) === null || +lot.minNotionalValue < 0)
+    throw new BybitError(-4, 'כללי הכמות או המחיר של הבורסה חסרים');
+  const v = LIVECORE.parseInstrument(it);
   BB.inst[k] = { at: Date.now(), v }; return v;
 }
 async function lastPrice(sym) {
   const j = await bbPublic('/v5/market/tickers', { category: 'linear', symbol: sym });
   const p = +j.result?.list?.[0]?.lastPrice; if (!fin(p) || p <= 0) throw new BybitError(-5, 'אין מחיר עדכני'); return p;
 }
-async function walletUSDT() {
-  const r = await bbPrivate('GET', '/v5/account/wallet-balance', { accountType: 'UNIFIED' });
-  const a = r?.list?.[0] || {};
-  const usdt = (a.coin || []).find(c => c.coin === 'USDT') || {};
-  const avail = +a.totalAvailableBalance || +usdt.availableToWithdraw || +usdt.walletBalance || 0;
-  return { equity: +a.totalEquity || +usdt.equity || 0, avail };
+function numericField(x) { return x !== '' && x !== null && x !== undefined && Number.isFinite(+x) ? +x : null; }
+function walletAvailable(a, mode) {
+  const c = (a.coin || []).find(x => x.coin === 'USDT') || {};
+  const balance = numericField(c.walletBalance);
+  if (balance === null) throw new Error('לא התקבלה יתרת USDT תקינה');
+  const deductions = ['totalPositionIM', 'totalOrderIM', 'locked', 'bonus', 'spotBorrow'];
+  let free = balance;
+  for (const k of deductions) {
+    const n = numericField(c[k]);
+    if (n === null) throw new Error('לא ניתן לאמת יתרה זמינה: ' + k);
+    free -= Math.max(0, n);
+  }
+  if (mode === 'REGULAR_MARGIN') {
+    const available = numericField(a.totalAvailableBalance);
+    if (available === null) throw new Error('לא התקבלה יתרה זמינה בחשבון');
+    free = Math.min(free, available);
+  } else if (mode !== 'ISOLATED_MARGIN') throw new Error('מצב בטחונות לא נתמך');
+  return { equity: numericField(c.equity) ?? balance, avail: Math.max(0, free), at: Date.now() };
 }
-
-/* ---------- מצב חשבון אמיתי ---------- */
-const liveOpen = () => L().orders.filter(o => o.status === 'open' || o.status === 'pending');
-const liveClosed = () => L().orders.filter(o => o.status === 'closed');
+async function walletUSDT(mode) {
+  const r = await bbPrivate('GET', '/v5/account/wallet-balance', { accountType: 'UNIFIED', coin: 'USDT' });
+  const a = r?.list?.[0];
+  if (!a || a.accountType !== 'UNIFIED') throw new Error('נדרש חשבון Unified עם USDT');
+  return walletAvailable(a, mode || BB.snapshot?.account?.marginMode);
+}
+async function bbPages(path, params) {
+  const rows = [], seen = new Set(); let cursor = '';
+  for (let i = 0; i < 30; i++) {
+    const r = await bbPrivate('GET', path, { ...params, limit: '50', ...(cursor ? { cursor } : {}) });
+    if (!Array.isArray(r?.list)) throw new Error('תגובה לא תקינה מ-Bybit');
+    rows.push(...r.list);
+    if (!r.nextPageCursor) return rows;
+    cursor = r.nextPageCursor;
+    if (seen.has(cursor)) throw new Error('סנכרון עמודים לא הושלם');
+    seen.add(cursor);
+  }
+  throw new Error('יותר מדי רשומות — הסנכרון לא הושלם');
+}
+function currentOrders() { return L().orders.filter(o => o.env === L().env && (!o.accountUid || o.accountUid === L().accountUid)); }
+const activeLiveStatus = o => ['open', 'pending', 'closing', 'accounting'].includes(o.status);
+const liveOpen = () => currentOrders().filter(activeLiveStatus);
+const liveClosed = () => currentOrders().filter(o => o.status === 'closed');
 const liveRealized = () => liveClosed().reduce((a, o) => a + (o.pnl || 0), 0);
-const liveEquity = () => Math.max(0, Math.min(L().alloc + liveRealized(), BB.wallet?.avail ?? Infinity));
+const liveEquity = () => Math.max(0, Math.min(L().alloc + liveRealized(), BB.wallet?.avail ?? 0));
 function checkLock() {
-  const lv = L();
-  if (!lv.locked && LIVECORE.lossLocked(liveRealized(), lv.alloc, lv.maxLossPct)) {
-    lv.locked = `המסחר האמיתי ננעל: הפסד מצטבר ${usd(liveRealized())} הגיע למגבלה של ${lv.maxLossPct}% מההקצאה`;
-    logit(lv.locked, 'err'); notify('⛔ מסחר אמיתי ננעל', lv.locked); save();
+  const lv = L(), upnl = (BB.snapshot?.positions || []).reduce((a, p) => a + Math.min(0, +p.unrealisedPnl || 0), 0);
+  if (!lv.locked && LIVECORE.lossLocked(liveRealized() - (lv.lossBaseline || 0) + upnl, lv.alloc, lv.maxLossPct)) {
+    lv.locked = 'נעילת כניסות: הפסד ממומש והפסדים פתוחים הגיעו למגבלת ' + lv.maxLossPct + '%';
+    LV.prep = null; logit(lv.locked, 'err'); notify('⛔ כניסות חדשות ננעלו', lv.locked); save();
   }
 }
+async function accountSnapshot(symbol) {
+  const env = L().env, generation = BB.generation;
+  const [info, account] = await Promise.all([
+    bbPrivate('GET', '/v5/user/query-api'), bbPrivate('GET', '/v5/account/info')]);
+  const verdict = LIVECORE.keyVerdict(info);
+  if (!verdict.ok) throw new Error(verdict.problems.join(' · '));
+  const uid = String(info.userID || '');
+  if (!uid) throw new Error('לא התקבל מזהה חשבון');
+  if (L().accountUid && L().accountUid !== uid) throw new Error('המפתח שייך לחשבון אחר — השתמש בחיבור המקורי');
+  if (![3,4,5,6].includes(+account.unifiedMarginStatus) ||
+      !['REGULAR_MARGIN','ISOLATED_MARGIN'].includes(account.marginMode)) throw new Error('נדרש Unified במצב Cross או Isolated; Portfolio אינו נתמך');
+  const [positions, orders, wallet] = await Promise.all([
+    bbPages('/v5/position/list', { category: 'linear', settleCoin: 'USDT' }),
+    bbPages('/v5/order/realtime', { category: 'linear', settleCoin: 'USDT', openOnly: '0' }),
+    walletUSDT(account.marginMode)]);
+  let symbolPositions = [];
+  if (symbol) {
+    const r = await bbPrivate('GET', '/v5/position/list', { category: 'linear', symbol });
+    if (!Array.isArray(r?.list) || !r.list.length || r.list.some(p => +p.positionIdx !== 0))
+      throw new Error('המטבע חייב להיות במצב One-Way ב-Bybit');
+    symbolPositions = r.list;
+  }
+  if (env !== L().env || generation !== BB.generation) throw new Error('החיבור השתנה');
+  const snap = { env, generation, uid, info, verdict, account, positions: positions.filter(p => +p.size > 0),
+    orders, symbolPositions, wallet, at: Date.now() };
+  BB.snapshot = snap; BB.wallet = wallet;
+  return snap;
+}
+function exposureBudget(snap) {
+  const lv = L(), active = liveOpen();
+  const positionSymbols = new Set(snap.positions.map(p => p.symbol));
+  let exposure = snap.positions.reduce((a, p) => a + Math.abs(+p.size * Math.max(+p.avgPrice || 0, +p.markPrice || 0)), 0);
+  const entryOrders = snap.orders.filter(o => !isReduce(o) && !o.stopOrderType?.includes('StopLoss') && !o.stopOrderType?.includes('TakeProfit'));
+  exposure += entryOrders.reduce((a, o) => a + Math.max(0, +o.leavesQty || 0) * (+o.price || +o.lastPriceOnCreated || 0), 0);
+  for (const o of active) if (!positionSymbols.has(o.symbol) && !entryOrders.some(e => e.orderLinkId === o.linkId))
+    exposure += Math.max(0, o.notional || 0);
+  const capital = Math.max(0, Math.min(lv.alloc, lv.alloc + liveRealized()));
+  const floatingLoss = snap.positions.reduce((a, p) => a + Math.min(0, +p.unrealisedPnl || 0), 0);
+  return { capital: Math.max(0, capital + floatingLoss), used: exposure,
+    remaining: Math.max(0, Math.min(capital + floatingLoss - exposure, snap.wallet.avail / 1.002)) };
+}
+function isReduce(o) { return o.reduceOnly === true || o.reduceOnly === 'true'; }
+function configStamp() {
+  const lv = L();
+  return JSON.stringify([lv.env, lv.accountUid, BB.generation, lv.enabled, lv.locked, lv.alloc, lv.riskPct,
+    lv.maxPositions, lv.maxLossPct, lv.maxSlipPct, lv.maxAgeH, lv.mainnetAck]);
+}
+function persistLive() {
+  // Order reservations must survive navigation or a crash.
+  localStorage.setItem(KEY, JSON.stringify(S));
+}
+async function withLiveLock(fn) {
+  if (!navigator.locks?.request) throw new Error('הדפדפן אינו תומך בנעילת מסחר. השתמש ב-Chrome או Edge מעודכן');
+  return navigator.locks.request('signal-pro-bybit', { ifAvailable: true }, async lock => {
+    if (!lock) throw new Error('מתבצע מסחר בלשונית אחרת — המתן');
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const stored = JSON.parse(raw).live;
+      if (stored && (stored.env !== L().env || stored.accountUid !== L().accountUid)) throw new Error('החיבור השתנה בלשונית אחרת — רענן');
+      if (stored) {
+        for (const o of stored.orders || []) {
+          const at = L().orders.findIndex(x => x.linkId === o.linkId && x.env === o.env);
+          if (at < 0) L().orders.push(o);
+          else if ((o.syncAt || o.at || 0) >= (L().orders[at].syncAt || L().orders[at].at || 0)) L().orders[at] = o;
+        }
+        if (stored.locked) L().locked = stored.locked;
+        if (!stored.enabled) L().enabled = false;
+      }
+    }
+    return fn();
+  });
+}
+
 
 /* ---------- חיבור, נעילה ושחרור ---------- */
 async function liveConnect() {
-  BB.conn = { state: 'checking' }; renderLiveSafe();
+  BB.conn = { state: 'checking' }; LV.prep = null; renderLiveSafe();
   try {
     await bbSyncTime();
-    const info = await bbPrivate('GET', '/v5/user/query-api');
-    const v = LIVECORE.keyVerdict(info);
-    BB.wallet = await walletUSDT();
-    BB.conn = { state: v.ok ? 'ok' : 'bad', verdict: v, at: Date.now(), master: !!info.isMaster };
-    if (!v.ok) { L().enabled = false; logit('מפתח Bybit נדחה: ' + v.problems.join(' · '), 'err'); }
-    else logit(`מחובר ל-Bybit ${L().env === 'mainnet' ? 'אמיתי' : 'testnet'} · יתרה זמינה ${usd(BB.wallet.avail)}`, 'sys');
-  } catch (e) { BB.conn = { state: 'error', msg: e.message, at: Date.now() }; logit('חיבור ל-Bybit נכשל: ' + e.message, 'err'); }
-  save(); renderLiveSafe();
-  return BB.conn.state === 'ok';
+    const snap = await accountSnapshot();
+    L().accountUid = snap.uid;
+    for (const o of L().orders) if (o.env === L().env && !o.accountUid) o.accountUid = snap.uid;
+    BB.conn = { state: 'ok', verdict: snap.verdict, at: Date.now(), master: !!snap.info.isMaster, uid: snap.uid, env: snap.env };
+    logit('מחובר ל-Bybit ' + snap.env + ' · יתרה זמינה ' + usd(snap.wallet.avail), 'sys');
+    await liveSync();
+  } catch (e) {
+    L().enabled = false; BB.conn = { state: 'error', msg: e.message, at: Date.now() };
+    logit('חיבור ל-Bybit נכשל: ' + e.message, 'err');
+  }
+  save(); renderLiveSafe(); return BB.conn.state === 'ok';
 }
 async function liveSaveKeys() {
+  if (BB.busy || liveOpen().length) return toast('אי אפשר להחליף מפתח כשיש פקודה או פוזיציה במעקב', true);
+  BB.generation++; LV.prep = null; BB.snapshot = null; L().enabled = false;
   const key = $('lk-key').value.trim(), secret = $('lk-sec').value.trim(), pin = $('lk-pin').value, pin2 = $('lk-pin2').value;
   if (key.length < 10 || secret.length < 10) return toast('מפתח או Secret קצרים מדי', true);
   if (!/^[A-Za-z0-9]+$/.test(key) || !/^[A-Za-z0-9]+$/.test(secret)) return toast('המפתח וה-Secret מכילים תווים לא חוקיים — העתק שוב', true);
@@ -1793,171 +1922,400 @@ async function liveUnlock() {
     toast('נפתח'); await liveConnect(); await liveSync(); }
   catch (e) { toast('PIN שגוי', true); }
 }
-function liveLock() { LK.key = LK.secret = null; BB.conn = null; BB.wallet = null; toast('המפתחות ננעלו'); renderLiveSafe(); }
-function liveForget() {
-  if (!LV.confirmForget) { LV.confirmForget = true; renderLiveSafe(); return; }
-  LV.confirmForget = false; L().keyEnc = null; L().enabled = false; liveLock(); save(); toast('המפתחות נמחקו מהמכשיר'); renderLiveSafe();
+function liveLock() {
+  BB.generation++; LK.key = LK.secret = null; BB.conn = null; BB.wallet = null; BB.snapshot = null;
+  LV.prep = null; L().enabled = false; clearTimeout(liveTimer); save(); toast('המפתחות ננעלו'); renderLiveSafe();
 }
+function liveForget() {
+  if (BB.busy || liveOpen().length) return toast('יש פקודה או פוזיציה במעקב — סגור וסנכרן לפני מחיקת מפתח', true);
+  if (!LV.confirmForget) { LV.confirmForget = true; renderLiveSafe(); return; }
+  LV.confirmForget = false; L().keyEnc = null; L().enabled = false; liveLock(); save(); renderLiveSafe();
+}
+
 
 /* ---------- ביצוע: הכנה → אישור → שליחה ---------- */
 const LV = { prep: null, confirmForget: false, mainnetTxt: '', closing: {} };
-async function livePrepare(tradeId) {
+async function buildLivePreparation(tradeId, approvedLimit) {
   const lv = L(), t = S.trades.find(x => x.id === tradeId);
-  if (!t) return;
+  if (!t) throw new Error('האיתות לא נמצא');
+  const stampBefore = configStamp();
+  if (!lv.enabled || !LK.key || lv.locked || BB.conn?.state !== 'ok') throw new Error(lv.locked || 'המסחר כבוי או החיבור לא תקין');
+  if (lv.env === 'mainnet' && (!lv.mainnetAck || !lv.testnetVerified)) throw new Error('נדרש סבב פתיחה וסגירה מאומת ב-Testnet לפני כסף אמיתי');
+  const snap = await accountSnapshot(t.symbol);
+  checkLock();
+  const [inst, last, fees] = await Promise.all([instrument(t.symbol), lastPrice(t.symbol),
+    bbPrivate('GET', '/v5/account/fee-rate', { category: 'linear', symbol: t.symbol })]);
+  if (stampBefore !== configStamp()) throw new Error('ההגדרות השתנו — הכן את הפקודה מחדש');
+  const fee = numericField(fees?.list?.find(x => x.symbol === t.symbol)?.takerFeeRate);
+  if (fee === null || fee < 0 || fee > .01) throw new Error('לא ניתן לאמת עמלת מסחר');
+  const active = liveOpen(), blocks = [];
+  if (active.some(o => o.status !== 'open' || o.protectionOk !== true || o.syncErr)) blocks.push('יש פקודה שטרם אומתה או פוזיציה ללא הגנה מאומתת — סנכרן');
+  const owned = new Set(active.filter(o => o.status === 'open').map(o => o.symbol));
+  if (snap.positions.some(p => !owned.has(p.symbol))) blocks.push('יש פוזיציה בבורסה שאינה במעקב המערכת. סגור אותה ב-Bybit לפני כניסה חדשה');
+  if (snap.orders.some(o => !isReduce(o) && !active.some(a => a.linkId === o.orderLinkId)))
+    blocks.push('יש פקודת כניסה חיצונית בבורסה — בטל או סיים אותה לפני כניסה חדשה');
+  const budget = exposureBudget(snap);
+  const g = LIVECORE.guards({ enabled: lv.enabled, unlocked: !!LK.key, locked: lv.locked,
+    openCount: new Set([...snap.positions.map(p => p.symbol), ...active.map(o => o.symbol)]).size,
+    maxPositions: lv.maxPositions, alreadySent: currentOrders().some(o => o.tradeId === tradeId),
+    symbolOpen: snap.positions.some(p => p.symbol === t.symbol) || active.some(o => o.symbol === t.symbol),
+    tradeStatus: t.status, now: Date.now(), signalAt: t.signalAt, maxAgeH: lv.maxAgeH,
+    last, entry: t.entry, stop: t.stop, target: t.target, maxSlipPct: lv.maxSlipPct });
+  // IOC limit bounds entry slippage. TP/SL cannot be combined with the market slippage API.
+  const limit = approvedLimit ?? LIVECORE.roundStep(Math.min(last * (1 + lv.maxSlipPct / 100),
+    t.entry * (1 + lv.maxSlipPct / 100)), inst.tick, 'down');
+  if (limit < last) blocks.push('המחיר כבר מעל מחיר הקנייה המאושר — רענן');
+  const eq = Math.min(budget.capital, snap.wallet.avail / (1 + 2 * fee));
+  let p = LIVECORE.plan({ last: limit, stop: t.stop, target: t.target, equity: budget.capital,
+    riskPct: lv.riskPct, maxExposure: 1, inst });
+  if (p.ok) {
+    const perUnitRisk = limit - p.sl + (limit + p.sl) * fee;
+    const available = Math.min(budget.remaining, eq);
+    const q = LIVECORE.roundStep(Math.min(p.qty, budget.capital * lv.riskPct / 100 / perUnitRisk,
+      available / (limit * (1 + 2 * fee))), inst.qtyStep, 'down');
+    if (!(q > 0) || q < inst.minQty || q * limit < inst.minNotional)
+      p = { ok: false, reason: 'החשיפה שנותרה או הסיכון המותר נמוכים מהמינימום בבורסה' };
+    else p = { ...p, qty: q, qtyStr: LIVECORE.fmtStep(q, inst.qtyStep), notional: q * limit,
+      riskUsd: q * perUnitRisk, fee, limit, limitStr: LIVECORE.fmtStep(limit, inst.tick),
+      exposurePct: q * limit / budget.capital * 100, capped: p.capped || q < p.qty };
+  }
+  return { tradeId, state: 'ready', last, inst, plan: p, blocks: blocks.concat(g, p.ok ? [] : [p.reason]),
+    eq: budget.capital, used: budget.used, env: lv.env, uid: snap.uid, stamp: configStamp(), at: Date.now() };
+}
+async function livePrepare(tradeId) {
+  if (BB.busy) return;
   LV.prep = { tradeId, state: 'loading' }; go('live');
-  try {
-    const [inst, last] = await Promise.all([instrument(t.symbol), lastPrice(t.symbol)]);
-    if (LK.key) BB.wallet = await walletUSDT();
-    const g = LIVECORE.guards({ enabled: lv.enabled, unlocked: !!LK.key, locked: lv.locked, openCount: liveOpen().length,
-      maxPositions: lv.maxPositions, alreadySent: lv.orders.some(o => o.tradeId === tradeId),
-      symbolOpen: liveOpen().some(o => o.symbol === t.symbol), tradeStatus: t.status, now: Date.now(), signalAt: t.signalAt,
-      maxAgeH: lv.maxAgeH, last, entry: t.entry, stop: t.stop, target: t.target, maxSlipPct: lv.maxSlipPct });
-    const eq = liveEquity();
-    const p = LIVECORE.plan({ last, stop: t.stop, target: t.target, equity: eq, riskPct: lv.riskPct, maxExposure: lv.maxExposure, inst });
-    LV.prep = { tradeId, state: 'ready', last, inst, plan: p, blocks: g.concat(p.ok ? [] : [p.reason]), eq, at: Date.now() };
-  } catch (e) { LV.prep = { tradeId, state: 'error', msg: e.message }; }
+  try { await liveSync(); LV.prep = await buildLivePreparation(tradeId); }
+  catch (e) { LV.prep = { tradeId, state: 'error', msg: e.message }; }
   renderLiveSafe();
 }
+function assertLiveApproval(P) {
+  if (!P || P.state !== 'ready' || P.blocks.length || !P.plan.ok) throw new Error('אין אישור תקף');
+  if (Date.now() - P.at > 60000 || P.stamp !== configStamp()) throw new Error('האישור התיישן או ההגדרות השתנו — הכן מחדש');
+  if (!L().enabled || L().locked || !LK.key || BB.conn?.state !== 'ok') throw new Error('המסחר אינו מורשה כרגע');
+  if (P.env !== L().env || P.uid !== L().accountUid) throw new Error('סביבת המסחר או החשבון השתנו');
+}
 async function liveExecute() {
-  const lv = L(), P = LV.prep; if (!P || P.state !== 'ready' || P.blocks.length || BB.busy) return;
-  if (Date.now() - P.at > 60000) { toast('ההכנה ישנה מדקה — מחשב מחדש'); return livePrepare(P.tradeId); }
-  const t = S.trades.find(x => x.id === P.tradeId);
-  if (lv.orders.some(o => o.tradeId === t.id)) return toast('כבר נשלחה פקודה לאיתות הזה', true);
+  const P = LV.prep;
+  if (BB.busy) return;
   BB.busy = true;
-  const linkId = ('sp' + t.id.replace(/[^A-Za-z0-9]/g, '')).slice(0, 36);
-  const o = { tradeId: t.id, symbol: t.symbol, linkId, env: lv.env, status: 'pending', at: Date.now(), qty: P.plan.qty,
-    planEntry: P.last, sl: P.plan.sl, tp: P.plan.tp, riskUsd: P.plan.riskUsd, notional: P.plan.notional, beDone: false,
-    beAfterR: S.cfg.beAfterR };
-  lv.orders.unshift(o); save();                      // נשמר לפני השליחה — מונע כפילות גם אם הדף נסגר באמצע
-  LV.prep = { ...P, state: 'sending' }; renderLiveSafe();
+  let o = null, submitted = false;
   try {
-    try { await bbPrivate('POST', '/v5/position/set-leverage', { category: 'linear', symbol: t.symbol,
-      buyLeverage: String(lv.leverage), sellLeverage: String(lv.leverage) }); }
-    catch (e) { if (e.code !== 110043) throw e; }
-    const r = await bbPrivate('POST', '/v5/order/create', { category: 'linear', symbol: t.symbol, side: 'Buy', orderType: 'Market',
-      qty: P.plan.qtyStr, positionIdx: 0, orderLinkId: linkId, takeProfit: P.plan.tpStr, stopLoss: P.plan.slStr,
-      tpslMode: 'Full', tpTriggerBy: 'LastPrice', slTriggerBy: 'LastPrice' });
-    o.orderId = r.orderId; o.status = 'open';
-    logit(`🟢 פקודה אמיתית נשלחה: קנייה ${P.plan.qtyStr} ${base(t.symbol)} · סטופ ${P.plan.slStr} · יעד ${P.plan.tpStr}`, 'signal');
-    toast('הפקודה נשלחה ל-Bybit'); LV.prep = null;
-    save(); await liveSync();
+    await withLiveLock(async () => {
+      assertLiveApproval(P);
+      await liveSyncOnce();
+      assertLiveApproval(P);
+      const fresh = await buildLivePreparation(P.tradeId, P.plan.limit);
+      if (fresh.blocks.length) throw new Error(fresh.blocks.join(' · '));
+      if (fresh.plan.qtyStr !== P.plan.qtyStr || fresh.plan.slStr !== P.plan.slStr || fresh.plan.tpStr !== P.plan.tpStr) {
+        LV.prep = fresh; throw new Error('הכמות או הסיכון השתנו — בדוק את ההכנה ואשר שוב');
+      }
+      const t = S.trades.find(x => x.id === P.tradeId);
+      try { await bbPrivate('POST', '/v5/position/set-leverage', { category: 'linear', symbol: t.symbol, buyLeverage: '1', sellLeverage: '1' }); }
+      catch (e) { if (e.code !== 110043) throw e; }
+      const vp = await bbPrivate('GET', '/v5/position/list', { category: 'linear', symbol: t.symbol });
+      if (!vp?.list?.length || vp.list.some(p => +p.positionIdx !== 0 || +p.leverage !== 1 || +p.size > 0))
+        throw new Error('לא אומתו מינוף פי 1, One-Way והיעדר פוזיציה קיימת');
+      assertLiveApproval(P);
+      const last = await lastPrice(t.symbol);
+      if (last > P.plan.limit || last <= P.plan.sl || last >= P.plan.tp ||
+          Math.abs(last / t.entry - 1) * 100 > L().maxSlipPct) throw new Error('המחיר השתנה — הכן מחדש');
+      assertLiveApproval(P);
+      const linkId = 'sp' + crypto.randomUUID().replace(/-/g, '');
+      o = { tradeId: t.id, symbol: t.symbol, linkId, env: L().env, accountUid: L().accountUid,
+        status: 'pending', at: Date.now(), qty: P.plan.qty, planEntry: P.last, limit: P.plan.limit,
+        sl: P.plan.sl, tp: P.plan.tp, riskUsd: P.plan.riskUsd, notional: P.plan.notional,
+        beDone: false, beAfterR: S.cfg.beAfterR, exitIds: [], protectionOk: false, verifiedV: 2 };
+      L().orders.unshift(o); persistLive(); // Storage failure prevents submission.
+      LV.prep = { ...P, state: 'sending' }; renderLiveSafe();
+      submitted = true;
+      const r = await bbPrivate('POST', '/v5/order/create', { category: 'linear', symbol: t.symbol,
+        side: 'Buy', orderType: 'Limit', timeInForce: 'IOC', price: P.plan.limitStr,
+        qty: P.plan.qtyStr, positionIdx: 0, orderLinkId: linkId, takeProfit: P.plan.tpStr, stopLoss: P.plan.slStr,
+        tpslMode: 'Full', tpOrderType: 'Market', slOrderType: 'Market', tpTriggerBy: 'LastPrice', slTriggerBy: 'LastPrice' });
+      o.orderId = r.orderId; persistLive(); LV.prep = null;
+      toast('הפקודה התקבלה — ממתין לאימות ביצוע והגנות');
+      await liveSyncOnce();
+    });
   } catch (e) {
-    o.status = 'failed'; o.err = e.message; logit(`פקודה ל-${base(t.symbol)} נכשלה: ${e.message}`, 'err');
-    toast('הפקודה נכשלה: ' + e.message, true); LV.prep = { ...P, state: 'failed', msg: e.message };
-    save();
-  } finally { BB.busy = false; renderLiveSafe(); }
+    if (o && submitted) {
+      // Even an HTTP error can be ambiguous. Reconcile by the stable orderLinkId.
+      o.status = 'pending'; o.uncertain = true; o.syncErr = e.message;
+      L().enabled = false; LV.prep = null; save();
+      toast('מצב הפקודה אינו ודאי. כניסות כובו; סנכרן ובדוק ב-Bybit', true);
+    } else {
+      if (o) { o.status = 'failed'; o.err = 'לא נשלחה: ' + e.message; save(); }
+      toast(e.message, true);
+    }
+    logit('ביצוע Bybit: ' + e.message, 'err');
+  } finally { BB.busy = false; renderLiveSafe(); if (LK.key) scheduleLiveSync(); }
+}
+
+
+async function lookupOrder(o, close = false) {
+  const link = close ? o.closeLinkId : o.linkId;
+  if (!link) return null;
+  const params = { category: 'linear', symbol: o.symbol, orderLinkId: link };
+  for (const path of ['/v5/order/realtime', '/v5/order/history']) {
+    const r = await bbPrivate('GET', path, params);
+    const row = (r?.list || []).find(x => x.orderLinkId === link && x.symbol === o.symbol);
+    if (row) return row;
+  }
+  return null; // Absence is NOT proof of failure.
+}
+function ownedPosition(o, rows) {
+  const p = rows.find(p => p.symbol === o.symbol && +p.size > 0);
+  if (!p) return null;
+  if (+p.positionIdx !== 0 || p.side !== 'Buy' || !o.entryConfirmed || !(o.filledQty > 0) ||
+      +p.size > o.filledQty + 1e-9) throw new Error('הפוזיציה אינה תואמת לעסקת המערכת. טפל בה ישירות ב-Bybit');
+  return p;
+}
+async function submitLiveClose(o) {
+  if (!LK.key || BB.conn?.state !== 'ok' || o.env !== L().env || o.accountUid !== L().accountUid)
+    throw new Error('החיבור אינו תואם לפוזיציה');
+  const snap = await accountSnapshot(o.symbol);
+  const p = ownedPosition(o, snap.positions);
+  if (!p) throw new Error('אין פוזיציה פתוחה — סנכרן');
+  const inst = await instrument(o.symbol);
+  if (+p.size > inst.maxMktQty) throw new Error('הכמות גדולה ממגבלת סגירה אחת — סגור ב-Bybit');
+  const link = 'sc' + crypto.randomUUID().replace(/-/g, '');
+  o.closeLinkId = link; o.closePending = true; o.manualClose = true; o.status = 'closing'; persistLive();
+  try {
+    const r = await bbPrivate('POST', '/v5/order/create', { category: 'linear', symbol: o.symbol,
+      side: 'Sell', orderType: 'Market', qty: LIVECORE.fmtStep(+p.size, inst.qtyStep),
+      reduceOnly: true, positionIdx: 0, orderLinkId: link });
+    o.exitIds = [...new Set([...(o.exitIds || []), r.orderId])]; o.closeOrderId = r.orderId; persistLive();
+    toast('בקשת הסגירה התקבלה — ממתין לאימות בבורסה');
+  } catch (e) {
+    o.syncErr = 'בקשת הסגירה טרם אומתה: ' + e.message; L().enabled = false; save();
+    throw e;
+  }
 }
 async function liveClose(linkId) {
-  const o = L().orders.find(x => x.linkId === linkId); if (!o || o.status !== 'open') return;
-  if (!LV.closing[linkId]) { LV.closing[linkId] = 'confirm'; renderLiveSafe(); return; }
-  LV.closing[linkId] = 'sending'; renderLiveSafe();
-  try {
-    await bbPrivate('POST', '/v5/order/create', { category: 'linear', symbol: o.symbol, side: 'Sell', orderType: 'Market',
-      qty: '0', reduceOnly: true, closeOnTrigger: true, positionIdx: 0 });
-    o.manualClose = true; logit(`סגירה ידנית של ${base(o.symbol)} נשלחה`, 'sys'); toast('פקודת סגירה נשלחה');
-    await liveSync();
-  } catch (e) { toast('הסגירה נכשלה: ' + e.message, true); logit('סגירה נכשלה: ' + e.message, 'err'); }
-  finally { delete LV.closing[linkId]; renderLiveSafe(); }
-}
-
-async function liveCloseAll() {
-  const list = L().orders.filter(o => o.status === 'open');
-  if (!list.length) return;
-  if (LV.closeAll !== 'confirm') { LV.closeAll = 'confirm'; renderLiveSafe();
-    setTimeout(() => { if (LV.closeAll === 'confirm') { LV.closeAll = null; renderLiveSafe(); } }, 6000); return; }
-  LV.closeAll = 'busy'; renderLiveSafe();
-  const failed = [];
-  for (const o of list) {
-    try { await bbPrivate('POST', '/v5/order/create', { category: 'linear', symbol: o.symbol, side: 'Sell', orderType: 'Market',
-        qty: '0', reduceOnly: true, closeOnTrigger: true, positionIdx: 0 }); o.manualClose = true; }
-    catch (e) { failed.push(base(o.symbol) + ': ' + e.message); }
+  const o = currentOrders().find(x => x.linkId === linkId);
+  if (!o || !activeLiveStatus(o) || BB.busy || o.closePending) return;
+  if (!LV.closing[linkId]) {
+    LV.closing[linkId] = 'confirm'; renderLiveSafe();
+    setTimeout(() => { if (LV.closing[linkId] === 'confirm') { delete LV.closing[linkId]; renderLiveSafe(); } }, 6000); return;
   }
-  logit(`סגירת כל הפוזיציות האמיתיות נשלחה (${list.length - failed.length}/${list.length})`, failed.length ? 'err' : 'sys');
-  toast(failed.length ? 'חלק מהסגירות נכשלו: ' + failed.join(' · ') : 'כל הפוזיציות נסגרו', !!failed.length);
-  LV.closeAll = null; await liveSync();
+  LV.closing[linkId] = 'sending'; BB.busy = true;
+  try { await withLiveLock(async () => { await liveSyncOnce();
+      const current = currentOrders().find(x => x.linkId === linkId);
+      if (!current || current.closePending) throw new Error('המצב השתנה — סנכרן');
+      await submitLiveClose(current); await liveSyncOnce(); }); }
+  catch (e) { toast('סגירה: ' + e.message + '. בדוק ב-Bybit לפני ניסיון נוסף', true); }
+  finally { BB.busy = false; delete LV.closing[linkId]; renderLiveSafe(); scheduleLiveSync(); }
+}
+async function liveCloseAll() {
+  if (BB.busy) return;
+  if (LV.closeAll !== 'confirm') {
+    LV.closeAll = 'confirm'; renderLiveSafe();
+    setTimeout(() => { if (LV.closeAll === 'confirm') { LV.closeAll = null; renderLiveSafe(); } }, 6000); return;
+  }
+  LV.closeAll = 'busy'; BB.busy = true;
+  try {
+    await withLiveLock(async () => {
+      await liveSyncOnce();
+      const list = currentOrders().filter(o => o.status === 'open' && !o.closePending);
+      for (const o of list) await submitLiveClose(o);
+      await liveSyncOnce();
+    });
+  } catch (e) { toast('לא כל הסגירות אומתו: ' + e.message + '. בדוק ב-Bybit', true); }
+  finally { BB.busy = false; LV.closeAll = null; renderLiveSafe(); scheduleLiveSync(); }
 }
 
-/* ---------- סנכרון: מילוי, הגנה, סגירה ---------- */
+/* ---------- סנכרון: המצב בבורסה הוא המקור ---------- */
 let liveTimer = null;
+function scheduleLiveSync() {
+  clearTimeout(liveTimer);
+  if (LK.key) liveTimer = setTimeout(liveSync, liveOpen().some(o => o.status !== 'open' || !o.protectionOk) ? 5000 : 30000);
+}
+function positionProtection(o, p) {
+  return +p.stopLoss > 0 && +p.takeProfit > 0 &&
+    Math.abs(+p.stopLoss - o.sl) <= Math.max(1e-9, o.sl * 1e-9) &&
+    Math.abs(+p.takeProfit - o.tp) <= Math.max(1e-9, o.tp * 1e-9);
+}
+async function verifyProtection(o, p) {
+  o.exSl = numericField(p.stopLoss) ?? 0; o.exTp = numericField(p.takeProfit) ?? 0;
+  o.protectionOk = positionProtection(o, p);
+  if (!o.protectionOk) {
+    if ((o.exSl > 0 && Math.abs(o.exSl - o.sl) > Math.max(1e-9, o.sl * 1e-9)) ||
+        (o.exTp > 0 && Math.abs(o.exTp - o.tp) > Math.max(1e-9, o.tp * 1e-9)))
+      throw new Error('הסטופ או היעד שונו בבורסה — כניסות נחסמו. בדוק את הפוזיציה ב-Bybit');
+    // Repair only a position whose filled quantity was verified by its entry order.
+    const last = await lastPrice(o.symbol), inst = await instrument(o.symbol);
+    if (!(o.sl < last && o.tp > last)) throw new Error('המחיר חצה סטופ או יעד וההגנות לא אומתו — בדוק וסגור ב-Bybit');
+    await bbPrivate('POST', '/v5/position/trading-stop', { category: 'linear', symbol: o.symbol, positionIdx: 0,
+      tpslMode: 'Full', stopLoss: LIVECORE.fmtStep(o.sl, inst.tick), takeProfit: LIVECORE.fmtStep(o.tp, inst.tick),
+      tpOrderType: 'Market', slOrderType: 'Market', slTriggerBy: 'LastPrice', tpTriggerBy: 'LastPrice' });
+    const r = await bbPrivate('GET', '/v5/position/list', { category: 'linear', symbol: o.symbol });
+    const updated = ownedPosition(o, r.list || []);
+    if (!updated) return false; // May have closed while protection was being repaired.
+    o.exSl = numericField(updated.stopLoss) ?? 0; o.exTp = numericField(updated.takeProfit) ?? 0;
+    o.protectionOk = positionProtection(o, updated);
+    if (!o.protectionOk) throw new Error('הסטופ והיעד לא אומתו אחרי עדכון — כניסות נחסמו');
+  }
+  o.protectionSeen = true;
+  return true;
+}
+async function reconcileClosed(o) {
+  // Exact exit order IDs only. Never sum unrelated trades on the same symbol.
+  const now = Date.now(), from = o.at - 60000;
+  const rows = [];
+  if (now - from > 45 * 864e5) throw new Error('היסטוריית הסגירה ישנה מדי לאימות אוטומטי — בדוק ב-Bybit');
+  for (let start = from; start <= now; start += 7 * 864e5) {
+    rows.push(...await bbPages('/v5/position/closed-pnl', { category: 'linear', symbol: o.symbol,
+      startTime: String(start), endTime: String(Math.min(now, start + 7 * 864e5 - 1)) }));
+  }
+  const ids = new Set(o.exitIds || []);
+  for (const row of rows) {
+    if (ids.has(row.orderId)) continue;
+    const h = await bbPrivate('GET', '/v5/order/history', { category: 'linear', symbol: o.symbol, orderId: row.orderId });
+    const exit = (h.list || []).find(x => x.orderId === row.orderId);
+    if (exit && exit.parentOrderLinkId === o.linkId) ids.add(row.orderId);
+  }
+  const unique = new Map(rows.filter(x => ids.has(x.orderId)).map(x => [x.orderId, x]));
+  const recs = [...unique.values()];
+  const qty = recs.reduce((a, x) => a + (+x.closedSize || +x.qty || 0), 0);
+  if (!recs.length || Math.abs(qty - o.filledQty) > Math.max(1e-9, o.filledQty * 1e-6)) {
+    o.status = 'accounting'; o.syncErr = 'הפוזיציה אינה פתוחה; ממתין לתוצאה שמקושרת בוודאות לפקודות הסגירה'; return;
+  }
+  if (recs.some(x => numericField(x.closedPnl) === null)) throw new Error('חסרה תוצאת סגירה');
+  o.pnl = recs.reduce((a, x) => a + +x.closedPnl, 0);
+  o.exit = recs.reduce((a, x) => a + +x.avgExitPrice * (+x.closedSize || +x.qty || 0), 0) / qty;
+  o.closedAt = Math.max(...recs.map(x => +x.updatedTime || 0));
+  o.status = 'closed'; o.syncErr = null; o.closePending = false;
+  o.reason = o.manualClose ? 'ידני' : Math.abs(o.exit / o.tp - 1) < .003 ? 'יעד' :
+    Math.abs(o.exit / o.sl - 1) < .003 ? o.beDone ? 'נקודת איחוד' : 'סטופ' : 'אחר';
+  if (o.env === 'testnet' && o.verifiedV === 2 && o.protectionSeen && o.entryConfirmed)
+    L().testnetVerified = { at: Date.now(), linkId: o.linkId, uid: o.accountUid };
+  logit('עסקה ב-Bybit נסגרה ואומתה: ' + base(o.symbol) + ' · ' + usd(o.pnl), o.pnl >= 0 ? 'win' : 'loss');
+}
+async function liveSyncOnce() {
+  if (!LK.key) return;
+  const snap = await accountSnapshot();
+  for (const o of liveOpen()) {
+    o.syncErr = null;
+    try {
+      const row = await lookupOrder(o);
+      if (row) {
+        o.orderId = row.orderId; o.orderStatus = row.orderStatus;
+        if (+row.cumExecQty > 0) {
+          o.entryConfirmed = true; o.filledQty = +row.cumExecQty;
+          o.fill = numericField(row.avgPrice) ?? o.fill;
+          o.uncertain = false;
+        } else if (['Rejected','Cancelled','Deactivated'].includes(row.orderStatus)) {
+          o.status = 'failed'; o.err = row.rejectReason || 'הבורסה אישרה שהפקודה לא בוצעה'; o.uncertain = false; continue;
+        }
+      }
+      if (o.closeLinkId) {
+        const close = await lookupOrder(o, true);
+        if (close) {
+          o.exitIds = [...new Set([...(o.exitIds || []), close.orderId])];
+          if (['Rejected','Cancelled','Filled','Deactivated'].includes(close.orderStatus)) o.closePending = false;
+        }
+      }
+      const p = ownedPosition(o, snap.positions);
+      if (p) {
+        o.status = o.closePending ? 'closing' : 'open';
+        o.size = +p.size; o.mark = +p.markPrice; o.upnl = +p.unrealisedPnl;
+        o.lastPositionAt = Date.now(); o.syncAt = Date.now();
+        if (o.verifiedV !== 2) throw new Error('עסקה מגרסה קודמת — יש לאמת או לסגור אותה ישירות ב-Bybit');
+        if (!await verifyProtection(o, p)) { o.status = 'accounting'; continue; }
+        const protectionOrders = snap.orders.filter(x => x.symbol === o.symbol && isReduce(x) && (x.parentOrderLinkId === o.linkId ||
+          (+x.positionIdx === 0 && +x.createdTime >= o.at && /TakeProfit|StopLoss/.test(x.stopOrderType || '') &&
+           (Math.abs(+x.triggerPrice - o.sl) < 1e-8 || Math.abs(+x.triggerPrice - o.tp) < 1e-8))));
+        o.exitIds = [...new Set([...(o.exitIds || []), ...protectionOrders.map(x => x.orderId)])];
+        if (LIVECORE.shouldBreakeven(o, o.mark, o.beAfterR) && !o.closePending) {
+          const inst = await instrument(o.symbol), be = LIVECORE.roundStep(o.fill, inst.tick, 'up');
+          if (await lastPrice(o.symbol) > be) {
+            await bbPrivate('POST', '/v5/position/trading-stop', { category: 'linear', symbol: o.symbol, positionIdx: 0,
+              tpslMode: 'Full', stopLoss: LIVECORE.fmtStep(be, inst.tick), slTriggerBy: 'LastPrice' });
+            o.sl = be; o.beDone = true; o.protectionOk = false;
+            const r = await bbPrivate('GET', '/v5/position/list', { category: 'linear', symbol: o.symbol });
+            const updated = ownedPosition(o, r.list || []);
+            if (updated) await verifyProtection(o, updated);
+          }
+        }
+      } else if (o.entryConfirmed) await reconcileClosed(o);
+      else {
+        o.status = 'pending'; o.uncertain = true;
+        o.syncErr = 'ממתין לאימות הפקודה לפי המזהה שלה בבורסה. אין לשלוח שוב';
+      }
+    } catch (e) {
+      o.syncErr = e.message; o.protectionOk = false; L().enabled = false;
+      logit('סנכרון Bybit: ' + base(o.symbol) + ' · ' + e.message, 'err');
+    }
+  }
+  checkLock(); persistLive(); renderLiveSafe();
+}
 async function liveSync() {
   if (!LK.key) return;
-  const lv = L();
-  for (const o of lv.orders.filter(o => (o.status === 'open' || o.status === 'pending') && o.env === lv.env)) {
-    try {
-      const pos = await bbPrivate('GET', '/v5/position/list', { category: 'linear', symbol: o.symbol });
-      const p = (pos?.list || []).find(x => +x.size > 0 && (x.side === 'Buy' || x.side === ''));
-      if (p) {
-        if (o.status === 'pending') o.status = 'open';
-        o.fill = +p.avgPrice || o.fill; o.size = +p.size; o.mark = +p.markPrice || o.mark;
-        o.upnl = +p.unrealisedPnl; o.exSl = +p.stopLoss || o.exSl; o.exTp = +p.takeProfit || o.exTp; o.syncAt = Date.now();
-        if (LIVECORE.shouldBreakeven(o, o.mark, o.beAfterR)) {
-          const inst = await instrument(o.symbol);
-          const be = LIVECORE.roundStep(o.fill, inst.tick, 'up');
-          await bbPrivate('POST', '/v5/position/trading-stop', { category: 'linear', symbol: o.symbol, positionIdx: 0,
-            tpslMode: 'Full', stopLoss: LIVECORE.fmtStep(be, inst.tick), slTriggerBy: 'LastPrice' });
-          o.beDone = true; o.sl = be; o.beAt = Date.now();
-          logit(`🛡 ${base(o.symbol)} (אמיתי): הסטופ בבורסה הוזז לכניסה ${LIVECORE.fmtStep(be, inst.tick)}`, 'shield');
-          notify(`🛡 ${base(o.symbol)} מוגנת`, 'הסטופ בבורסה הוזז לנקודת הכניסה');
-        }
-      } else if (o.status === 'open' || (o.status === 'pending' && Date.now() - o.at > 60000)) {
-        const cp = await bbPrivate('GET', '/v5/position/closed-pnl', { category: 'linear', symbol: o.symbol, startTime: String(o.at - 6e4), limit: '50' });
-        const recs = (cp?.list || []).filter(x => +x.createdTime >= o.at - 6e4 || +x.updatedTime >= o.at);
-        if (recs.length) {
-          o.pnl = recs.reduce((a, x) => a + (+x.closedPnl || 0), 0);
-          o.exit = +recs[0].avgExitPrice; o.fill = o.fill || +recs[0].avgEntryPrice;
-          o.closedAt = Math.max(...recs.map(x => +x.updatedTime || 0)) || Date.now(); o.status = 'closed';
-          const near = (a, b) => Math.abs(a - b) / b < 0.003;
-          o.reason = o.manualClose ? 'ידני' : near(o.exit, o.tp) ? 'יעד' : o.beDone && near(o.exit, o.sl) ? 'נקודת איחוד' : near(o.exit, o.sl) ? 'סטופ' : 'אחר';
-          logit(`${o.pnl >= 0 ? '✅' : '❌'} עסקה אמיתית ${base(o.symbol)} נסגרה (${o.reason}) · ${usd(o.pnl)}`, o.pnl >= 0 ? 'win' : 'loss');
-          notify(`${o.pnl >= 0 ? '✅' : '❌'} ${base(o.symbol)} — עסקה אמיתית נסגרה`, `${o.reason} · ${usd(o.pnl)}`);
-          beep(o.pnl >= 0);
-        } else if (o.status === 'pending') { o.status = 'failed'; o.err = 'הפקודה לא בוצעה בבורסה'; }
-      }
-    } catch (e) { o.syncErr = e.message; logit(`סנכרון ${base(o.symbol)}: ${e.message}`, 'err'); }
-  }
-  try { BB.wallet = await walletUSDT(); } catch (e) {}
-  checkLock(); save(); renderLiveSafe();
-  clearTimeout(liveTimer);
-  if (liveOpen().length) liveTimer = setTimeout(liveSync, 60000);   // בזמן שיש פוזיציה אמיתית — כל דקה
+  if (BB.syncPromise) return BB.syncPromise;
+  BB.syncPromise = withLiveLock(liveSyncOnce).catch(e => {
+    L().enabled = false; BB.snapshot = null; BB.wallet = null;
+    BB.conn = { state: 'error', msg: e.message, at: Date.now() };
+    logit('סנכרון החשבון נכשל: ' + e.message, 'err'); save(); renderLiveSafe();
+  }).finally(() => { BB.syncPromise = null; scheduleLiveSync(); });
+  return BB.syncPromise;
 }
+
 
 /* ---------- הגדרות ---------- */
 function liveSet(k, v) {
   const lv = L();
+  if (BB.busy || BB.syncPromise) return toast('המתן לסיום הבקשה לבורסה', true);
+  LV.prep = null;
   if (k === 'env') {
+    if (!['mainnet','testnet'].includes(v)) return;
+    if (liveOpen().length || BB.snapshot?.positions?.length || BB.snapshot?.orders?.some(x => !isReduce(x)))
+      return toast('יש פוזיציה או פקודה במעקב — אי אפשר להחליף סביבה', true);
+    if (v === 'mainnet' && !lv.testnetVerified) return toast('קודם בצע ואמת פתיחה, הגנות וסגירה ב-Testnet', true);
     if (v === 'mainnet' && !lv.mainnetAck) { LV.askMainnet = true; renderLiveSafe(); return; }
-    if (liveOpen().length) return toast('אי אפשר להחליף סביבה כשיש פוזיציה פתוחה', true);
-    lv.env = v; liveLock(); BB.inst = {}; logit('סביבת המסחר: ' + (v === 'mainnet' ? 'כסף אמיתי' : 'testnet'), 'sys');
+    liveLock(); lv.env = v; lv.accountUid = null; lv.locked = null; lv.lossBaseline = 0; lv.keyEnc = null; BB.inst = {};
+    logit('סביבת המסחר: ' + v, 'sys');
   } else if (k === 'enabled') {
-    if (v && BB.conn?.state !== 'ok') return toast('קודם חבר מפתח תקין', true);
-    lv.enabled = v; logit('מסחר אמיתי ' + (v ? 'הופעל' : 'כובה'), 'sys');
+    if (v && (BB.conn?.state !== 'ok' || !BB.snapshot || Date.now() - BB.snapshot.at > 60000 || !LK.key))
+      return toast('קודם בדוק חיבור וסנכרן חשבון', true);
+    if (v && (lv.locked || liveOpen().some(o => o.status !== 'open' || !o.protectionOk || o.syncErr)))
+      return toast('יש נעילה או פקודה שטרם אומתה — כניסות חסומות', true);
+    if (v && !navigator.locks?.request) return toast('נדרש דפדפן עם תמיכה בנעילת מסחר', true);
+    if (v && lv.env === 'mainnet' && (!lv.testnetVerified || !lv.mainnetAck)) return toast('נדרש אימות Testnet ואישור כסף אמיתי', true);
+    lv.enabled = !!v;
   } else {
     if (!fin(v) || v <= 0) return toast('ערך לא תקין', true);
     const caps = { alloc: [10, 100000], riskPct: [.25, 3], maxPositions: [1, 5], maxLossPct: [5, 50], maxSlipPct: [.2, 3], maxAgeH: [1, 48] };
-    if (caps[k]) v = Math.max(caps[k][0], Math.min(caps[k][1], v));
+    if (!caps[k]) return;
+    v = Math.max(caps[k][0], Math.min(caps[k][1], v));
+    if (k === 'maxPositions') v = Math.floor(v);
+    if (liveOpen().length && ['alloc','maxLossPct'].includes(k)) return toast('לא משנים הקצאה או מגבלת הפסד בזמן עסקה', true);
     lv[k] = v;
   }
   save(); renderLiveSafe();
 }
 function liveConfirmMainnet() {
   if (($('lk-mainnet')?.value || '').trim() !== 'כסף אמיתי') return toast('הקלד בדיוק: כסף אמיתי', true);
+  if (!L().testnetVerified) return toast('נדרש סבב Testnet מאומת', true);
   L().mainnetAck = true; LV.askMainnet = false; liveSet('env', 'mainnet');
 }
 function liveUnlockLoss() {
+  if (BB.busy || liveOpen().length) return toast('סגור וסנכרן את כל הפוזיציות לפני שחרור נעילה', true);
   if (!LV.confirmUnlock) { LV.confirmUnlock = true; renderLiveSafe(); return; }
-  LV.confirmUnlock = false; L().locked = null; L().lockResetAt = Date.now(); L().alloc = Math.max(10, L().alloc + liveRealized());
-  logit('נעילת ההפסד שוחררה ידנית. ההקצאה עודכנה ליתרה שנשארה', 'warn'); save(); renderLiveSafe();
+  LV.confirmUnlock = false; L().locked = null; L().lockResetAt = Date.now();
+  L().lossBaseline = liveRealized(); L().enabled = false; LV.prep = null;
+  logit('נעילת ההפסד שוחררה. נדרש להפעיל מסחר מחדש', 'warn'); save(); renderLiveSafe();
 }
+
 
 /* ---------- תצוגה ---------- */
 function renderLiveSafe() { if (view === 'live') { const el = $('view'); if (el) { el.innerHTML = vLive(); } } renderNav(); }
 function liveEligible() {
-  return S.trades.filter(t => t.status === 'open' && !L().orders.some(o => o.tradeId === t.id) && (Date.now() - t.signalAt) / 36e5 <= L().maxAgeH);
+  return S.trades.filter(t => t.status === 'open' && !currentOrders().some(o => o.tradeId === t.id) && (Date.now() - t.signalAt) / 36e5 <= L().maxAgeH);
 }
 function vLive() {
   const lv = L(), envName = lv.env === 'mainnet' ? 'כסף אמיתי' : 'Testnet (כסף מדומה של Bybit)';
   const c = BB.conn, opn = liveOpen(), cls_ = liveClosed(), real = liveRealized();
-  const lossUsed = Math.max(0, -real) / (lv.alloc * lv.maxLossPct / 100) * 100;
+  const lossUsed = Math.max(0, -(real - (lv.lossBaseline || 0) + (BB.snapshot?.positions || []).reduce((a,p)=>a + Math.min(0,+p.unrealisedPnl || 0),0))) / (lv.alloc * lv.maxLossPct / 100) * 100;
   const banner = lv.env === 'mainnet'
     ? `<div class="note bad" style="margin:0 0 14px"><b>מצב כסף אמיתי.</b> כל לחיצה על "בצע" שולחת פקודה אמיתית ל-Bybit בחשבון שלך.</div>`
     : `<div class="note" style="margin:0 0 14px"><b>Testnet.</b> הבורסה של Bybit לתרגול: מחירים אמיתיים, כסף מדומה. מומלץ לבצע כאן כמה עסקאות לפני שעוברים לכסף אמיתי.</div>`;
@@ -2002,19 +2360,20 @@ function vLive() {
       ${P.state === 'loading' ? '<div class="faint">בודק מחיר, כללי בורסה ויתרה…</div>'
       : P.state === 'error' ? `<div class="note bad">${esc(P.msg)}</div>`
       : P.state === 'sending' ? '<div class="faint">שולח ל-Bybit…</div>'
-      : `<div class="pv-row"><span>פעולה</span><b>קנייה (לונג) · Market · ${esc(envName)}</b></div>
+      : `<div class="pv-row"><span>פעולה</span><b>קנייה (לונג) · Limit IOC · מינוף פי 1 · ${esc(envName)}</b></div>
          <div class="pv-row"><span>מחיר נוכחי / מחיר האיתות</span><b>${nx(P.last)} / ${nx(t.entry)}</b></div>
          ${P.plan.ok ? `
+         <div class="pv-row"><span>מחיר קנייה מרבי</span><b>${esc(P.plan.limitStr)}</b></div>
          <div class="pv-row"><span>כמות</span><b>${esc(P.plan.qtyStr)} ${esc(base(t.symbol))} (${usd(P.plan.notional)})</b></div>
          <div class="pv-row"><span>סטופ בבורסה</span><b class="down">${esc(P.plan.slStr)} (${((P.plan.sl - P.last) / P.last * 100).toFixed(2)}%)</b></div>
          <div class="pv-row"><span>יעד בבורסה</span><b class="up">${esc(P.plan.tpStr)} (+${((P.plan.tp - P.last) / P.last * 100).toFixed(2)}%)</b></div>
-         <div class="pv-row"><span>הפסד מקסימלי אם הסטופ נפגע</span><b class="down">≈ ${usd(P.plan.riskUsd)} + עמלות</b></div>
+         <div class="pv-row"><span>סיכון מתוכנן כולל עמלות, לפני החלקה בסטופ</span><b class="down">≈ ${usd(P.plan.riskUsd)}</b></div>
          <div class="pv-row"><span>רווח אם היעד מושג</span><b class="up">≈ ${usd(P.plan.qty * (P.plan.tp - P.last))}</b></div>
          <div class="pv-row"><span>חשיפה מההון (${usd(P.eq)})</span><b>${P.plan.exposurePct.toFixed(0)}%${P.plan.capped ? ' · הוקטן כדי לא לחרוג מההון' : ''}</b></div>` : ''}
          ${P.blocks.length ? `<div class="note bad"><b>לא ניתן לבצע:</b><br>${P.blocks.map(esc).join('<br>')}</div>`
            : `<div style="margin-top:12px;display:flex;gap:8px"><button class="btn pri" onclick="liveExecute()" ${BB.busy ? 'disabled' : ''}>בצע עכשיו ב-Bybit</button>
               <button class="btn ghost" onclick="livePrepare('${esc(P.tradeId)}')">רענן מחיר</button></div>
-              <div class="faint" style="font-size:11.5px;margin-top:8px">הסטופ והיעד נשלחים יחד עם הפקודה ויושבים בבורסה — הם יפעלו גם כשהדף סגור.</div>`}
+              <div class="faint" style="font-size:11.5px;margin-top:8px">הסטופ והיעד נשלחים עם הפקודה ומאומתים לאחר ביצוע. פער מחיר בעת הפעלת סטופ עלול להגדיל את ההפסד.</div>`}
          ${P.state === 'failed' ? `<div class="note bad">${esc(P.msg)}</div>` : ''}`}</div>`; }
 
   // --- מאשר בתחנת טרום: אישור מעבר לכסף אמיתי
@@ -2025,7 +2384,10 @@ function vLive() {
     <button class="btn ghost" onclick="LV.askMainnet=false;renderLiveSafe()">ביטול</button></div></div>` : '';
 
   const elig = liveEligible();
-  return `${banner}${askMain}${sheet}
+  return `${banner}${lv.upgradeNote ? `<div class="note">${esc(lv.upgradeNote)}</div>` : ''}
+  <div class="note" style="margin-bottom:14px">מינוף פי 1 · One-Way נבדק לפני ביצוע · חשיפה כוללת מוגבלת להקצאה.<br>
+  בדיקת Testnet: ${lv.testnetVerified ? 'פתיחה, הגנות וסגירה אומתו' : 'טרם הושלמה — נדרשת לפני מעבר לכסף אמיתי'}.<br>
+  המעקב פועל כשהדף פתוח והמפתחות משוחררים. סטופ ויעד שאומתו בבורסה נשארים שם גם כשהדף סגור.</div>${askMain}${sheet}
   <div class="kpis">
     ${kpi('◆', 'הקצאה למסחר אמיתי', usd(lv.alloc), '', `מקס׳ ${lv.maxPositions} פוזיציות · ${lv.riskPct}% סיכון`)}
     ${kpi('±', 'רווח/הפסד ממומש', usd(real), cls(real), `${cls_.length} עסקאות אמיתיות סגורות`)}
@@ -2048,12 +2410,12 @@ function vLive() {
       <div class="card"><div class="card-h"><h2>פוזיציות אמיתיות</h2>${opn.filter(o => o.status === 'open').length > 1 ? `<span class="sp"></span>
         <button class="btn dz sm" onclick="liveCloseAll()" ${LV.closeAll === 'busy' ? 'disabled' : ''}>${LV.closeAll === 'confirm' ? 'לחץ שוב לסגירת הכל' : LV.closeAll === 'busy' ? 'סוגר…' : 'סגור הכל'}</button>` : ''}</div>
         ${opn.length ? opn.map(o => `<div class="pos"><div class="pos-h"><b>${esc(base(o.symbol))}</b>
-            ${o.beDone ? '<span class="badge b-s">🛡 מוגנת</span>' : `<span class="badge b-o">${o.status === 'pending' ? 'ממתינה' : 'פתוחה'}</span>`}
+            ${o.protectionOk && o.beDone ? '<span class="badge b-s">🛡 סטופ בכניסה מאומת</span>' : `<span class="badge b-o">${({pending:'ממתינה לאימות',closing:'סגירה באימות',accounting:'תוצאה באימות',open:'פתוחה'})[o.status] || 'באימות'}</span>`}
             <span class="badge ${o.env === 'mainnet' ? 'b-l' : 'b-g'}">${o.env === 'mainnet' ? 'אמיתי' : 'testnet'}</span><span class="sp"></span>
             <b class="num ${cls(o.upnl)}">${fin(o.upnl) ? usd(o.upnl) : '—'}</b></div>
-            <div class="faint" style="font-size:12px">כמות ${nx(o.size ?? o.qty, 6)} · כניסה ${nx(o.fill ?? o.planEntry)} · סטופ ${nx(o.exSl || o.sl)} · יעד ${nx(o.exTp || o.tp)} · ${ago(o.at)}</div>
+            <div class="faint" style="font-size:12px">כמות ${nx(o.size ?? o.qty, 6)} · כניסה ${nx(o.fill ?? o.planEntry)} · סטופ בבורסה ${nx(o.exSl)} · יעד בבורסה ${nx(o.exTp)} · ${o.protectionOk ? 'הגנות מאומתות' : 'הגנות טרם אומתו'} · ${ago(o.at)}</div>
             ${o.syncErr ? `<div class="faint" style="font-size:11.5px;color:#fca5a5">${esc(o.syncErr)}</div>` : ''}
-            <div style="margin-top:8px"><button class="btn dz sm" onclick="liveClose('${esc(o.linkId)}')" ${LV.closing[o.linkId] === 'sending' ? 'disabled' : ''}>
+            <div style="margin-top:8px"><button class="btn dz sm" onclick="liveClose('${esc(o.linkId)}')" ${LV.closing[o.linkId] === 'sending' || o.closePending || !o.entryConfirmed ? 'disabled' : ''}>
               ${LV.closing[o.linkId] === 'confirm' ? 'לחץ שוב לסגירה במחיר השוק' : LV.closing[o.linkId] === 'sending' ? 'סוגר…' : 'סגור עכשיו'}</button></div></div>`).join('')
           : '<div class="empty">אין פוזיציות אמיתיות פתוחות</div>'}
       </div>
@@ -2082,7 +2444,7 @@ function vLive() {
              ['maxSlipPct', 'סטיית מחיר מותרת (%)', .1], ['maxAgeH', 'גיל איתות מקס׳ (שעות)', 1]].map(([k, l, st]) =>
             `<div><label>${l}</label><input type="number" step="${st}" value="${lv[k]}" onchange="liveSet('${k}',+this.value)"></div>`).join('')}
         </div>
-        <div class="note">גודל הפוזיציה לעולם לא עובר את ההקצאה — בלי מינוף נסתר. הסטופ והיעד נשלחים לבורסה עם הפקודה.
+        <div class="note">סך החשיפה מוגבל להקצאה ומינוף פי 1 נבדק בבורסה. פקודת כניסה מוגבלת במחיר; סטופ ויעד נשלחים ונבדקים אחרי ביצוע.
           הזזת הסטופ לכניסה (אחרי 1R) נעשית רק כשהדף פתוח.</div></div></div>
     </div>
   </div>`;
