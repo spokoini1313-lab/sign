@@ -546,7 +546,7 @@ var LIVECORE = (function () {
    המנוע (CORE) נבדק בנפרד ב-Node. כאן: נתונים, ממשק, יומן, הגדרות.
    =================================================================== */
 const KEY = 'sigpro_v3';
-const APP_VERSION = '3.9';
+const APP_VERSION = '3.9.1';
 const PRESETS = {
   conservative: { name: 'שמרני', desc: 'יומי · סטופ 3 ATR · 1:2 · סיכון 1% · ניקוד 5/5',
     v: { interval: 'D', atrStop: 3, rr: 2, riskPct: 1, minScore: 5, beAfterR: 1 } },
@@ -927,7 +927,7 @@ function openPnl() {
   const priced = list.filter(t => fin(t.livePnl));
   const sum = priced.reduce((a, t) => a + t.livePnl, 0);
   const lastAt = Math.max(0, ...list.map(t => t.liveAt || 0));
-  const lv = (S.live?.orders || []).filter(o => o.status === 'open');
+  const lv = (S.live?.orders || []).filter(o => o.status === 'open' && o.env === (S.live?.env || 'testnet'));
   return { list, n: list.length, priced: priced.length, sum, up: priced.filter(t => t.livePnl > 0).length,
            down: priced.filter(t => t.livePnl < 0).length, lastAt, liveN: lv.length, liveSum: lv.reduce((a, o) => a + (fin(o.upnl) ? o.upnl : 0), 0) };
 }
@@ -1769,7 +1769,8 @@ function walletAvailable(a, mode) {
   const deductions = ['totalPositionIM', 'totalOrderIM', 'locked', 'bonus', 'spotBorrow'];
   let free = balance;
   for (const k of deductions) {
-    const n = numericField(c[k]);
+    // bonus / spotBorrow / locked: שדה שלא נשלח בכלל = אין כזה. שדה ריק או פגום = עצירה.
+    const n = c[k] === undefined && ['bonus', 'spotBorrow', 'locked'].includes(k) ? 0 : numericField(c[k]);
     if (n === null) throw new Error('לא ניתן לאמת יתרה זמינה: ' + k);
     free -= Math.max(0, n);
   }
@@ -1934,7 +1935,73 @@ function liveForget() {
 
 
 /* ---------- ביצוע: הכנה → אישור → שליחה ---------- */
-const LV = { prep: null, confirmForget: false, mainnetTxt: '', closing: {} };
+const LV = { prep: null, confirmForget: false, mainnetTxt: '', closing: {}, resolving: {} };
+const RESOLVE_WAIT_MS = 10 * 6e4;
+// מתי מותר לטפל ידנית בעסקה תקועה (נסגרה מחוץ למערכת, או פקודה שלא ידוע אם הגיעה)
+function canResolve(o) {
+  if (o.status === 'accounting') return true;
+  if (o.status === 'pending' && Date.now() - o.at >= RESOLVE_WAIT_MS) return true;
+  return false;
+}
+async function closedRowsSince(o) {
+  const now = Date.now(), from = o.at - 60000, rows = [];
+  if (now - from > 45 * 864e5) return null;          // מעבר לחלון האימות — רק בדיקה ב-Bybit
+  for (let start = from; start <= now; start += 7 * 864e5)
+    rows.push(...await bbPages('/v5/position/closed-pnl', { category: 'linear', symbol: o.symbol,
+      startTime: String(start), endTime: String(Math.min(now, start + 7 * 864e5 - 1)) }));
+  return [...new Map(rows.filter(x => +x.updatedTime >= o.at - 60000).map(x => [x.orderId, x])).values()];
+}
+async function liveResolve(linkId) {
+  const o0 = currentOrders().find(x => x.linkId === linkId);
+  if (!o0 || !canResolve(o0) || BB.busy) return;
+  if (LV.resolving[linkId] !== 'confirm') {
+    LV.resolving[linkId] = 'confirm'; renderLiveSafe();
+    setTimeout(() => { if (LV.resolving[linkId] === 'confirm') { delete LV.resolving[linkId]; renderLiveSafe(); } }, 8000); return;
+  }
+  LV.resolving[linkId] = 'busy'; BB.busy = true; renderLiveSafe();
+  try {
+    await withLiveLock(async () => {
+      const o = currentOrders().find(x => x.linkId === linkId);
+      if (!o || !canResolve(o)) throw new Error('המצב השתנה — סנכרן');
+      const snap = await accountSnapshot(o.symbol);
+      if (snap.positions.some(p => p.symbol === o.symbol))
+        throw new Error('עדיין יש פוזיציה פתוחה על ' + base(o.symbol) + ' ב-Bybit. סגור אותה שם קודם');
+      if (snap.orders.some(x => x.symbol === o.symbol && !isReduce(x)))
+        throw new Error('יש פקודה פתוחה על ' + base(o.symbol) + ' ב-Bybit. בטל אותה שם קודם');
+      if (o.status === 'pending') {
+        const row = await lookupOrder(o);
+        if (row && !(+row.cumExecQty > 0)) {
+          if (!['Rejected', 'Cancelled', 'Deactivated'].includes(row.orderStatus)) throw new Error('הפקודה עדיין פעילה בבורסה');
+          o.status = 'failed'; o.err = 'הבורסה אישרה שהפקודה לא בוצעה'; o.uncertain = false; o.resolvedAt = Date.now();
+          logit('פקודה ' + base(o.symbol) + ': אומת שלא בוצעה. ההזמנה שוחררה', 'sys'); persistLive(); return;
+        }
+        if (!row) {
+          o.status = 'failed'; o.uncertain = false; o.resolvedAt = Date.now();
+          o.err = 'לא נמצאה בבורסה ' + Math.round((Date.now() - o.at) / 6e4) + ' דקות אחרי השליחה, ואין פוזיציה — סומנה כלא בוצעה';
+          logit('פקודה ' + base(o.symbol) + ': ' + o.err, 'warn'); persistLive(); return;
+        }
+        o.entryConfirmed = true; o.filledQty = +row.cumExecQty; o.fill = numericField(row.avgPrice) ?? o.fill;
+      }
+      const rows = await closedRowsSince(o);
+      if (rows === null) {
+        o.status = 'closed'; o.pnl = 0; o.pnlUnknown = true; o.reason = 'נסגר מחוץ למערכת';
+      } else {
+        if (!rows.length) throw new Error('Bybit עוד לא פרסם את תוצאת הסגירה. נסה שוב בעוד דקה');
+        if (rows.some(x => numericField(x.closedPnl) === null)) throw new Error('חסרה תוצאת סגירה ב-Bybit');
+        const qty = rows.reduce((a, x) => a + (+x.closedSize || +x.qty || 0), 0);
+        o.pnl = rows.reduce((a, x) => a + +x.closedPnl, 0);
+        o.exit = qty > 0 ? rows.reduce((a, x) => a + +x.avgExitPrice * (+x.closedSize || +x.qty || 0), 0) / qty : null;
+        o.closedAt = Math.max(...rows.map(x => +x.updatedTime || 0));
+        o.status = 'closed'; o.reason = 'נסגר מחוץ למערכת'; o.pnlFromSymbol = true;
+      }
+      o.closePending = false; o.syncErr = null; o.resolvedAt = Date.now();
+      logit('עסקה ' + base(o.symbol) + ' טופלה ידנית: נסגרה מחוץ למערכת · ' + (o.pnlUnknown ? 'תוצאה לא ידועה — בדוק ב-Bybit' : usd(o.pnl)), o.pnl >= 0 ? 'win' : 'loss');
+      checkLock(); persistLive();
+    });
+    toast('העסקה טופלה. אפשר לסנכרן ולהפעיל מסחר מחדש');
+  } catch (e) { toast(e.message, true); }
+  finally { BB.busy = false; delete LV.resolving[linkId]; renderLiveSafe(); }
+}
 async function buildLivePreparation(tradeId, approvedLimit) {
   const lv = L(), t = S.trades.find(x => x.id === tradeId);
   if (!t) throw new Error('האיתות לא נמצא');
@@ -2378,7 +2445,7 @@ function vLive() {
 
   // --- מאשר בתחנת טרום: אישור מעבר לכסף אמיתי
   const askMain = LV.askMainnet ? `<div class="card" style="border-color:var(--downln)"><h2 style="font-size:15px;margin-bottom:8px">מעבר לכסף אמיתי</h2>
-    <div style="font-size:13px;color:var(--dim);line-height:1.7;margin-bottom:10px">מכאן כל "בצע" שולח פקודה אמיתית. המפתח הנוכחי יינעל, ותצטרך מפתח של החשבון האמיתי (מומלץ תת-חשבון עם $${lv.alloc} בלבד).
+    <div style="font-size:13px;color:var(--dim);line-height:1.7;margin-bottom:10px">מכאן כל "בצע" שולח פקודה אמיתית. מפתח ה-Testnet יימחק מהמכשיר, ותצטרך מפתח של החשבון האמיתי (מומלץ תת-חשבון עם $${lv.alloc} בלבד).
     כדי לאשר, הקלד: <b>כסף אמיתי</b></div>
     <div style="display:flex;gap:8px;max-width:420px"><input id="lk-mainnet"><button class="btn dz" onclick="liveConfirmMainnet()">אשר</button>
     <button class="btn ghost" onclick="LV.askMainnet=false;renderLiveSafe()">ביטול</button></div></div>` : '';
@@ -2415,6 +2482,12 @@ function vLive() {
             <b class="num ${cls(o.upnl)}">${fin(o.upnl) ? usd(o.upnl) : '—'}</b></div>
             <div class="faint" style="font-size:12px">כמות ${nx(o.size ?? o.qty, 6)} · כניסה ${nx(o.fill ?? o.planEntry)} · סטופ בבורסה ${nx(o.exSl)} · יעד בבורסה ${nx(o.exTp)} · ${o.protectionOk ? 'הגנות מאומתות' : 'הגנות טרם אומתו'} · ${ago(o.at)}</div>
             ${o.syncErr ? `<div class="faint" style="font-size:11.5px;color:#fca5a5">${esc(o.syncErr)}</div>` : ''}
+            ${canResolve(o) ? `<div class="note" style="margin-top:8px">${o.status === 'accounting'
+                ? 'הפוזיציה כבר לא פתוחה ב-Bybit, אבל לא נמצאה סגירה שמקושרת אליה (למשל: סגרת אותה באפליקציה של Bybit). אם כך, לחץ "טפל ידנית": המערכת תוודא שאין פוזיציה פתוחה ותרשום את התוצאה מ-Bybit.'
+                : 'לא ידוע אם הפקודה הגיעה לבורסה. "טפל ידנית" יבדוק שוב ב-Bybit: אם בוצעה — תירשם; אם לא נמצאה ואין פוזיציה — ההזמנה תשוחרר.'}
+              <div style="margin-top:8px"><button class="btn ${LV.resolving[o.linkId] === 'confirm' ? 'dz' : 'ghost'} sm" onclick="liveResolve('${esc(o.linkId)}')" ${LV.resolving[o.linkId] === 'busy' ? 'disabled' : ''}>
+                ${LV.resolving[o.linkId] === 'confirm' ? 'לחץ שוב לאישור' : LV.resolving[o.linkId] === 'busy' ? 'בודק ב-Bybit…' : 'טפל ידנית'}</button></div></div>`
+              : o.status === 'pending' ? `<div class="faint" style="font-size:11.5px;margin-top:6px">אם המצב לא יתברר, אפשרות טיפול ידני תופיע בעוד ${Math.max(1, Math.ceil((o.at + RESOLVE_WAIT_MS - Date.now()) / 6e4))} דקות</div>` : ''}
             <div style="margin-top:8px"><button class="btn dz sm" onclick="liveClose('${esc(o.linkId)}')" ${LV.closing[o.linkId] === 'sending' || o.closePending || !o.entryConfirmed ? 'disabled' : ''}>
               ${LV.closing[o.linkId] === 'confirm' ? 'לחץ שוב לסגירה במחיר השוק' : LV.closing[o.linkId] === 'sending' ? 'סוגר…' : 'סגור עכשיו'}</button></div></div>`).join('')
           : '<div class="empty">אין פוזיציות אמיתיות פתוחות</div>'}
