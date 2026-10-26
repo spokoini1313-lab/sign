@@ -1,67 +1,77 @@
 # voice.md
 
-Copy this to `~/.claude/instagram/voice.md` and fill it in. Every skill in the
-pack reads it. Ten minutes here is the difference between scripts you shoot and
-scripts you rewrite.
-
-If you would rather not fill it in by hand, send Claude three of your own reels
-or captions and say "write my voice.md from these". That works better than
-guessing at the answers.
-
-This file matters more on Instagram than anywhere else, because you have to say
-the words out loud. A line you would never say is not a draft, it is a retake.
+Every skill in the pack reads this file. Written from the profile and three
+captions of @h.s_helectric. Fill in the {{...}} gaps.
 
 ---
 
 ## Who I am
 
-- **Name:**
-- **Handle:**
-- **What I do, in one sentence:**
-- **Who I am talking to:** (be specific: "photographers charging under $2,000",
-  not "creatives")
-- **What I sell:**
+- **Name:** {{שם פרטי}}, ח.ס עבודות חשמל
+- **Handle:** @h.s_helectric
+- **What I do, in one sentence:** חשמלאי מוסמך: חשמל לממ"דים, שיפוצי חשמל,
+  תאורה ועמדות טעינה לרכב חשמלי.
+- **Area:** גוש דן, השפלה והשרון
+- **Who I am talking to:** בעלי דירות ובתים פרטיים שמשפצים או בונים ממ"ד,
+  יזמים וקבלנים שצריכים חשמלאי שעומד בלוחות זמנים של אתר.
+- **What I sell:** ביצוע עבודות חשמל, מהתשתית בשלב הקירות ועד גופי התאורה.
+  ייעוץ ראשון חינם.
 
 ## What I sound like
 
-- **Three of my own reels or captions that sound most like me:** (paste them)
-- **On camera I am:** (fast and loud / dry / calm / funny / deadpan)
-- **Words I actually use:**
-- **Words I would never say out loud:**
-- **Do I swear:** (yes / mild / no)
-- **Emoji in captions:** (never / one, rarely / freely)
-- **Face on camera:** (always / sometimes / faceless)
-- **Voiceover or to-camera:**
-- **Pace:** (words per minute, if you have timed yourself reading a script.
-  `beats.py --wpm` uses this. Most people are between 150 and 200.)
+- **Three of my own captions that sound most like me:**
+
+  > ממ"ד בירושלים, הקומה העליונה 🏗️
+  > את הממ"ד התחתון כבר סיימנו. הקבלן עלה קומה, והיום התחלנו בעליונה.
+  > עכשיו אנחנו בשלב הקירות, לפני היציקה. זה השלב שבו כל צינור וכל קופסה
+  > נכנסים למקום שלהם וקשורים לברזל, לפי תוכנית החשמל.
+  > אחרי היציקה כבר אין דרך חזרה, ולכן עושים את זה נכון מההתחלה.
+
+  > פרויקט חדש ומעניין מאוד ביבנה
+  > החלפה של כל מערכת החשמל במטבח הכוללים החלפה והזזה של נקודות והוספה של
+  > נקודות חשמל חדשות. חיווט והתקנה של גופי תאורה דקורטיביים שקועים בגבס
+  > שמתן מראה יוקרתי לבית. היום ביצענו את התשתיות בתקרה בשיתוף פעולה עם נתי
+  > אומן הגבס. תעקבו לראות את ההמשך ❤️
+
+  > מתקדמים בקצב מצוין 🔝
+  > שלב התקרה וההשחלות בוצעו ✅
+  > שלב הבא - אבזור וחישמול 🙏🏻
+
+- **On camera I am:** רגוע ומקצועי. מראה את העבודה, לא את עצמי.
+- **Words I actually use:** שלב, תשתית, השחלות, אבזור, חישמול, נקודות,
+  לפי תוכנית, נכון מההתחלה, דיוק בכל פרט, מתקדמים
+- **Words I would never say out loud:** {{למלא}}
+- **Do I swear:** no
+- **Emoji in captions:** one or two per caption (🏗️ ✅ 📞 ❤️)
+- **Face on camera:** faceless so far. The work is the star.
+- **Voiceover or to-camera:** text on screen over site footage, with music
+- **Language:** Hebrew only
+- **Pace:** {{לא נמדד}}
 
 ## My positions
 
-Three to five things I believe that some of my audience does not. These are
-where the good reels come from.
-
-1.
-2.
-3.
+1. אחרי היציקה אין דרך חזרה. חשמל בממ"ד מתכננים ומבצעים לפני הבטון, לא
+   אחרי.
+2. כל פרויקט גדול מתחיל בתכנון מוקפד ומדויק.
+3. {{למשל: למה לא לחסוך על חשמלאי בשיפוץ / מה לבדוק לפני עמדת טעינה}}
 
 ## Off limits
 
-- **Topics I do not post about:**
-- **Clients, numbers or names I cannot say publicly:**
-- **Claims I am not allowed to make:** (regulated industry, employer policy, NDA)
+- **Topics I do not post about:** {{למלא}}
+- **Clients, numbers or names I cannot say publicly:** כתובות מדויקות של
+  לקוחות. {{עוד?}}
+- **Claims I am not allowed to make:** {{למלא}}
 
 ## Proof I can use
 
-Real numbers, outcomes and stories I am happy to put my name on. The skills will
-never invent one, so if this section is empty, every draft comes back with
-`{{your number}}` in it.
-
--
--
--
+- פרויקטים אמיתיים בפיד: ממ"ד בירושלים (שתי קומות), ממ"ד ברמת גן, מטבח
+  ותאורה ביבנה, שיפוץ דירה בראשון לציון.
+- עמדות טעינה: שני הפוסטים המובילים בחשבון (6,545 ו-6,062 צפיות).
+- {{כמה שנים במקצוע}}
+- {{כמה עמדות טעינה / ממ"דים ביצעת}}
 
 ## The ask
 
-- **My keyword CTA, if I use one:** (one word, sayable, no spaces)
-- **What the keyword sends them:**
-- **Where my link goes:**
+- **My keyword CTA, if I use one:** {{למשל: ממד / טעינה}}
+- **What the keyword sends them:** {{למלא}}
+- **Where my link goes:** WhatsApp, 054-7413005
