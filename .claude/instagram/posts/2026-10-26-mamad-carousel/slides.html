@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=block" rel="stylesheet">
+<style>
+  :root { --gold: #d9b45a; --ink: #0d0d0d; --paper: #f5f1e8; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #222; font-family: 'Heebo', sans-serif; }
+  .slide {
+    position: relative; width: 1080px; height: 1350px; overflow: hidden;
+    background: var(--ink); color: #fff; margin-bottom: 20px;
+  }
+  .photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .shade { position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 30%, rgba(0,0,0,.72) 58%, rgba(0,0,0,.94) 100%); }
+  .shade.top { background: linear-gradient(to bottom, rgba(0,0,0,.85) 0%, rgba(0,0,0,.4) 35%, rgba(0,0,0,0) 55%, rgba(0,0,0,.85) 100%); }
+  .text { position: absolute; right: 120px; left: 120px; bottom: 150px; }
+  .kicker { color: var(--gold); font-weight: 700; font-size: 36px; letter-spacing: .5px; margin-bottom: 18px; }
+  h1 { font-weight: 900; font-size: 104px; line-height: 1.02; }
+  h2 { font-weight: 800; font-size: 76px; line-height: 1.08; margin-bottom: 26px; }
+  p { font-weight: 500; font-size: 40px; line-height: 1.38; color: #ececec; }
+  .gold { color: var(--gold); }
+  .rule { width: 120px; height: 6px; background: var(--gold); margin: 30px 0; }
+  .num { position: absolute; top: 70px; left: 80px; font-weight: 700; font-size: 32px;
+    background: rgba(0,0,0,.55); padding: 8px 22px; border-radius: 40px; direction: ltr; }
+  .handle { position: absolute; bottom: 60px; left: 80px; font-size: 30px; font-weight: 500;
+    color: rgba(255,255,255,.8); direction: ltr; }
+  .brand { position: absolute; bottom: 60px; right: 120px; font-size: 30px; font-weight: 700; color: var(--gold); }
+  .dark { background: radial-gradient(circle at 70% 20%, #2a2418 0%, #0d0d0d 60%); }
+  .list { list-style: none; margin-top: 10px; }
+  .list li { font-size: 43px; font-weight: 700; line-height: 1.25; padding: 26px 0;
+    border-bottom: 2px solid rgba(217,180,90,.25); display: flex; gap: 28px; align-items: baseline; }
+  .list li span { color: var(--gold); font-weight: 900; min-width: 50px; }
+  .phone { font-size: 92px; font-weight: 900; color: var(--gold); direction: ltr; text-align: right; margin-top: 30px; }
+  .center { position: absolute; right: 120px; left: 120px; top: 230px; }
+</style>
+</head>
+<body>
+
+<!-- 1 COVER -->
+<section class="slide">
+  <img class="photo" src="pipes.jpg" style="object-position: 40% 40%">
+  <div class="shade"></div>
+  <div class="num">1/8</div>
+  <div class="text">
+    <div class="kicker">ממ״ד בבית קיים</div>
+    <h1>אחרי היציקה<br><span class="gold">אין דרך חזרה</span></h1>
+    <div class="rule"></div>
+    <p>ככה מכינים את החשמל בממ״ד, שלב אחרי שלב, לפני הבטון.</p>
+  </div>
+  <div class="handle">@h.s_helectric</div>
+</section>
+
+<!-- 2 STAKE -->
+<section class="slide">
+  <img class="photo" src="inside.jpg" style="object-position: 50% 45%">
+  <div class="shade"></div>
+  <div class="num">2/8</div>
+  <div class="text">
+    <h2>רגע לפני שסוגרים את הקיר</h2>
+    <p>הדלת והחלון כבר במקום, הברזל קשור, והצנרת בתוכו. קיר ממ״ד הוא בטון מזוין. מה שלא נכנס עכשיו, לא ייכנס אחר כך בקלות.</p>
+  </div>
+  <div class="handle">@h.s_helectric</div>
+</section>
+
+<!-- 3 PLAN -->
+<section class="slide">
+  <img class="photo" src="plan.jpg" style="object-position: 50% 30%">
+  <div class="shade"></div>
+  <div class="num">3/8</div>
+  <div class="text">
+    <div class="kicker">שלב 1</div>
+    <h2>הכול מתחיל בתוכנית</h2>
+    <p>מסמנים כל שקע, תאורה ותקשורת. מה שצריך לזוז, זז עכשיו על הנייר. כאן פתח המזגן עבר לקיר חיצוני, כדי שיציאת הגז לא תהיה בתוך הבית.</p>
+  </div>
+  <div class="handle">@h.s_helectric</div>
+</section>
+
+<!-- 4 BOXES -->
+<section class="slide">
+  <img class="photo" src="boxes.jpg" style="object-position: 50% 35%">
+  <div class="shade"></div>
+  <div class="num">4/8</div>
+  <div class="text">
+    <div class="kicker">שלב 2</div>
+    <h2>קופסאות קשורות לברזל</h2>
+    <p>כל קופסה נקשרת לרשת בגובה ובמיקום שבתוכנית, כדי שלא תזוז כשהבטון נכנס.</p>
+  </div>
+  <div class="handle">@h.s_helectric</div>
+</section>
+
+<!-- 5 PIPES -->
+<section class="slide">
+  <img class="photo" src="pipes2.jpg" style="object-position: 30% 35%">
+  <div class="shade"></div>
+  <div class="num">5/8</div>
+  <div class="text">
+    <div class="kicker">שלב 3</div>
+    <h2>צנרת בקשתות רחבות</h2>
+    <p>בלי כיפופים חדים. ככה אחרי היציקה ההשחלה עוברת חלק ולא נתקעת בתוך הקיר.</p>
+  </div>
+  <div class="handle">@h.s_helectric</div>
+</section>
+
+<!-- 6 OPENINGS -->
+<section class="slide">
+  <img class="photo" src="window.jpg" style="object-position: 50% 45%">
+  <div class="shade"></div>
+  <div class="num">6/8</div>
+  <div class="text">
+    <div class="kicker">שלב 4</div>
+    <h2>מסביב לפתחים</h2>
+    <p>חלון ההדף ופתחי האוורור תופסים מקום בקיר. הנקודות מתוכננות מסביבם, לא עליהם.</p>
+  </div>
+  <div class="handle">@h.s_helectric</div>
+</section>
+
+<!-- 7 RECAP -->
+<section class="slide dark">
+  <div class="num">7/8</div>
+  <div class="center">
+    <div class="kicker">שמרו לפני שמתחילים</div>
+    <h2>לפני שיוצקים ממ״ד:</h2>
+    <ul class="list">
+      <li><span>1</span>תוכנית עם כל הנקודות מסומנות</li>
+      <li><span>2</span>קופסאות קשורות לברזל, בגובה הנכון</li>
+      <li><span>3</span>צנרת בלי כיפופים חדים</li>
+      <li><span>4</span>נקודות מסביב לפתחים, לא עליהם</li>
+      <li><span>5</span>חשמלאי באתר לפני הבטון, לא אחריו</li>
+    </ul>
+  </div>
+  <div class="brand">ח.ס עבודות חשמל ⚡</div>
+  <div class="handle">@h.s_helectric</div>
+</section>
+
+<!-- 8 CTA -->
+<section class="slide">
+  <img class="photo" src="pipes.jpg" style="object-position: 70% 60%; filter: blur(6px) brightness(.45)">
+  <div class="num">8/8</div>
+  <div class="center" style="top: 380px">
+    <h1 style="font-size: 92px">בונים ממ״ד?</h1>
+    <div class="rule"></div>
+    <p style="font-size: 50px; font-weight: 700">דברו איתי לפני היציקה.<br>ייעוץ ראשון חינם.</p>
+    <div class="phone">054-7413005</div>
+  </div>
+  <div class="brand">ח.ס עבודות חשמל ⚡</div>
+  <div class="handle">@h.s_helectric</div>
+</section>
+
+</body>
+</html>
